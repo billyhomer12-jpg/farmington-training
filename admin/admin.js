@@ -15,17 +15,28 @@ sessionStorage.setItem('coach',JSON.stringify(cred));D=j;$('who').textContent='C
 document.querySelector('.tabs').onclick=e=>{const t=e.target.dataset.tab;if(!t)return;document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('hide',x.id!==t));document.querySelectorAll('.tabs .btn').forEach(b=>b.classList.toggle('ghost',b.dataset.tab!==t))};
 const who=id=>D.signups.find(s=>s.id===id)||{};
 // Calendar
-function drawCal(){const C=$('cal');C.className='cal'+(week?' week':'');let start,n;
+let sel=new Date().toLocaleDateString('en-CA');const mob=matchMedia('(max-width:759px)');mob.onchange=()=>drawCal();
+const reqsOn=k=>D.requests.filter(r=>K(r.starts_at)===k&&r.status!=='cancelled'&&r.status!=='declined').sort((a,b)=>a.starts_at<b.starts_at?-1:1);
+const blksOn=k=>D.blocks.filter(b=>K(b.starts_at)===k);
+const chip=(t,c)=>`<span class="chip ${c||''}">${esc(t)}</span>`;
+function row(r){const s=who(r.signup_id);return `<button class="ag ${r.status}" data-req="${r.id}"><b class="t">${F(r.starts_at,{hour:'numeric',minute:'2-digit'})}</b><span class="m"><b>${esc(s.athlete||'?')}</b><span>${esc(r.program)}</span><span>${chip(r.status,r.status)}${chip(s.payment_status||'',s.payment_status)}</span></span></button>`}
+const blk=b=>`<div class="ag blk"><b class="t">⛔</b><span class="m"><b>${F(b.starts_at,{hour:'numeric'})}–${F(b.ends_at,{hour:'numeric'})} blocked</b><span>${esc(b.note||'')}</span></span></div>`;
+function dayList(k,title){const r=reqsOn(k),b=blksOn(k);return `<h3 class="agh">${title||new Date(k+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'})}</h3>`+(r.length||b.length?r.map(row).join('')+b.map(blk).join(''):'<p class="note">No sessions.</p>')}
+function drawCal(){const C=$('cal'),A=$('agenda'),m=mob.matches;let start,n;
 if(week){start=new Date(view);start.setDate(start.getDate()-start.getDay());n=7;$('cal-title').textContent='Week of '+start.toLocaleDateString('en-US',{month:'short',day:'numeric'})}
 else{const f=new Date(view.getFullYear(),view.getMonth(),1);start=new Date(f);start.setDate(1-f.getDay());n=42;$('cal-title').textContent=f.toLocaleDateString('en-US',{month:'long',year:'numeric'})}
-let h=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d=>`<div class="h">${d}</div>`).join('');
-for(let i=0;i<n;i++){const d=new Date(start);d.setDate(start.getDate()+i);const k=d.toLocaleDateString('en-CA');
-const ev=D.requests.filter(r=>K(r.starts_at)===k&&r.status!=='cancelled'&&r.status!=='declined').map(r=>{const s=who(r.signup_id);return `<button class="ev ${r.status}" data-req="${r.id}" title="Click to confirm or reschedule"><b>${F(r.starts_at,{hour:'numeric'})}</b> ${esc(s.athlete)} · ${esc(r.program)}<br><u>${r.status} · ${esc(s.payment_status)}</u></button>`}).join('')
-+D.blocks.filter(b=>K(b.starts_at)===k).map(b=>`<span class="ev blk">⛔ ${F(b.starts_at,{hour:'numeric'})}–${F(b.ends_at,{hour:'numeric'})} ${esc(b.note||'Blocked')}</span>`).join('');
-h+=`<div class="c${!week&&d.getMonth()!==view.getMonth()?' o':''}"><b>${d.getDate()}</b>${ev}</div>`}C.innerHTML=h}
+const days=[...Array(n)].map((_,i)=>{const d=new Date(start);d.setDate(start.getDate()+i);return d});
+if(week&&m){C.className='cal hide';A.innerHTML=days.map(d=>dayList(d.toLocaleDateString('en-CA'))).join('');return}
+C.className='cal'+(week?' week':'')+(m?' mini':'');
+let h=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d=>`<div class="h">${m?d[0]:d}</div>`).join('');
+for(const d of days){const k=d.toLocaleDateString('en-CA'),r=reqsOn(k),b=blksOn(k),o=!week&&d.getMonth()!==view.getMonth()?' o':'',today=k===new Date().toLocaleDateString('en-CA')?' today':'';
+if(m)h+=`<button class="c${o}${today}${k===sel?' sel':''}" data-day="${k}"><b>${d.getDate()}</b>${r.length?`<i>${r.length}</i>`:''}${b.length?'<s></s>':''}</button>`;
+else h+=`<div class="c${o}${today}"><b>${d.getDate()}</b>${r.map(x=>{const s=who(x.signup_id);return `<button class="ev ${x.status}" data-req="${x.id}" title="${esc(F(x.starts_at,{hour:'numeric'})+' '+(s.athlete||'')+' · '+x.program+' · '+x.status+' · '+(s.payment_status||''))}"><b>${F(x.starts_at,{hour:'numeric'})}</b> ${esc(s.athlete||'?')}<small>${esc(x.program)} · ${esc(s.payment_status||'')}</small></button>`}).join('')}${b.map(x=>`<span class="ev blk" title="${esc(x.note||'')}">⛔ ${F(x.starts_at,{hour:'numeric'})}–${F(x.ends_at,{hour:'numeric'})} ${esc(x.note||'Blocked')}</span>`).join('')}</div>`}
+C.innerHTML=h;A.innerHTML=m?dayList(sel):''}
+$('cal').addEventListener('click',e=>{const d=e.target.closest('[data-day]');if(d){sel=d.dataset.day;drawCal()}});
 $('prev').onclick=()=>{week?view.setDate(view.getDate()-7):view.setMonth(view.getMonth()-1);drawCal()};$('next').onclick=()=>{week?view.setDate(view.getDate()+7):view.setMonth(view.getMonth()+1);drawCal()};
 $('mode').onclick=()=>{week=!week;$('mode').textContent=week?'Month view':'Week view';drawCal()};
-$('cal').onclick=e=>{const b=e.target.closest('[data-req]');if(!b)return;const r=D.requests.find(x=>x.id==b.dataset.req),s=who(r.signup_id);
+$('t-cal').onclick=e=>{const b=e.target.closest('[data-req]');if(!b)return;const r=D.requests.find(x=>x.id==b.dataset.req),s=who(r.signup_id);
 $('rq-info').innerHTML=`<b>${esc(s.athlete)}</b> (age ${esc(s.age)}) · ${esc(r.program)}<br>${F(r.starts_at,{weekday:'long',month:'short',day:'numeric',hour:'numeric'})} · <i>${r.status}</i><br>Parent ${esc(s.parent)} · <a href="tel:${esc(s.phone)}">${esc(s.phone||'')}</a> · <a href="mailto:${esc(s.email)}">${esc(s.email)}</a><br>Payment: ${esc(s.payment_status)}`;
 $('rq-date').value=K(r.starts_at);$('rq-time').value=F(r.starts_at,{hour:'2-digit',minute:'2-digit',hourCycle:'h23'});$('rq').dataset.id=r.id;$('rq').showModal()};
 async function req(p){const j=await rpc('coach_update_request',{...auth(),p_id:+$('rq').dataset.id,...p});if(j.error)return msg(j.error);$('rq').close();load()}
