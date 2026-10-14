@@ -10,5 +10,8 @@ window.SITE = {
   formMode: "supabase", // "supabase" | "mailto" | "formspree"
   supabaseUrl: "https://jrcozcrfbjcsuqkmoaki.supabase.co",
   supabaseKey: "sb_publishable_cAiiq9Vv_9H_3ZCGD6yOXA_NeDnSkAe",
-  formspreeEndpoint: "https://formspree.io/f/YOUR_FORM_ID"
+  formspreeEndpoint: "https://formspree.io/f/YOUR_FORM_ID",
+  // Stripe Payment Links per program (leave "" until Billy creates them in Stripe).
+  // The booking ref is appended as ?client_reference_id=<ref> so a webhook can mark it paid.
+  stripePaymentLinks: { "Basketball Skills": "", "Athletic Performance": "", "Youth Strength Training": "" }
 };

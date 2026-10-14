@@ -1,30 +1,18 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
-<title>Coaches – Sign-ups</title><link rel="stylesheet" href="../style.css"><script src="../config.js"></script>
-<style>.wrap{padding:24px 16px}table{width:100%;border-collapse:collapse;font-size:.9rem}th,td{padding:8px;border-bottom:1px solid #333;text-align:left;vertical-align:top}th{cursor:pointer;color:var(--ac);white-space:nowrap}select.s{width:auto;padding:4px;margin:0}.tw{overflow-x:auto}.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}#login{max-width:380px}.hide{display:none}</style></head><body>
-<div class="wrap"><h2>Coaches · Sign-ups</h2>
-<form id="login"><label>Email<input id="em" type="email" required autocomplete="username"></label><label>Password<input id="pw" type="password" required autocomplete="current-password"></label><button class="btn">Sign in</button></form>
-<form id="mfa" class="hide" style="max-width:380px"><label>2FA code<input id="code" inputmode="numeric" autocomplete="one-time-code" required></label><button class="btn">Verify</button></form>
-<div id="app" class="hide"><div class="bar"><span id="who"></span><button class="btn sm" id="csv">Export CSV</button><button class="btn sm ghost" id="out">Sign out</button></div>
-<div class="tw"><table><thead><tr></tr></thead><tbody></tbody></table></div></div>
-<p id="msg" role="status"></p></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-const S=window.SITE,sb=supabase.createClient(S.supabaseUrl,S.supabaseKey),$=i=>document.getElementById(i),msg=t=>$('msg').textContent=t||'';
-const cols=[['created_at','Date'],['parent','Parent'],['athlete','Athlete'],['age','Age'],['program','Program'],['phone','Phone'],['email','Email'],['message','Message'],['status','Status']];
-let rows=[],sk='created_at',asc=false;
-document.querySelector('thead tr').innerHTML=cols.map(([k,l])=>`<th data-k="${k}">${l}</th>`).join('');
-document.querySelector('thead').onclick=e=>{const k=e.target.dataset.k;if(!k)return;asc=sk===k?!asc:true;sk=k;draw()};
-const esc=v=>String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-function draw(){rows.sort((a,b)=>{const x=a[sk]??'',y=b[sk]??'';return (x>y?1:x<y?-1:0)*(asc?1:-1)});
-document.querySelector('tbody').innerHTML=rows.length?rows.map(r=>'<tr>'+cols.map(([k])=>k==='status'?`<td><select class="s" data-id="${r.id}">${['new','contacted','booked'].map(s=>`<option${s===r.status?' selected':''}>${s}</option>`).join('')}</select></td>`:`<td>${esc(k==='created_at'?new Date(r[k]).toLocaleString():r[k])}</td>`).join('')+'</tr>').join(''):'<tr><td colspan="9">No sign-ups yet.</td></tr>'}
-document.querySelector('tbody').onchange=async e=>{const id=+e.target.dataset.id,status=e.target.value;const{error}=await sb.from('training_signups').update({status}).eq('id',id);if(error)return msg('Update failed: '+error.message);rows.find(r=>r.id===id).status=status;msg('Saved.')};
-async function load(){const{data:{user}}=await sb.auth.getUser();if(!user){$('login').classList.remove('hide');$('app').classList.add('hide');return}
-const{data:aal}=await sb.auth.mfa.getAuthenticatorAssuranceLevel();if(aal&&aal.nextLevel==='aal2'&&aal.currentLevel!=='aal2'){$('login').classList.add('hide');$('mfa').classList.remove('hide');return}
-$('login').classList.add('hide');$('mfa').classList.add('hide');$('app').classList.remove('hide');$('who').textContent=user.email;
-const{data,error}=await sb.from('training_signups').select('*');if(error)return msg('Error: '+error.message);rows=data;msg(rows.length?'':'If you expected sign-ups, make sure your email is on the coaches list.');draw()}
-$('login').onsubmit=async e=>{e.preventDefault();msg('Signing in…');const{error}=await sb.auth.signInWithPassword({email:$('em').value,password:$('pw').value});if(error)return msg(error.message);msg();load()};
-$('mfa').onsubmit=async e=>{e.preventDefault();const{data:f}=await sb.auth.mfa.listFactors();const t=f.totp.find(x=>x.status==='verified');if(!t)return msg('No 2FA factor found');const{error}=await sb.auth.mfa.challengeAndVerify({factorId:t.id,code:$('code').value.trim()});if(error)return msg(error.message);load()};
-$('out').onclick=async()=>{await sb.auth.signOut();rows=[];load()};
-$('csv').onclick=()=>{const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';const csv=[cols.map(c=>q(c[1])).join(','),...rows.map(r=>cols.map(([k])=>q(r[k])).join(','))].join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='signups-'+new Date().toISOString().slice(0,10)+'.csv';a.click()};
-load();
-</script></body></html>
+<title>Coaches back office</title><link rel="stylesheet" href="../style.css"><script src="../config.js"></script>
+<style>.wrap{padding:24px 16px}table{width:100%;border-collapse:collapse;font-size:.9rem}th,td{padding:8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{cursor:pointer;white-space:nowrap}select.s{width:auto;padding:4px;margin:0}.tw{overflow-x:auto}.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}.bar input,.bar select{width:auto;margin:0}#login{max-width:340px}.hide{display:none!important}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;font-size:.75rem}.cal .h{font-weight:700;text-align:center}.cal .c{background:var(--bg2);border:1px solid var(--line);border-radius:8px;min-height:90px;padding:4px;overflow:hidden}.cal .c.o{opacity:.4}.cal .c>b{display:block}
+.ev{display:block;width:100%;text-align:left;font:inherit;border:0;border-left:4px solid var(--ac);background:#f6f0d8;border-radius:4px;padding:2px 4px;margin-top:3px;cursor:pointer;color:#111}.ev.requested{border-left-color:#bbb;background:#f2f2f2}.ev.blk{border-left-color:#111;background:#eee;cursor:default}.ev u{text-decoration:none;color:var(--mut)}.cal.week .c{min-height:300px}
+dialog{border:1px solid var(--line);border-radius:14px;max-width:420px;width:92vw}dialog::backdrop{background:rgba(0,0,0,.35)}</style></head><body>
+<div class="wrap"><h2>Coaches back office</h2>
+<form id="login"><label>Your email<input id="em" type="email" required autocomplete="username"></label><label>4-digit PIN<input id="pin" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required autocomplete="current-password"></label><button class="btn">Open</button><p class="note">First time? Use the setup link you were given.</p></form>
+<div id="app" class="hide"><div class="bar"><b id="who"></b><button class="btn sm" id="csv">Export CSV</button><button class="btn sm ghost" id="out">Lock</button></div>
+<div class="bar tabs"><button class="btn sm" data-tab="t-cal">Calendar</button><button class="btn sm ghost" data-tab="t-list">Sign-ups</button><button class="btn sm ghost" data-tab="t-block">Block out time</button></div>
+<div id="t-cal" class="tab"><div class="bar"><button class="btn sm ghost" id="prev">‹</button><b id="cal-title"></b><button class="btn sm ghost" id="next">›</button><button class="btn sm ghost" id="mode">Week view</button><span class="note" style="margin:0">Gold = confirmed, grey = requested. Click a session to confirm or reschedule.</span></div><div id="cal" class="cal"></div></div>
+<div id="t-list" class="tab hide"><div class="tw"><table id="list"><thead><tr></tr></thead><tbody></tbody></table></div></div>
+<div id="t-block" class="tab hide"><p class="note">Parents can request any day, start times 6 AM–8 PM (Denver). Block times you can't coach.</p>
+<form id="addblock" class="bar"><input type="date" id="bd" required><input type="time" id="bs" step="3600" required><span>to</span><input type="time" id="be" step="3600" required><input id="bn" placeholder="Note (optional)" maxlength="200"><button class="btn sm">Block</button></form>
+<div class="tw"><table id="blocks"><thead><tr><th>When</th><th>Note</th><th></th></tr></thead><tbody></tbody></table></div></div></div>
+<dialog id="rq"><div id="rq-info"></div><div class="bar" style="margin-top:12px"><button class="btn sm" id="rq-ok">Confirm</button><button class="btn sm ghost" id="rq-no">Decline</button></div>
+<p class="note">Reschedule to:</p><div class="bar"><input type="date" id="rq-date"><input type="time" id="rq-time" step="3600"><button class="btn sm" id="rq-move">Move &amp; confirm</button></div><button class="btn sm ghost" id="rq-x">Close</button></dialog>
+<p id="msg" role="status"></p></div><script src="admin.js"></script></body></html>

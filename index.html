@@ -2,13 +2,13 @@
 <title data-brand>Four Corners Hoops & Performance</title><meta name="description" content="Youth basketball, athletic performance and strength training in Farmington, NM.">
 <link rel="stylesheet" href="style.css"><script src="config.js"></script></head><body>
 <a class="skip" href="#main">Skip to content</a>
-<header class="nav"><a href="#top" class="logo"><svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18" fill="#ff7a1a"/><path d="M2 20h36M20 2v36M7 7c8 6 8 20 0 26M33 7c-8 6-8 20 0 26" stroke="#141414" stroke-width="2.5" fill="none"/></svg><span data-brand>Four Corners Hoops & Performance</span></a>
+<header class="nav"><a href="#top" class="logo"><svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18" fill="#C5B358"/><path d="M2 20h36M20 2v36M7 7c8 6 8 20 0 26M33 7c-8 6-8 20 0 26" stroke="#111" stroke-width="2.5" fill="none"/></svg><span data-brand>Four Corners Hoops & Performance</span></a>
 <button class="menu" aria-expanded="false" aria-controls="links">Menu</button>
 <nav id="links"><a href="#programs">Programs</a><a href="#coaches">Coaches</a><a href="#contact" class="btn sm">Book</a></nav></header>
 <main id="main">
 <section class="hero" id="top"><div class="wrap"><p class="kicker">Farmington, NM · Four Corners</p><h1>Train hard.<br><span>Play smarter.</span></h1><p class="lead" data-tagline></p>
 <div class="ctas"><a class="btn" href="#contact">Book a free evaluation</a><a class="btn ghost" href="#programs">See programs</a></div></div>
-<svg class="court" viewBox="0 0 400 400" aria-hidden="true"><circle cx="200" cy="200" r="150" fill="#ff7a1a"/><g stroke="#141414" stroke-width="8" fill="none"><path d="M50 200h300M200 50v300"/><path d="M95 95c55 45 55 165 0 210M305 95c-55 45-55 165 0 210"/></g></svg></section>
+<svg class="court" viewBox="0 0 400 400" aria-hidden="true"><circle cx="200" cy="200" r="150" fill="#C5B358"/><g stroke="#111" stroke-width="8" fill="none"><path d="M50 200h300M200 50v300"/><path d="M95 95c55 45 55 165 0 210M305 95c-55 45-55 165 0 210"/></g></svg></section>
 
 <section id="programs" class="wrap"><h2>Programs</h2><div class="grid3">
 <article class="card"><div class="ico">🏀</div><h3>Basketball Skills</h3><p>Handles, shooting, footwork and game IQ.</p></article>
@@ -21,13 +21,25 @@
 <article class="card coach"><div class="photo" role="img" aria-label="Photo placeholder for Billy">B</div><div><h3>Coach Billy</h3><p class="ph">[PLACEHOLDER BIO]</p></div></article>
 <article class="card coach"><div class="photo" role="img" aria-label="Photo placeholder for Devin">D</div><div><h3>Coach Devin</h3><p class="ph">[PLACEHOLDER BIO]</p></div></article></div></div></section>
 
-<section id="contact" class="wrap"><h2>Book a free evaluation</h2><p class="note"><span data-location></span></p>
-<form id="form" novalidate><div class="grid2">
+<section id="contact" class="wrap"><h2>Sign up &amp; book</h2><p class="note"><span data-location></span></p>
+<ol class="stepper" aria-label="Booking steps"><li class="on">Info</li><li>Times</li><li>Review</li><li>Pay</li></ol>
+<form id="form" novalidate>
+<fieldset class="step" data-step="0"><div class="grid2">
 <label>Parent name<input name="parent" required autocomplete="name"></label><label>Athlete name<input name="athlete" required></label>
 <label>Athlete age<input name="age" type="number" min="6" max="19" required></label>
-<label>Program interest<select name="program"><option>Basketball Skills</option><option>Athletic Performance</option><option>Youth Strength Training</option></select></label>
-<label>Phone<input name="phone" type="tel" autocomplete="tel"></label><label>Email<input name="email" type="email" required autocomplete="email"></label></div>
-<label>Message (optional)<textarea name="message" rows="2"></textarea></label><button class="btn" type="submit">Request evaluation</button><p id="status" role="status"></p></form></section>
+<label>Phone<input name="phone" type="tel" autocomplete="tel"></label></div>
+<label>Email<input name="email" type="email" required autocomplete="email"></label>
+<button class="btn" type="button" data-next>Next: pick times</button></fieldset>
+<fieldset class="step" data-step="1" hidden>
+<label>Program<select name="program" id="prog"><option>Basketball Skills</option><option>Athletic Performance</option><option>Youth Strength Training</option></select></label>
+<div id="days" class="days" role="group" aria-label="Pick a day"></div><div id="times" class="hours" role="group" aria-label="Pick start times"></div>
+<p class="note" id="picked">Pick one or more sessions.</p>
+<div class="row"><button class="btn ghost" type="button" data-back>Back</button><button class="btn" type="button" data-next>Next: review</button></div></fieldset>
+<fieldset class="step" data-step="2" hidden><div id="review" class="card"></div>
+<label>Message (optional)<textarea name="message" rows="2"></textarea></label>
+<div class="row"><button class="btn ghost" type="button" data-back>Back</button><button class="btn" type="submit">Book &amp; continue to pay</button></div></fieldset>
+<fieldset class="step" data-step="3" hidden><div id="pay" class="card"></div></fieldset>
+<p id="status" role="status"></p></form></section>
 </main>
 <footer><div class="wrap"><b data-brand></b><p><a data-phone></a> · <a data-email></a> · <a data-ig>Instagram</a> · <a data-fb>Facebook</a> · <a data-tt>TikTok</a></p><p class="small">Contact details are placeholders.</p></div></footer>
 <script src="main.js"></script></body></html>
