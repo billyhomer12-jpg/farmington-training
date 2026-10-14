@@ -1,7 +1,7 @@
 :root{--bg:#141414;--bg2:#1e1e1e;--fg:#f4f4f4;--mut:#c4c4c4;--ac:#ff7a1a}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.6 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 a{color:var(--ac)}.skip{position:absolute;left:-999px}.skip:focus{left:8px;top:8px;background:#fff;color:#000;padding:8px;z-index:9}
-.wrap{max-width:1100px;margin:0 auto;padding:64px 20px}h1,h2,h3{font-family:Impact,"Arial Black",system-ui,sans-serif;letter-spacing:.5px;line-height:1.05;text-transform:uppercase}
+.wrap{max-width:1100px;margin:0 auto;padding:44px 20px}h1,h2,h3{font-family:Impact,"Arial Black",system-ui,sans-serif;letter-spacing:.5px;line-height:1.05;text-transform:uppercase}
 h2{font-size:clamp(2rem,6vw,3.2rem);margin:0 0 24px}h2::after{content:"";display:block;width:64px;height:6px;background:var(--ac);margin-top:10px}
 .nav{position:sticky;top:0;z-index:5;display:flex;justify-content:space-between;align-items:center;padding:12px 20px;background:rgba(20,20,20,.94);border-bottom:1px solid #2c2c2c}
 .logo{display:flex;gap:10px;align-items:center;color:var(--fg);text-decoration:none;font-weight:800}.logo svg{width:34px;flex:none}
@@ -9,7 +9,7 @@ nav a{color:var(--fg);text-decoration:none;margin-left:20px;font-weight:600}.men
 .btn{display:inline-block;background:var(--ac);color:#141414;font-weight:800;text-decoration:none;padding:14px 26px;border-radius:999px;border:0;font-size:1rem;cursor:pointer;text-transform:uppercase}
 .btn.sm{padding:8px 16px;color:#141414}.btn.ghost{background:none;color:var(--fg);box-shadow:inset 0 0 0 2px var(--fg)}
 :focus-visible{outline:3px solid #fff;outline-offset:3px}
-.hero{position:relative;overflow:hidden;min-height:88vh;display:flex;align-items:center;background:radial-gradient(circle at 80% 30%,#3a2412,transparent 55%),repeating-linear-gradient(135deg,#181818 0 22px,#141414 22px 44px)}
+.hero{position:relative;overflow:hidden;min-height:64vh;display:flex;align-items:center;background:radial-gradient(circle at 80% 30%,#3a2412,transparent 55%),repeating-linear-gradient(135deg,#181818 0 22px,#141414 22px 44px)}
 .hero .wrap{position:relative;z-index:1;width:100%}.hero h1{font-size:clamp(3rem,12vw,7rem);margin:0}.hero h1 span{color:var(--ac)}
 .kicker{color:var(--ac);font-weight:800;text-transform:uppercase;letter-spacing:2px}.lead{font-size:1.2rem;max-width:560px;color:var(--mut)}.ctas{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}
 .court{position:absolute;right:-80px;bottom:-60px;width:min(520px,80vw);opacity:.35;transform:rotate(-18deg)}
@@ -27,3 +27,7 @@ label{display:block;font-weight:600;margin-bottom:14px}input,select,textarea{dis
 footer{background:#0c0c0c;text-align:center}footer .wrap{padding:40px 20px}.small{font-size:.85rem;color:var(--mut)}
 @media(max-width:760px){.menu{display:block}nav{display:none;position:absolute;top:100%;left:0;right:0;background:#141414;padding:12px 20px}nav.open{display:block}nav a{display:block;margin:12px 0}.logo span{font-size:.9rem}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+.note{color:var(--mut);margin:16px 0 0}.pills{margin-top:20px}.pills span{padding:6px 14px;font-size:.9rem}
+.card{padding:18px}.card p{margin:.3em 0 0}.grid3 .card{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;align-items:center}.grid3 .card .ico{grid-row:span 2}.grid3 .card h3{margin:0;font-size:1.3rem}
+.coaches{display:grid;grid-template-columns:1fr 1fr;gap:16px}.coach{display:flex;flex-direction:column;gap:10px}.coach .photo{aspect-ratio:1;font-size:3rem}.coach h3{margin:0;font-size:1.2rem}
+@media(min-width:761px){.coach{flex-direction:row;align-items:center}.coach .photo{width:120px;flex:none}}

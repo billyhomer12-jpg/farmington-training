@@ -7,6 +7,8 @@ window.SITE = {
   location: "Gym address TBD, Farmington, NM", // PLACEHOLDER
   instagram: "#", facebook: "#", tiktok: "#",  // PLACEHOLDER links
   // Form: "mailto" (opens the parent's email app) or "formspree" (paste your endpoint)
-  formMode: "mailto",
+  formMode: "supabase", // "supabase" | "mailto" | "formspree"
+  supabaseUrl: "https://jrcozcrfbjcsuqkmoaki.supabase.co",
+  supabaseKey: "sb_publishable_cAiiq9Vv_9H_3ZCGD6yOXA_NeDnSkAe",
   formspreeEndpoint: "https://formspree.io/f/YOUR_FORM_ID"
 };
