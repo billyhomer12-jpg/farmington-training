@@ -2,7 +2,7 @@
 create schema if not exists training;
 create table if not exists training.coaches (email text primary key);
 insert into training.coaches(email) values ('billyhomer12@gmail.com') on conflict do nothing;
--- Devin: insert into training.coaches(email) values ('DEVIN_EMAIL');
+insert into training.coaches(email) values ('collins.devin2018@gmail.com') on conflict do nothing;
 
 create table if not exists public.training_signups (
   id bigint generated always as identity primary key,
