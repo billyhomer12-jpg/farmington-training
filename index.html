@@ -1,6 +1,6 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title data-brand>Four Corners Hoops & Performance</title><meta name="description" content="Youth basketball, athletic performance and strength training in Farmington, NM.">
-<link rel="stylesheet" href="style.css?v=7"><script src="config.js?v=9"></script></head><body>
+<link rel="stylesheet" href="style.css?v=10"><script src="config.js?v=10"></script></head><body>
 <a class="skip" href="#main">Skip to content</a>
 <header class="nav"><a href="#top" class="logo"><svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18" fill="#C5B358"/><path d="M2 20h36M20 2v36M7 7c8 6 8 20 0 26M33 7c-8 6-8 20 0 26" stroke="#111" stroke-width="2.5" fill="none"/></svg><span data-brand>Four Corners Hoops & Performance</span></a>
 <button class="menu" aria-expanded="false" aria-controls="links">Menu</button>
@@ -33,6 +33,11 @@
 <fieldset class="step" data-step="1" hidden>
 <label>Program<select name="program" id="prog"><option>Basketball Skills</option><option>Athletic Performance</option><option>Youth Strength Training</option></select></label>
 <label>Session type<select name="format"><option value="Small group">Small group (2–4 players)</option><option>1-on-1</option></select></label>
+<fieldset class="wt" id="wt"><legend>Workout type</legend>
+<label><input type="radio" name="workout_type" value="Gym" required> <b>Gym (court) workout</b><small>Indoor basketball court at the HHPC. Only during gym hours: Mon–Thu 5 AM–9 PM, Fri 5 AM–8 PM, Sat 7 AM–5 PM, closed Sun and on gym closure days.</small></label>
+<label><input type="radio" name="workout_type" value="Outdoor"> <b>Outdoor workout</b><small>Speed, agility and conditioning outside (field, track or outdoor court). Any day, 6 AM–9 PM.</small></label>
+<label><input type="radio" name="workout_type" value="Weight room"> <b>Weight room workout</b><small>Coached, technique-first strength training. Any day, 6 AM–9 PM, even when the gym is closed.</small></label></fieldset>
+<p class="note" id="daynote"></p>
 <div id="days" class="days" role="group" aria-label="Pick a day"></div><div id="times" class="hours" role="group" aria-label="Pick start times"></div>
 <p class="note" id="picked">Pick one or more sessions.</p>
 <div class="row"><button class="btn ghost" type="button" data-back>Back</button><button class="btn" type="button" data-next>Next: review</button></div></fieldset>
@@ -43,4 +48,4 @@
 <p id="status" role="status"></p></form></section>
 </main>
 <footer><div class="wrap"><b data-brand></b><p><a data-phone></a> · <a data-email></a> · <a data-ig>Instagram</a> · <a data-tt>TikTok</a></p></div></footer>
-<script src="main.js?v=9"></script></body></html>
+<script src="main.js?v=10"></script></body></html>

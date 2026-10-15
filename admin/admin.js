@@ -11,7 +11,7 @@ $('out').onclick=()=>{sessionStorage.removeItem('coach');cred=null;$('pin').valu
 function show(on){$('login').classList.toggle('hide',on);$('app').classList.toggle('hide',!on)}
 async function load(){msg('Loading…');const from=new Date(Date.now()-120*864e5).toISOString(),to=new Date(Date.now()+180*864e5).toISOString();
 const j=await rpc('coach_data',{...auth(),p_from:from,p_to:to});if(j.error){msg(j.error);sessionStorage.removeItem('coach');show(false);return false}
-sessionStorage.setItem('coach',JSON.stringify(cred));D=j;$('who').textContent='Coach '+j.name;show(true);msg('');drawCal();drawList();drawBlocks();return true}
+sessionStorage.setItem('coach',JSON.stringify(cred));D=j;D.closures=D.closures||[];D.signups.forEach(x=>{const r=D.requests.find(q=>q.signup_id===x.id);x.workout_type=r&&r.workout_type||''});$('who').textContent='Coach '+j.name;show(true);msg('');drawCal();drawList();drawBlocks();drawClosures();return true}
 document.querySelector('.tabs').onclick=e=>{const t=e.target.dataset.tab;if(!t)return;document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('hide',x.id!==t));document.querySelectorAll('.tabs .btn').forEach(b=>b.classList.toggle('ghost',b.dataset.tab!==t))};
 const who=id=>D.signups.find(s=>s.id===id)||{};
 // Calendar
@@ -22,7 +22,8 @@ const grp=r=>/group|clinic|team/i.test(r.format||'');
 const first=id=>String(who(id).athlete||'?').replace(/^DEMO\s+/i,'').split(/\s+/)[0];
 const reqsOn=k=>D.requests.filter(r=>K(r.starts_at)===k&&r.status!=='cancelled'&&r.status!=='declined').sort((a,b)=>a.starts_at<b.starts_at?-1:1);
 const blksOn=k=>D.blocks.filter(b=>K(b.starts_at)===k);
-const pill=r=>`<button class="pl t-${ty(r)[1]}${grp(r)?' grp':''}${r.status==='requested'?' rq':''}" data-req="${r.id}">${esc(first(r.signup_id))} · ${ty(r)[0]}${r.format?(grp(r)?' Grp':' 1:1'):''}</button>`;
+const WT={'Gym':'🏀','Outdoor':'🌤','Weight room':'🏋'},wti=r=>r.workout_type?' '+(WT[r.workout_type]||''):'';
+const pill=r=>`<button class="pl t-${ty(r)[1]}${grp(r)?' grp':''}${r.status==='requested'?' rq':''}" data-req="${r.id}">${esc(first(r.signup_id))} · ${ty(r)[0]}${r.format?(grp(r)?' Grp':' 1:1'):''}${wti(r)}</button>`;
 const kd=d=>d.toLocaleDateString('en-CA'),kdate=k=>new Date(k+'T12:00:00');
 function drawCal(){const C=$('cal'),A=$('agenda');document.querySelectorAll('[data-mode]').forEach(b=>b.classList.toggle('ghost',b.dataset.mode!==mode));A.innerHTML='';
 if(mode==='day'){const d=kdate(sel);$('cal-title').textContent=d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});C.className='cal hide';
@@ -30,7 +31,7 @@ const r=reqsOn(sel),H=52;let h='<div class="tl">';for(let i=6;i<=21;i++)h+=`<div
 blksOn(sel).forEach(b=>{const s=+F(b.starts_at,{hour:'numeric',hourCycle:'h23'}),e=+F(b.ends_at,{hour:'numeric',hourCycle:'h23'})||24;h+=`<div class="tb" style="top:${(Math.max(s,6)-6)*H}px;height:${(Math.min(e,21)-Math.max(s,6))*H}px">Blocked ${esc(b.note||'')}</div>`});
 const by={};r.forEach(x=>(by[x.starts_at]=by[x.starts_at]||[]).push(x));
 Object.values(by).forEach(g=>g.forEach((x,i)=>{const hr=+F(x.starts_at,{hour:'numeric',hourCycle:'h23'}),s=who(x.signup_id);
-h+=`<button class="te t-${ty(x)[1]}${grp(x)?' grp':''}${x.status==='requested'?' rq':''}" data-req="${x.id}" style="top:${(hr-6)*H+1}px;height:${H-2}px;left:calc(56px + (100% - 56px) * ${i}/${g.length});width:calc((100% - 56px) / ${g.length} - 3px)"><b>${esc(first(x.signup_id))}</b> ${esc(ty(x)[0])}${x.format?' · '+esc(x.format):''}<small>${F(x.starts_at,{hour:'numeric'})} · ${esc(x.status)} · ${esc(s.payment_status||'')}</small></button>`}));
+h+=`<button class="te t-${ty(x)[1]}${grp(x)?' grp':''}${x.status==='requested'?' rq':''}" data-req="${x.id}" style="top:${(hr-6)*H+1}px;height:${H-2}px;left:calc(56px + (100% - 56px) * ${i}/${g.length});width:calc((100% - 56px) / ${g.length} - 3px)"><b>${esc(first(x.signup_id))}</b> ${esc(ty(x)[0])}${x.format?' · '+esc(x.format):''}${x.workout_type?' · '+esc(x.workout_type):''}<small>${F(x.starts_at,{hour:'numeric'})} · ${esc(x.status)} · ${esc(s.payment_status||'')}</small></button>`}));
 A.innerHTML=h+`<div style="height:${15*H+20}px"></div></div>`+(r.length?'':'<p class="note">No sessions this day.</p>');return}
 if(mode==='week'){const st=new Date(view);st.setDate(st.getDate()-st.getDay());$('cal-title').textContent='Week of '+st.toLocaleDateString('en-US',{month:'short',day:'numeric'});C.className='cal hide';
 A.innerHTML=[...Array(7)].map((_,i)=>{const d=new Date(st);d.setDate(st.getDate()+i);const k=kd(d),r=reqsOn(k),b=blksOn(k);
@@ -50,7 +51,7 @@ async function req(p){const j=await rpc('coach_update_request',{...auth(),p_id:+
 $('rq-ok').onclick=()=>req({p_status:'confirmed',p_start:null});$('rq-no').onclick=()=>req({p_status:'declined',p_start:null});
 $('rq-move').onclick=()=>req({p_status:'confirmed',p_start:at($('rq-date').value,$('rq-time').value)});$('rq-x').onclick=()=>$('rq').close();
 // Sign-ups list
-const cols=[['created_at','Date'],['parent','Parent'],['athlete','Athlete'],['age','Age'],['program','Program'],['phone','Phone'],['email','Email'],['message','Message'],['status','Status'],['payment_status','Paid']];
+const cols=[['created_at','Date'],['parent','Parent'],['athlete','Athlete'],['age','Age'],['program','Program'],['workout_type','Workout'],['phone','Phone'],['email','Email'],['message','Message'],['status','Status'],['payment_status','Paid']];
 document.querySelector('#list thead tr').innerHTML=cols.map(([k,l])=>`<th data-k="${k}">${l}</th>`).join('')+'<th></th>';
 document.querySelector('#list thead').onclick=e=>{const k=e.target.dataset.k;if(!k)return;asc=sk===k?!asc:true;sk=k;drawList()};
 function drawList(){const rows=[...D.signups].sort((a,b)=>{const x=a[sk]??'',y=b[sk]??'';return(x>y?1:x<y?-1:0)*(asc?1:-1)});
@@ -64,3 +65,6 @@ function drawBlocks(){document.querySelector('#blocks tbody').innerHTML=D.blocks
 $('blocks').onclick=async e=>{const id=e.target.dataset.del;if(!id)return;const j=await rpc('coach_delete_block',{...auth(),p_id:+id});if(j.error)return msg(j.error);load()};
 $('addblock').onsubmit=async e=>{e.preventDefault();const d=$('bd').value,j=await rpc('coach_add_block',{...auth(),p_start:at(d,$('bs').value),p_end:at(d,$('be').value),p_note:$('bn').value});if(j.error)return msg(j.error);msg('Time blocked.');e.target.reset();load()};
 if(cred)load();
+function drawClosures(){document.querySelector('#closures tbody').innerHTML=D.closures.filter(b=>new Date(b.ends_at)>Date.now()).map(b=>`<tr><td>${F(b.starts_at,{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})} – ${F(b.ends_at,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})}</td><td>${esc(b.reason)}</td><td><button class="btn sm ghost" data-delc="${b.id}">Remove</button></td></tr>`).join('')||'<tr><td colspan="3">No upcoming gym closures.</td></tr>'}
+$('closures').onclick=async e=>{const id=e.target.dataset.delc;if(!id)return;const j=await rpc('coach_delete_closure',{...auth(),p_id:+id});if(j.error)return msg(j.error);load()};
+$('addclosure').onsubmit=async e=>{e.preventDefault();const j=await rpc('coach_add_closure',{...auth(),p_start:at($('cd1').value,$('ct1').value||'00:00'),p_end:at($('cd2').value||$('cd1').value,$('ct2').value||'23:59'),p_reason:$('cr').value});if(j.error)return msg(j.error);msg('Gym closure added.');e.target.reset();load()};
