@@ -7,7 +7,7 @@ $$('[data-email]').forEach(e=>{e.textContent=S.email;e.href='mailto:'+S.email});
 const m=document.querySelector('.menu'),n=document.getElementById('links');
 m.onclick=()=>{const o=n.classList.toggle('open');m.setAttribute('aria-expanded',o)};n.onclick=e=>{if(e.target.tagName==='A'){n.classList.remove('open');m.setAttribute('aria-expanded',false)}};
 // Scroll fade-ins (respects reduced motion)
-(()=>{const els=document.querySelectorAll('main h2,main .sub,.tiles .card,.coach,.pills,#contact form,.aday,main article');if(matchMedia('(prefers-reduced-motion: reduce)').matches||!('IntersectionObserver' in window))return;
+(()=>{const els=document.querySelectorAll('main h2,main .sub,.tiles .card,.coach,.pills,#contact form,.aday,main article,main .tile,main .links');if(matchMedia('(prefers-reduced-motion: reduce)').matches||!('IntersectionObserver' in window))return;
 els.forEach(e=>e.classList.add('reveal'));const io=new IntersectionObserver(es=>es.forEach(x=>{if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target)}}),{rootMargin:'0px 0px -8% 0px'});els.forEach(e=>io.observe(e));
 window.revealNew=n=>n.querySelectorAll('.aday').forEach(e=>{e.classList.add('reveal');io.observe(e)})})();
 if(document.getElementById('form')){

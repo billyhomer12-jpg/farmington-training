@@ -84,3 +84,13 @@ nav a{display:block;margin:0;padding:12px 0;font-size:1.25rem;font-weight:600;op
 .coaches{grid-template-columns:1fr 1fr;gap:10px}.coach{padding:14px;border-radius:22px}.photo{font-size:3rem}.coach h3{font-size:1.05rem}
 #form{padding:20px;border-radius:22px}.chev{display:inline-block;margin:6px 10px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}.reveal{opacity:1;transform:none}}
+
+/* sub-page hero + tiles */
+.sm-hero{min-height:auto;padding:96px 0 80px}.sm-hero h1{font-size:clamp(2.4rem,7vw,4.5rem)}
+.tile{border-radius:28px;padding:32px}.sec.alt .tile{background:#fff}.kicker.gold{color:var(--ac2);font-size:.95rem}
+.tile h3{font-size:1.6rem;margin-bottom:10px}.mut{color:var(--mut)}.small-hours{font-size:.88rem}
+.ctas.left{justify-content:flex-start;margin-top:20px}
+.loc{gap:12px;align-items:stretch}.map{padding:0;overflow:hidden;min-height:340px}.map iframe{display:block;width:100%;height:100%;min-height:340px;border:0}
+.filters{margin-bottom:16px;padding:24px}.filters .note{margin-top:0}.sec.alt .aday{background:#fff}
+@media(max-width:760px){.sm-hero{padding:64px 0 56px}.tile{padding:24px;border-radius:22px}.map,.map iframe{min-height:280px}}
+.sec.alt .aday .achip{background:var(--bg2)}
