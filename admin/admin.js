@@ -46,21 +46,23 @@ const step=n=>{if(mode==='day'){const d=kdate(sel);d.setDate(d.getDate()+n);sel=
 $('prev').onclick=()=>step(-1);$('next').onclick=()=>step(1);
 const rng=r=>{const a=new Date(r.starts_at),b=new Date(a.getTime()+(r.duration_min||120)*6e4),h=d=>F(d,{hour:'numeric'});const x=h(a),y=h(b);return x.slice(-2)===y.slice(-2)?x.replace(/ ?[AP]M/,'')+'–'+y:x+'–'+y};
 function openRq(id){const r=D.requests.find(x=>x.id==id);if(!r)return;const s=who(r.signup_id);
-$('rq-info').innerHTML=`<b>${esc(s.athlete)}</b> (age ${esc(s.age)}) · ${esc(s.program||r.program)}<br>${F(r.starts_at,{weekday:'long',month:'short',day:'numeric'})}, ${rng(r)} · ${esc(r.workout_type||'')} · <i>${r.status}</i>${s.package_txt?'<br>'+esc(s.package_txt):''}<br>Parent ${esc(s.parent)} · <a href="tel:${esc(s.phone)}">${esc(s.phone||'')}</a> · <a href="mailto:${esc(s.email)}">${esc(s.email)}</a><br>Payment: ${esc(s.payment_status)}${(s.additional_players||[]).map((p,i)=>'<br>Player '+(i+2)+': <b>'+esc(p.athlete)+'</b> · parent '+esc(p.parent)+' · <a href="tel:'+esc(p.phone)+'">'+esc(p.phone)+'</a>').join('')}`;
+$('rq-info').innerHTML=`<b>${esc(s.athlete)}</b> (age ${esc(s.age)}) · ${esc(s.program||r.program)}<br>${F(r.starts_at,{weekday:'long',month:'short',day:'numeric'})}, ${rng(r)} · ${esc(r.workout_type||'')} · <i>${r.status}</i>${r.moved_from?'<br><small>Moved by parent from '+F(r.moved_from,{weekday:'short',month:'short',day:'numeric'})+', '+rng({starts_at:r.moved_from,duration_min:r.duration_min})+'. Confirm or move.</small>':''}${s.package_txt?'<br>'+esc(s.package_txt):''}<br>Parent ${esc(s.parent)} · <a href="tel:${esc(s.phone)}">${esc(s.phone||'')}</a> · <a href="mailto:${esc(s.email)}">${esc(s.email)}</a><br>Payment: ${esc(s.payment_status)}${(s.additional_players||[]).map((p,i)=>'<br>Player '+(i+2)+': <b>'+esc(p.athlete)+'</b> · parent '+esc(p.parent)+' · <a href="tel:'+esc(p.phone)+'">'+esc(p.phone)+'</a>').join('')}`;
 $('rq-date').value=K(r.starts_at);$('rq-time').value=F(r.starts_at,{hour:'2-digit',minute:'2-digit',hourCycle:'h23'});$('rq').dataset.id=r.id;$('rq').showModal()}
 $('t-cal').onclick=e=>{const b=e.target.closest('[data-req]');if(!b||e.target.closest('[data-day],[data-mode]'))return;openRq(b.dataset.req)};
 // Stats tiles
 let fromList=false,onlyNew=false,open=new Set();
 const pend=()=>D.requests.filter(r=>r.status==='requested'&&new Date(r.starts_at)>Date.now()).sort((a,b)=>a.starts_at<b.starts_at?-1:1);
 const rowH=r=>{const s=who(r.signup_id);return `<button class="lrow" data-req="${r.id}"><span><b>${esc(s.athlete||'?')}</b><small>${esc(s.program||r.program)}${s.package_txt?' · '+esc(s.package_txt.split(' · ')[0]):''}</small><small>${F(r.starts_at,{weekday:'short',month:'short',day:'numeric'})}, ${rng(r)} · ${esc(r.status)}</small></span><i>›</i></button>`};
-function drawPend(){const l=pend();$('pl-list').innerHTML=l.length?l.map(rowH).join(''):'<p class="muted">Nothing to confirm. You’re all caught up.</p>'}
+const groups=()=>{const m=new Map();pend().forEach(r=>{if(!m.has(r.signup_id))m.set(r.signup_id,[]);m.get(r.signup_id).push(r)});return [...m]};
+function drawPend(){const g=groups();$('pl-list').innerHTML=g.length?g.map(([sid,rs])=>{const s=who(sid);return `<div class="pgrp" data-sid="${sid}"><div class="pgh"><div><b>${esc(s.athlete||'?')}${s.plus?' +'+s.plus+' players':''}</b><small>${esc(s.parent||'')} · <a href="tel:${esc(s.phone||'')}">${esc(s.phone||'')}</a></small><small>${esc(s.package_txt||'')}${s.price_txt?' · '+esc(s.price_txt):''}</small><small>${esc(s.program||'')}</small></div><button class="btn sm" data-all="${sid}">Confirm all (${rs.length})</button></div>${rs.map(r=>`<div class="psess"><span>${F(r.starts_at,{weekday:'short',month:'short',day:'numeric'})}, ${rng(r)} · ${esc(r.workout_type||'')}</span><span class="pact"><button class="btn sm" data-ok="${r.id}">Confirm</button><button class="btn sm ghost" data-no="${r.id}">Decline</button><button class="btn sm ghost" data-req="${r.id}">Move</button></span></div>`).join('')}</div>`}).join(''):'<p class="muted">Nothing to confirm. You’re all caught up.</p>'}
+async function updMany(ids,st){for(const id of ids){const j=await rpc('coach_update_request',{...auth(),p_id:id,p_status:st,p_start:null});if(j.error){msg(j.error);break}}await load();drawPend();if(!$('pl').open)$('pl').showModal()}
 const tab=t=>document.querySelector(`.tabs [data-tab="${t}"]`).click();
 document.querySelector('.stats').onclick=e=>{const b=e.target.closest('[data-stat]');if(!b)return;const k=b.dataset.stat;
 if(k==='req'){drawPend();$('pl').showModal()}
 if(k==='week'){tab('t-cal');mode='week';view=new Date();drawCal();$('app').scrollIntoView({behavior:'smooth'})}
 if(k==='new'){onlyNew=true;tab('t-list');drawList();$('app').scrollIntoView({behavior:'smooth'})}};
 $('pl-x').onclick=()=>$('pl').close();
-$('pl-list').onclick=e=>{const b=e.target.closest('[data-req]');if(!b)return;fromList=true;$('pl').close();openRq(b.dataset.req)};
+$('pl-list').onclick=e=>{const A=e.target.closest('[data-all]'),O=e.target.closest('[data-ok]'),N=e.target.closest('[data-no]');if(A||O||N){e.target.closest('button').disabled=true;if(A)return updMany((groups().find(([g])=>g==A.dataset.all)||[0,[]])[1].map(r=>r.id),'confirmed');return updMany([+(O||N).dataset[O?'ok':'no']],O?'confirmed':'declined')}const b=e.target.closest('[data-req]');if(!b)return;fromList=true;$('pl').close();openRq(b.dataset.req)};
 $('rq').addEventListener('close',()=>{if(fromList&&!$('rq').dataset.busy){fromList=false;drawPend();$('pl').showModal()}});
 async function req(p){const j=await rpc('coach_update_request',{...auth(),p_id:+$('rq').dataset.id,...p});if(j.error)return msg(j.error);const back=fromList;$('rq').dataset.busy=1;$('rq').close();delete $('rq').dataset.busy;fromList=false;await load();if(back){drawPend();$('pl').showModal()}}
 $('rq-ok').onclick=()=>req({p_status:'confirmed',p_start:null});$('rq-no').onclick=()=>req({p_status:'declined',p_start:null});
@@ -87,7 +89,7 @@ $('addclosure').onsubmit=async e=>{e.preventDefault();const j=await rpc('coach_a
 
 function stats(){const now=Date.now(),wk=new Date();wk.setHours(0,0,0,0);wk.setDate(wk.getDate()-wk.getDay());const we=wk.getTime()+7*864e5;
 const act=D.requests.filter(r=>r.status==='requested'||r.status==='confirmed');
-$('st-req').textContent=D.requests.filter(r=>r.status==='requested'&&new Date(r.starts_at)>now).length;
+{const p=D.requests.filter(r=>r.status==='requested'&&new Date(r.starts_at)>now),n=new Set(p.map(r=>r.signup_id)).size;$('st-req').textContent=n;$('st-req').nextElementSibling.textContent='Bookings to confirm'+(p.length?' ('+p.length+' session'+(p.length>1?'s':'')+')':'')+' ›'}
 $('st-week').textContent=act.filter(r=>{const t=new Date(r.starts_at).getTime();return t>=wk.getTime()&&t<we}).length;
 $('st-new').textContent=D.signups.filter(x=>x.status==='new').length}
 // PIN digit boxes
