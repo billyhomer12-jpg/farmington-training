@@ -169,3 +169,8 @@ h2{font-size:clamp(2.1rem,5vw,3.5rem);letter-spacing:-.015em}
 .mover{flex-basis:100%;background:#fff;border-radius:14px;padding:14px;margin-top:4px}.mover .days{margin:8px 0}.hb{font:inherit;border:1.5px solid var(--line);background:#fff;cursor:pointer}.hb.on{border-color:var(--ac2);background:#faf6e6}
 .okmsg{flex-basis:100%;margin:0;color:#1d6b34}.small{font-size:.85rem}.mytile .cta2.left{justify-content:flex-start}
 .coach .born{margin:2px 0 8px;color:#6e6e73;font-size:15px}
+.coaches.stack{display:flex!important;flex-direction:column;gap:20px;max-width:760px;margin:0 auto}
+.coaches.stack .coach{display:flex;align-items:flex-start;gap:24px;text-align:left}
+.coaches.stack .coach .photo{flex:0 0 160px;width:160px;height:160px}
+@media(max-width:600px){.coaches.stack .coach{flex-direction:column;align-items:center;text-align:center}}
+.more{color:#6F5F22;font-weight:600;text-decoration:none;white-space:nowrap}
