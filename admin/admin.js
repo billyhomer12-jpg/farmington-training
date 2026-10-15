@@ -11,12 +11,12 @@ $('out').onclick=()=>{sessionStorage.removeItem('coach');cred=null;$('pin').valu
 function show(on){$('login').classList.toggle('hide',on);$('app').classList.toggle('hide',!on)}
 async function load(){msg('Loading…');const from=new Date(Date.now()-120*864e5).toISOString(),to=new Date(Date.now()+180*864e5).toISOString();
 const j=await rpc('coach_data',{...auth(),p_from:from,p_to:to});if(j.error){msg(j.error);sessionStorage.removeItem('coach');show(false);return false}
-sessionStorage.setItem('coach',JSON.stringify(cred));D=j;D.closures=D.closures||[];D.signups.forEach(x=>{const r=D.requests.find(q=>q.signup_id===x.id);x.workout_type=r&&r.workout_type||''});$('who').textContent='Coach '+j.name;show(true);msg('');drawCal();drawList();drawBlocks();drawClosures();return true}
+sessionStorage.setItem('coach',JSON.stringify(cred));D=j;D.signups.forEach(x=>x.program=progLabel(x.program));D.requests.forEach(x=>x.program=progLabel(x.program));D.closures=D.closures||[];D.signups.forEach(x=>{const r=D.requests.find(q=>q.signup_id===x.id);x.workout_type=r&&r.workout_type||''});$('who').textContent='Coach '+j.name;show(true);msg('');drawCal();drawList();drawBlocks();drawClosures();return true}
 document.querySelector('.tabs').onclick=e=>{const t=e.target.dataset.tab;if(!t)return;document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('hide',x.id!==t));document.querySelectorAll('.tabs .btn').forEach(b=>b.classList.toggle('ghost',b.dataset.tab!==t))};
 const who=id=>D.signups.find(s=>s.id===id)||{};
 // Calendar
 let mode='month',sel=new Date().toLocaleDateString('en-CA');
-const TYPES={'Basketball Skills':['BB','bb'],'Athletic Performance':['AP','ap'],'Youth Strength Training':['ST','st']};
+const TYPES={'Basketball Training':['BB','bb'],'Conditioning':['COND','ap'],'Weightlifting':['WL','st']};
 const ty=r=>TYPES[r.program]||[String(r.program||'?').slice(0,2).toUpperCase(),'xx'];
 const grp=r=>/group|clinic|team/i.test(r.format||'');
 const first=id=>String(who(id).athlete||'?').replace(/^DEMO\s+/i,'').split(/\s+/)[0];
