@@ -100,3 +100,7 @@ footer,footer .wrap,footer p{text-align:center}footer p{margin:6px 0 0}footer b{
 .faq{max-width:760px;margin:28px auto 0}.faq details{background:var(--bg2);border-radius:18px;padding:16px 20px;margin-bottom:8px}.faq summary{font-weight:600;cursor:pointer}.faq p{color:var(--mut);margin:8px 0 0}
 .pkgline{font-weight:600;color:var(--ac2);margin:-4px 0 14px}@media(max-width:760px){.prices{grid-template-columns:1fr}}
 .prices4{gap:12px;grid-template-columns:repeat(2,1fr)}.prices4 .btn{margin-top:14px;align-self:flex-start}.price{display:flex;flex-direction:column}.incl{margin-top:12px}.incl ul{margin:10px 0 0;padding-left:20px;color:var(--mut)}.incl li{margin:4px 0}@media(max-width:760px){.prices4{grid-template-columns:1fr}}
+.sheet{border:0;padding:0;width:min(720px,100vw);max-width:100vw;max-height:92vh;border-radius:28px;background:#fff;color:var(--fg)}.sheet::backdrop{background:rgba(0,0,0,.45);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+.sheet-head{position:sticky;top:0;z-index:2;display:flex;justify-content:space-between;align-items:center;padding:14px 20px;background:rgba(255,255,255,.92);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border-bottom:1px solid var(--line)}.sheet-head b{font-size:1.05rem}
+.sheet #buy-pkg{margin:14px 20px 0}.sheet #booking-root{padding:0 20px 24px}.sheet #form{padding:0;border-radius:0}.sheet .stepper{margin-top:12px}
+@media(max-width:760px){.sheet{margin:auto 0 0;width:100vw;max-height:94vh;border-radius:22px 22px 0 0}}

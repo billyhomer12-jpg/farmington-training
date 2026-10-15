@@ -1,6 +1,6 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title data-brand>Four Corners Hoops & Performance</title><meta name="description" content="Youth basketball, athletic performance and strength training in Farmington, NM.">
-<link rel="stylesheet" href="style.css?v=18"><script src="config.js?v=18"></script></head><body>
+<link rel="stylesheet" href="style.css?v=19"><script src="config.js?v=19"></script></head><body>
 <a class="skip" href="#main">Skip to content</a>
 <header class="nav"><a href="#top" class="logo"><svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18" fill="#C5B358"/><path d="M2 20h36M20 2v36M7 7c8 6 8 20 0 26M33 7c-8 6-8 20 0 26" stroke="#111" stroke-width="2.5" fill="none"/></svg><span data-brand>Four Corners Hoops & Performance</span></a>
 <button class="menu" aria-expanded="false" aria-controls="links">Menu</button>
@@ -30,32 +30,7 @@
 <article class="card coach"><div class="photo" role="img" aria-label="Photo placeholder for Devin">D</div><div><h3>Coach Devin</h3><p class="ph">[PLACEHOLDER BIO]</p></div></article></div></div></section>
 
 <section id="contact" class="sec alt"><div class="wrap narrow"><h2>Sign up &amp; book</h2><p class="note"><span data-location></span></p>
-<ol class="stepper" aria-label="Booking steps"><li class="on">Info</li><li>Times</li><li>Review</li><li>Pay</li></ol>
-<form id="form" novalidate>
-<fieldset class="step" data-step="0"><div class="grid2">
-<label>Parent name<input name="parent" required autocomplete="name"></label><label>Athlete name<input name="athlete" required></label>
-<label>Athlete age<input name="age" type="number" min="12" max="18" required></label>
-<label>Phone<input name="phone" type="tel" autocomplete="tel"></label></div>
-<label>Email<input name="email" type="email" required autocomplete="email"></label>
-<button class="btn" type="button" data-next>Next: pick times</button></fieldset>
-<fieldset class="step" data-step="1" hidden>
-<label>Program<select name="program" id="prog"><option value="Basketball Skills" selected>Basketball Training</option><option value="Youth Strength Training">Weightlifting</option><option value="Athletic Performance">Conditioning</option></select></label>
-<div class="grid2"><label>Package<select name="ptype" id="ptype"><option value="1on1">1-on-1 — $250</option><option value="group">Small group — from $300</option></select></label>
-<label id="plabel" hidden>Players in group<select name="players" id="players"><option value="2">2 players — $300</option><option value="3">3 players — $350</option><option value="4">4 players — $375</option></select></label></div>
-<p class="pkgline" id="pkgline">$250 · 4 sessions · 2 hrs each. Every package is four 2-hour sessions.</p>
-<fieldset class="wt" id="wt"><legend>Workout type</legend>
-<label><input type="radio" name="workout_type" value="Gym" required> <b>Gym (court) workout</b><small>Indoor basketball court at the HHPC. Only during gym hours: Mon–Thu 5 AM–9 PM, Fri 5 AM–8 PM, Sat 7 AM–5 PM, closed Sun and on gym closure days.</small></label>
-<label><input type="radio" name="workout_type" value="Outdoor"> <b>Outdoor workout</b><small>Speed, agility and conditioning outside (field, track or outdoor court). Any day, 6 AM–9 PM.</small></label>
-<label><input type="radio" name="workout_type" value="Weight room"> <b>Weight room workout</b><small>Coached, technique-first strength training. Any day, 6 AM–9 PM, even when the gym is closed.</small></label></fieldset>
-<p class="note" id="daynote"></p>
-<div id="days" class="days" role="group" aria-label="Pick a day"></div><div id="times" class="hours" role="group" aria-label="Pick start times"></div>
-<p class="note" id="picked">Pick 4 start times (each session is 2 hours).</p>
-<div class="row"><button class="btn ghost" type="button" data-back>Back</button><button class="btn" type="button" data-next>Next: review</button></div></fieldset>
-<fieldset class="step" data-step="2" hidden><div id="review" class="card"></div>
-<label>Message (optional)<textarea name="message" rows="2"></textarea></label>
-<div class="row"><button class="btn ghost" type="button" data-back>Back</button><button class="btn" type="submit">Book &amp; continue to pay</button></div></fieldset>
-<fieldset class="step" data-step="3" hidden><div id="pay" class="card"></div></fieldset>
-<p id="status" role="status"></p></form></div></section>
+<div id="booking-root"></div></div></section>
 </main>
 <footer><div class="wrap"><b data-brand></b><p><a data-phone></a> · <a data-email></a> · <a data-ig>Instagram</a> · <a data-tt>TikTok</a></p></div></footer>
-<script src="main.js?v=18"></script></body></html>
+<script src="main.js?v=19"></script></body></html>
