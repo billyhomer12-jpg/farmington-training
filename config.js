@@ -4,7 +4,7 @@ window.SITE = {
   tagline: "Basketball skills, speed and safe strength training for Farmington-area athletes, ages 12-18.",
   phone: "(505) 469-3851",
   email: "billyhomer12@gmail.com",
-  location: "Gym address TBD, Farmington, NM", // PLACEHOLDER
+  location: "San Juan College HHPC, 4601 College Blvd, Farmington, NM 87402",
   instagram: "#", tiktok: "#",  // PLACEHOLDER links
   // Form: "mailto" (opens the parent's email app) or "formspree" (paste your endpoint)
   formMode: "supabase", // "supabase" | "mailto" | "formspree"
