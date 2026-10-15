@@ -3,7 +3,8 @@
 export const BRAND = 'Four Corners Hoops & Performance';
 export const FROM = 'Four Corners Hoops & Performance <bookings@fourcornershoopsandperformance.com>';
 export const REPLY_TO = 'billyhomer12@gmail.com';
-export const PHONE = '(505) 469-3851';
+export const PHONE = '(505) 231-0725';
+export const PHONE_TEL = '+15052310725';
 export const LOCATION = { name: 'San Juan College Health & Human Performance Center', address: '4601 College Blvd, Farmington, NM 87402, United States',
   apple: 'https://maps.apple.com/place?address=4601%20College%20Blvd,%20Farmington,%20NM%20%2087402,%20United%20States&coordinate=36.770237,-108.173952&name=San%20Juan%20College%20Health%20%26%20Human%20Performance%20Center&place-id=IBC9B4F4B78DAE618&map=explore' };
 export const SITE = 'https://fourcornershoopsandperformance.com';
@@ -27,7 +28,7 @@ function shell(title, pre, body) {
 <tr><td align="center" style="padding:0 0 18px;font-size:14px;font-weight:600;letter-spacing:-.01em"><span style="display:inline-block;width:22px;height:22px;border-radius:50%;background:#C5B358;vertical-align:-6px;margin-right:8px"></span>${BRAND}</td></tr>
 <tr><td style="background:#000;border-radius:24px 24px 0 0;padding:34px 28px 30px;text-align:center"><div style="color:#C5B358;font-size:14px;font-weight:600;margin-bottom:8px">${esc(pre)}</div><div style="color:#fff;font-size:30px;line-height:1.15;font-weight:700;letter-spacing:-.02em">${esc(title)}</div></td></tr>
 <tr><td style="background:#fff;border-radius:0 0 24px 24px;padding:28px">${body}</td></tr>
-<tr><td align="center" style="padding:22px 10px;font-size:12px;line-height:1.6;color:#6e6e73">${BRAND} · Farmington, NM<br>Questions? Reply to this email or call/text ${PHONE}.<br>${esc(LOCATION.name)}, ${esc(LOCATION.address)}</td></tr>
+<tr><td align="center" style="padding:22px 10px;font-size:12px;line-height:1.6;color:#6e6e73">${BRAND} · Farmington, NM<br>Questions? Reply to this email or call/text <a href="tel:${PHONE_TEL}" style="color:#6F5F22">${PHONE}</a>.<br>${esc(LOCATION.name)}, ${esc(LOCATION.address)}</td></tr>
 </table></td></tr></table></body></html>`;
 }
 function sessionRows(sessions, hi) {

@@ -9,7 +9,7 @@ window.SITE = {
   ],
   brand: "Four Corners Hoops & Performance", // PLACEHOLDER brand name
   tagline: "Basketball skills, speed and safe strength training for Farmington-area athletes, ages 12-18.",
-  phone: "(505) 469-3851",
+  phone: "(505) 231-0725", phoneTel: "+15052310725",
   email: "billyhomer12@gmail.com",
   location: "San Juan College Health & Human Performance Center, 4601 College Blvd, Farmington, NM 87402, United States",
   locationName: "San Juan College Health & Human Performance Center",

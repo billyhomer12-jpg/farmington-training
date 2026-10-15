@@ -1,7 +1,7 @@
 const S=window.SITE,$$=s=>document.querySelectorAll(s);
 $$('[data-brand]').forEach(e=>e.textContent=S.brand);document.title=S.brand;
 $$('[data-tagline]').forEach(e=>e.textContent=S.tagline);$$('[data-location]').forEach(e=>e.textContent=S.location);
-$$('[data-phone]').forEach(e=>{e.textContent=S.phone;e.href='tel:'+S.phone.replace(/\D/g,'')});
+$$('[data-phone]').forEach(e=>{e.textContent=S.phone;e.href='tel:'+(S.phoneTel||S.phone)});
 $$('[data-email]').forEach(e=>{e.textContent=S.email;e.href='mailto:'+S.email});
 [['ig','instagram'],['tt','tiktok']].forEach(([a,b])=>$$('[data-'+a+']').forEach(e=>e.href=S[b]));
 // Tab bar: keep current tab visible; scroll-spy for homepage anchors
