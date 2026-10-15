@@ -1,7 +1,7 @@
 /* Apple-style theme: white / #f5f5f7 / one black band, Las Vegas gold accents */
 :root{--bg:#fff;--bg2:#f5f5f7;--fg:#1d1d1f;--mut:#6e6e73;--ac:#C5B358;--ac2:#6F5F22;--line:#d2d2d7;
 --font:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue",Inter,Arial,sans-serif;--ease:cubic-bezier(0,0,.5,1)}
-*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:56px}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:60px}
 body{margin:0;background:var(--bg);color:var(--fg);font:400 17px/1.47 var(--font);letter-spacing:-.022em;-webkit-font-smoothing:antialiased}
 a{color:var(--ac2)}img{max-width:100%}
 .skip{position:absolute;left:-999px}.skip:focus{left:8px;top:8px;background:#fff;color:#000;padding:8px;z-index:99}
@@ -16,9 +16,6 @@ h3{font-size:1.3rem;letter-spacing:-.01em;line-height:1.2}
 /* nav */
 .nav{position:sticky;top:0;z-index:20;height:48px;display:flex;justify-content:space-between;align-items:center;padding:0 22px;background:rgba(255,255,255,.8);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid rgba(0,0,0,.08)}
 .logo{display:flex;gap:8px;align-items:center;color:var(--fg);text-decoration:none;font-weight:600;font-size:.88rem;letter-spacing:-.01em}.logo svg{width:24px;flex:none}
-nav a{color:var(--fg);text-decoration:none;margin-left:22px;font-size:.8rem;opacity:.85}nav a:hover{opacity:1}nav a[aria-current]{opacity:1;font-weight:600}
-nav a.btn.sm{opacity:1;padding:4px 14px;font-size:.78rem}
-.menu{display:none;background:none;color:var(--fg);border:0;font:500 .9rem var(--font);padding:8px;cursor:pointer}
 /* buttons */
 .btn{display:inline-block;background:var(--ac);color:#1d1d1f;font:500 1.0625rem/1 var(--font);letter-spacing:-.01em;text-decoration:none;padding:12px 22px;border-radius:980px;border:0;cursor:pointer;transition:transform .3s var(--ease),background .2s}
 .btn:hover{background:#d3c370}.btn.sm{padding:8px 16px;font-size:.88rem}
@@ -77,8 +74,6 @@ footer{background:var(--bg2);color:var(--mut);font-size:.75rem;letter-spacing:-.
 .reveal{opacity:0;transform:translateY(24px);transition:opacity .8s var(--ease),transform .8s var(--ease)}.reveal.in{opacity:1;transform:none}
 /* mobile */
 @media(max-width:760px){.sec{padding:56px 0}.hero{padding:64px 0;min-height:auto}
-.menu{display:block}nav{display:none;position:absolute;top:48px;left:0;right:0;background:rgba(255,255,255,.97);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);padding:8px 22px 18px;border-bottom:1px solid var(--line)}nav.open{display:block}
-nav a{display:block;margin:0;padding:12px 0;font-size:1.25rem;font-weight:600;opacity:1;border-bottom:1px solid rgba(0,0,0,.06)}nav a.btn.sm{display:inline-block;margin-top:14px;padding:10px 22px;font-size:1rem;border:0}
 .tiles{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;margin:0 -22px;padding:0 22px 8px;scroll-padding:0 22px;scrollbar-width:none}.tiles::-webkit-scrollbar{display:none}
 .tiles .card{flex:0 0 78%;scroll-snap-align:start;min-height:260px}
 .coaches{grid-template-columns:1fr 1fr;gap:10px}.coach{padding:14px;border-radius:22px}.photo{font-size:3rem}.coach h3{font-size:1.05rem}
@@ -105,3 +100,47 @@ footer,footer .wrap,footer p{text-align:center}footer p{margin:6px 0 0}footer b{
 .sheet #buy-pkg{margin:14px 20px 0}.sheet #booking-root{padding:0 20px 24px}.sheet #form{padding:0;border-radius:0}.sheet .stepper{margin-top:12px}
 @media(max-width:760px){.sheet{margin:auto 0 0;width:100vw;max-height:94vh;border-radius:22px 22px 0 0}}
 .progs{margin:0 0 14px}.progs legend{font-weight:500;font-size:.94rem;margin-bottom:8px}.progs legend small{color:var(--mut);font-weight:400}.pchips{display:flex;flex-wrap:wrap;gap:8px}.pchip{margin:0;display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--line);border-radius:980px;padding:8px 14px;cursor:pointer;background:#fff;font-weight:500}.pchip input{width:auto;margin:0;accent-color:var(--ac2)}.pchip:has(input:checked){border-color:var(--ac2);background:#f3ecd2}
+
+/* ===== Pass 2: apple.com-style global nav (always visible tabs) ===== */
+.gnav{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.8);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid rgba(0,0,0,.08)}
+.gnav-in{max-width:1024px;margin:0 auto;height:48px;padding:0 22px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:16px}
+.gnav .logo{min-width:0}.gnav .brand{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.82rem}
+.tabsnav{display:flex;justify-content:center;gap:2px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}.tabsnav::-webkit-scrollbar{display:none}
+.tabsnav a{flex:none;display:flex;align-items:center;min-height:40px;padding:0 10px;color:#424245;text-decoration:none;font-size:.75rem;letter-spacing:-.01em;border-bottom:2px solid transparent}
+.tabsnav a:hover{color:#1d1d1f}.tabsnav a[aria-current]{color:#1d1d1f;font-weight:600;border-bottom-color:var(--ac)}
+.gnav .book{padding:6px 14px;font-size:.75rem}
+@media(max-width:900px){.gnav .brand{max-width:150px}}
+@media(max-width:760px){html{scroll-padding-top:100px}
+.gnav-in{grid-template-columns:1fr auto;grid-template-rows:44px 40px;height:auto;padding:0;gap:0}
+.gnav .logo{padding-left:16px}.gnav .brand{max-width:none;font-size:.85rem}.gnav .book{margin-right:16px}
+.tabsnav{grid-column:1/-1;grid-row:2;justify-content:flex-start;padding:0 10px;border-top:1px solid rgba(0,0,0,.06);scroll-snap-type:x proximity}
+.tabsnav a{font-size:.8rem;padding:0 11px;scroll-snap-align:center}}
+@media(max-width:360px){.gnav .brand{font-size:.78rem}}
+section[id]{scroll-margin-top:60px}@media(max-width:760px){section[id]{scroll-margin-top:100px}}
+/* rhythm + type */
+.sec{padding:80px 0}.wrap.wide{max-width:1240px}
+h2{font-size:clamp(2.1rem,5vw,3.5rem);letter-spacing:-.015em}
+.sub{margin-bottom:28px}
+.hero{min-height:auto;padding:96px 0 104px}.hero h1{font-size:clamp(2.6rem,7.5vw,5rem)}.hero .lead{max-width:560px}
+.ctas{gap:12px;margin-top:24px}.ctas .btn{padding:11px 22px;font-size:1.0625rem}
+.cta2{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:16px}.cta2.center{margin-top:32px}
+.cta2 .btn.sm{padding:8px 16px;font-size:.9rem}.btn.dark{background:#1d1d1f;color:#fff}.btn.dark:hover{background:#000}
+/* apple tile grid */
+.tgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.atile{position:relative;overflow:hidden;background:#fff;border-radius:28px;padding:48px 28px 0;text-align:center;min-height:420px;display:flex;flex-direction:column;align-items:center;transition:transform .3s var(--ease)}
+.atile:hover{transform:scale(1.008)}
+.atile h3{font-size:clamp(1.8rem,3.4vw,2.5rem);letter-spacing:-.01em}.atile .tsub{font-size:1.15rem;color:var(--mut);margin:6px 0 0}
+.atile .tart{margin-top:auto;font-size:clamp(7rem,14vw,10rem);line-height:1;transform:translateY(14%);filter:saturate(.9)}
+.atile.dark{background:#000;color:#f5f5f7}.atile.dark .tsub{color:#a1a1a6}.atile.dark .btn.ghost{color:#f5f5f7}
+.atile.gold{background:var(--ac)}.atile.gold .tsub{color:#3a3320}
+.prices.grid2{max-width:760px;margin:0 auto}.price.c{text-align:center;align-items:center}
+.sec.alt .coach{background:#fff}
+/* apple-style footer (centered per Billy) */
+.gfoot{background:var(--bg2);color:#6e6e73;font-size:.75rem;line-height:1.35;border-top:0}.gfoot .wrap{padding:20px 22px 24px;max-width:1024px}
+.gfoot .fine{max-width:760px;margin:0 auto 16px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+.fcols{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+.fcols h4{margin:0 0 8px;font-size:.75rem;font-weight:600;color:#1d1d1f}.fcols a,.fcols span{display:block;color:#424245;text-decoration:none;margin:0 0 7px}.fcols a:hover{text-decoration:underline}
+.gfoot .legal{margin:14px 0 0}
+@media(max-width:760px){.sec{padding:56px 0}.hero{padding:64px 0 72px}.tgrid{grid-template-columns:1fr}.atile{min-height:380px;padding-top:40px}.fcols{grid-template-columns:1fr;gap:6px}.fcols div{padding:8px 0;border-top:1px solid var(--line)}.fcols div:first-child{border-top:0}}
+.prices4 .price{text-align:center;align-items:center}.prices4 .btn{align-self:center}
+@media(max-width:760px){.ctas{flex-wrap:nowrap}.ctas .btn{padding:10px 18px;font-size:1rem}}

@@ -4,10 +4,12 @@ $$('[data-tagline]').forEach(e=>e.textContent=S.tagline);$$('[data-location]').f
 $$('[data-phone]').forEach(e=>{e.textContent=S.phone;e.href='tel:'+S.phone.replace(/\D/g,'')});
 $$('[data-email]').forEach(e=>{e.textContent=S.email;e.href='mailto:'+S.email});
 [['ig','instagram'],['tt','tiktok']].forEach(([a,b])=>$$('[data-'+a+']').forEach(e=>e.href=S[b]));
-const m=document.querySelector('.menu'),n=document.getElementById('links');
-m.onclick=()=>{const o=n.classList.toggle('open');m.setAttribute('aria-expanded',o)};n.onclick=e=>{if(e.target.tagName==='A'){n.classList.remove('open');m.setAttribute('aria-expanded',false)}};
+// Tab bar: keep current tab visible; scroll-spy for homepage anchors
+(()=>{const n=document.getElementById('links');if(!n)return;const c=n.querySelector('[aria-current]');if(c)c.scrollIntoView({inline:'center',block:'nearest'});
+const spy=[...n.querySelectorAll('a[href^="#"]')].map(a=>[a,document.querySelector(a.getAttribute('href'))]).filter(x=>x[1]);if(!spy.length||!('IntersectionObserver' in window))return;
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){spy.forEach(([a])=>a.removeAttribute('aria-current'));const h=spy.find(x=>x[1]===e.target);if(h)h[0].setAttribute('aria-current','true')}}),{rootMargin:'-45% 0px -50% 0px'});spy.forEach(x=>io.observe(x[1]))})();
 // Scroll fade-ins (respects reduced motion)
-(()=>{const els=document.querySelectorAll('main h2,main .sub,.tiles .card,.coach,.pills,#contact form,.aday,main article,main .tile,main .links');if(matchMedia('(prefers-reduced-motion: reduce)').matches||!('IntersectionObserver' in window))return;
+(()=>{const els=document.querySelectorAll('main h2,main .sub,.atile,.coach,.aday,main .tile,main .cta2,.faq');if(matchMedia('(prefers-reduced-motion: reduce)').matches||!('IntersectionObserver' in window))return;
 els.forEach(e=>e.classList.add('reveal'));const io=new IntersectionObserver(es=>es.forEach(x=>{if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target)}}),{rootMargin:'0px 0px -8% 0px'});els.forEach(e=>io.observe(e));
 window.revealNew=n=>n.querySelectorAll('.aday').forEach(e=>{e.classList.add('reveal');io.observe(e)})})();
 // Shared booking flow: injected into any #booking-root (home page section, pricing page sheet).
