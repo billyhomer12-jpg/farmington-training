@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /my.html
+Disallow: /reschedule.html
+
+Sitemap: https://fourcornershoopsandperformance.com/sitemap.xml
