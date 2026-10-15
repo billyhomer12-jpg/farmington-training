@@ -2,7 +2,7 @@
 // Apple-style: white card on #f5f5f7, black text, gold #C5B358 accents. Inline CSS + table layout for email clients.
 export const BRAND = 'Four Corners Hoops & Performance';
 export const FROM = 'Four Corners Hoops & Performance <bookings@fourcornershoopsandperformance.com>';
-export const REPLY_TO = 'billyhomer12@gmail.com';
+export const REPLY_TO = 'fourcornershoopsandperformance@gmail.com';
 export const PHONE = '(505) 231-0725';
 export const PHONE_TEL = '+15052310725';
 export const LOCATION = { name: 'San Juan College Health & Human Performance Center', address: '4601 College Blvd, Farmington, NM 87402, United States',
