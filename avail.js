@@ -2,7 +2,7 @@
 const esc=v=>String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const at=(ds,h)=>{const g=new Date(ds+'T'+String(h).padStart(2,'0')+':00:00Z');const off=new Date(g.toLocaleString('en-US',{timeZone:tz}))-new Date(g.toLocaleString('en-US',{timeZone:'UTC'}));return new Date(g-off).toISOString()};
 const DAYS=[...Array(30)].map((_,i)=>new Date(Date.now()+864e5*i).toLocaleDateString('en-CA',{timeZone:tz}));
-const WHY={'Gym':'Gym (court) workouts follow HHPC hours: Mon–Thu 5 AM–9 PM, Fri 5 AM–8 PM, Sat 7 AM–5 PM, closed Sundays and on gym closure days. Each 2-hour session ends by closing time.','Outdoor':'Outdoor workouts: any day, 6 AM–9 PM.','Weight room':'Weight room workouts: any day, 6 AM–9 PM, even when the gym is closed.'};
+const WHY={'Gym':'Gym (court) workouts follow San Juan College Health & Human Performance Center hours: Mon–Thu 5 AM–9 PM, Fri 5 AM–8 PM, Sat 7 AM–5 PM, closed Sundays and on gym closure days. Each 2-hour session ends by closing time.','Outdoor':'Outdoor workouts: any day, 6 AM–9 PM.','Weight room':'Weight room workouts: any day, 6 AM–9 PM, even when the gym is closed.'};
 const rng=t=>{const o={timeZone:tz,hour:'numeric'},s=new Date(t).toLocaleTimeString('en-US',o),e=new Date(new Date(t).getTime()+72e5).toLocaleTimeString('en-US',o);return (s.slice(-2)===e.slice(-2)?s.slice(0,-3):s)+'–'+e};
 let closures=[];const closedAt=t=>closures.filter(c=>new Date(c.starts_at)<new Date(new Date(t).getTime()+72e5)&&new Date(c.ends_at)>new Date(t));
 function allowed(k,h,w){const dow=new Date(k+'T12:00:00Z').getUTCDay();if(w==='Gym')return(dow>=1&&dow<=4?h>=5&&h<=19:dow===5?h>=5&&h<=18:dow===6?h>=7&&h<=15:false)&&!closedAt(at(k,h)).length;return h>=6&&h<=19}
