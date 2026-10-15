@@ -50,11 +50,13 @@ ${box(sessionRows(sessions))}
 ${where()}
 <p style="margin:0 0 14px;font-size:15px;line-height:1.5">See your sessions or move one (up to 24 hours before it starts) on your dashboard:</p>
 <p style="margin:0 0 8px">${btn(link, 'My sessions & reschedule')}</p>
+<p style="margin:22px 0 8px;font-size:15px;line-height:1.5"><b>Waiver:</b> Download &amp; sign the waiver and bring it to your first session (or sign a paper copy at drop-off).</p>
+<p style="margin:0 0 8px">${btn(`${SITE}/waiver.pdf`, 'Download the waiver (PDF)', false)}</p>
 <p style="margin:14px 0 0;font-size:12px;color:#86868b;line-height:1.5">This link is private to your booking. Don't share it.</p>`;
   return { subject: `You're booked: 4 sessions with ${BRAND}`, html: shell("You're booked.", 'Payment confirmed', body),
     text: `Payment confirmed. ${names(s)} is booked: ${PKG[s.package] || s.package}, ${money(s.amount_paid_cents ?? s.price_cents)}.\n` +
       sessions.map(r => `- ${day(r.starts_at)}, ${range(r.starts_at, r.duration_min || 120)}, ${r.workout_type} (${r.status})`).join('\n') +
-      `\n\nWhere: ${LOCATION.name}, ${LOCATION.address}\nMaps: ${LOCATION.apple}\nMy sessions & reschedule: ${link}\nQuestions? Reply or call/text ${PHONE}.` };
+      `\n\nWhere: ${LOCATION.name}, ${LOCATION.address}\nMaps: ${LOCATION.apple}\nMy sessions & reschedule: ${link}\nWaiver (download, sign, bring to your first session): ${SITE}/waiver.pdf\nQuestions? Reply or call/text ${PHONE}.` };
 }
 
 export function rescheduledEmail({ signup: s, sessions, token, from, to, session_id }) {
