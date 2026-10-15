@@ -1,5 +1,6 @@
 // ===== EDIT EVERYTHING HERE =====
 window.SITE = {
+  siteUrl: "https://fourcornershoopsandperformance.com",
   // Programs: "key" is the database value (don't change); "label" is what parents/coaches see. Order = dropdown order.
   programs: [
     { key: "Basketball Skills",       label: "Basketball Training", abbr: "BB" },
