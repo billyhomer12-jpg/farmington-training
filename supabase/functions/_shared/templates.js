@@ -7,7 +7,7 @@ export const PHONE = '(505) 231-0725';
 export const PHONE_TEL = '+15052310725';
 export const LOCATION = { name: 'San Juan College Health & Human Performance Center', address: '4601 College Blvd, Farmington, NM 87402, United States',
   apple: 'https://maps.apple.com/place?address=4601%20College%20Blvd,%20Farmington,%20NM%20%2087402,%20United%20States&coordinate=36.770237,-108.173952&name=San%20Juan%20College%20Health%20%26%20Human%20Performance%20Center&place-id=IBC9B4F4B78DAE618&map=explore' };
-export const SITE = 'https://www.fourcornershoopsandperformance.com';
+export const SITE = 'https://fourcornershoopsandperformance.com';
 const PROG = { 'Basketball Skills': 'Basketball Training', 'Youth Strength Training': 'Weightlifting', 'Athletic Performance': 'Conditioning' };
 const PKG = { '1on1': '1-on-1', group2: 'Small group · 2 players', group3: 'Small group · 3 players', group4: 'Small group · 4 players' };
 const TZ = 'America/Denver';
