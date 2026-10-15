@@ -94,3 +94,5 @@ nav a{display:block;margin:0;padding:12px 0;font-size:1.25rem;font-weight:600;op
 .filters{margin-bottom:16px;padding:24px}.filters .note{margin-top:0}.sec.alt .aday{background:#fff}
 @media(max-width:760px){.sm-hero{padding:64px 0 56px}.tile{padding:24px;border-radius:22px}.map,.map iframe{min-height:280px}}
 .sec.alt .aday .achip{background:var(--bg2)}
+footer,footer .wrap,footer p{text-align:center}footer p{margin:6px 0 0}footer b{display:block}
+.step>.btn,.step .row{display:flex;justify-content:center;margin-left:auto;margin-right:auto}.step>.btn{width:max-content}
