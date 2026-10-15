@@ -168,3 +168,4 @@ h2{font-size:clamp(2.1rem,5vw,3.5rem);letter-spacing:-.015em}
 .sinfo{flex:1;min-width:180px;display:flex;flex-direction:column;gap:3px}.sinfo span{font-size:.92rem;color:#424245}.sinfo .pillst{align-self:flex-start}.sinfo small{color:var(--mut);font-size:.8rem}
 .mover{flex-basis:100%;background:#fff;border-radius:14px;padding:14px;margin-top:4px}.mover .days{margin:8px 0}.hb{font:inherit;border:1.5px solid var(--line);background:#fff;cursor:pointer}.hb.on{border-color:var(--ac2);background:#faf6e6}
 .okmsg{flex-basis:100%;margin:0;color:#1d6b34}.small{font-size:.85rem}.mytile .cta2.left{justify-content:flex-start}
+.coach .born{margin:2px 0 8px;color:#6e6e73;font-size:15px}
