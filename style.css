@@ -223,5 +223,5 @@ a[href^="mailto:"]{overflow-wrap:anywhere;word-break:break-word}
 @media(max-width:700px){
   /* phones: header scrolls away instead of covering ~29% of the screen; floating scroll buttons off on form pages so they never cover inputs/slots */
   .gnav{position:relative}
-  body:has(form,#booking-root,.oglist,#alist) .scrollhint{display:none}
+  body:has(form,input,select,textarea,canvas,#booking-root,.oglist,#alist) .scrollhint{display:none}
 }
