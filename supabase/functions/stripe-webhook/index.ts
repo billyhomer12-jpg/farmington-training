@@ -21,6 +21,14 @@ Deno.serve(async req => {
   const { data, error } = await db().rpc('training_mark_paid', { p_ref: ref, p_stripe_session: s.id, p_amount_cents: s.amount_total ?? 0 });
   if (error) return new Response('db error: ' + error.message, { status: 500 }); // Stripe retries
   if (data?.error || data?.duplicate) return new Response(JSON.stringify(data), { status: 200 });
-  const sent = await flushOutbox(data.signup_id, data.token);
+  let sent = await flushOutbox(data.signup_id, data.token);
+  // Waivers are signed before payment; if one is somehow missing, email a signing link right away.
+  try {
+    const { data: missing } = await db().rpc('training_waiver_unsigned', { p_signup: data.signup_id });
+    if (missing > 0) {
+      const { data: t } = await db().rpc('training_waiver_issue_token', { p_signup: data.signup_id, p_kind: 'paid_unsigned' });
+      if (t?.token) sent += await flushOutbox(data.signup_id, '', { wtoken: t.token });
+    }
+  } catch (e) { console.error('waiver reminder failed', e); }
   return new Response(JSON.stringify({ ok: true, sent }), { status: 200, headers: { 'Content-Type': 'application/json' } });
 });

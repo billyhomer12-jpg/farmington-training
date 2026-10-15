@@ -10,7 +10,7 @@ const PKG={'1on1':'1-on-1','group2':'Small group · 2 players','group3':'Small g
 let V=null,open=null,slots=[],selDay=null,selT=null;
 const fail=m=>{R.innerHTML=`<div class="card tile mytile center"><h3>${esc(m)}</h3><p class="mut">Use the link from your confirmation email. Questions? Call or text <a href="tel:${esc(S.phoneTel||S.phone)}">${esc(S.phone)}</a> or email <a href="mailto:${esc(S.email)}">${esc(S.email)}</a>.</p></div>`};
 async function load(){if(tok.length<32)return fail('This link isn’t valid.');const r=await rpc('parent_view',{p_token:tok});
-if(r.status===404)return fail('Your dashboard is almost ready.');if(!r.ok||!r.j||r.j.error)return fail('This link isn’t valid.');V=r.j;draw()}
+if(r.status===404)return fail('Your dashboard is almost ready.');if(!r.ok||!r.j||r.j.error)return fail('This link isn’t valid.');V=r.j;const w=await rpc('parent_waivers',{p_token:tok});V.w=w.ok&&w.j&&!w.j.error?w.j:null;draw()}
 function draw(){const s=V.signup,names=[s.athlete,...(s.additional_players||[]).map(p=>p.athlete)].filter(Boolean),paid=s.payment_status==='paid';
 document.getElementById('hi').textContent='Hi '+(s.parent||'').split(' ')[0]+'.';
 R.innerHTML=`<div class="card tile mytile"><p class="kicker accent">Your package</p><h3>${esc(names.join(', '))}</h3>
@@ -18,11 +18,14 @@ R.innerHTML=`<div class="card tile mytile"><p class="kicker accent">Your package
 <div class="kv"><span>Payment</span><b><i class="pillst ${paid?'ok':'pend'}">${paid?'Paid':'Pending'}</i>${s.amount_paid_cents!=null?' $'+(s.amount_paid_cents/100):''}</b></div>
 <div class="kv"><span>Programs</span><b>${esc((s.programs||[]).map(progLabel).join(' + '))}</b></div>
 <div class="kv"><span>Workout types</span><b>${esc((s.workout_types||[...new Set(V.sessions.map(x=>x.workout_type))]).join(', '))}</b></div></div>
-<div class="card tile mytile"><p class="kicker accent">Your sessions</p><h3>${V.sessions.length} session${V.sessions.length===1?"":"s"} · Denver time</h3><div class="slist">${V.sessions.map(sessRow).join('')}</div>
+${wcard()}<div class="card tile mytile"><p class="kicker accent">Your sessions</p><h3>${V.sessions.length} session${V.sessions.length===1?"":"s"} · Denver time</h3><div class="slist">${V.sessions.map(sessRow).join('')}</div>
 <p class="mut small">You can move a session up to 24 hours before it starts. Moved sessions show as pending until a coach confirms.</p></div>
 <div class="card tile mytile"><p class="kicker accent">Where</p><h3>${esc(S.locationName||'San Juan College Health & Human Performance Center')}</h3><p class="mut">4601 College Blvd, Farmington, NM 87402, United States</p>
 <div class="cta2 left"><a class="btn sm" href="${esc(S.appleMaps)}" target="_blank" rel="noopener">Open in Maps</a><a class="btn sm ghost" href="https://www.google.com/maps/search/?api=1&query=36.770237,-108.173952" target="_blank" rel="noopener">Google Maps</a></div></div>
 <div class="card tile mytile center"><h3>Questions?</h3><p class="mut">Call or text <a href="tel:${esc(S.phoneTel||S.phone)}">${esc(S.phone)}</a> · <a href="mailto:${esc(S.email)}">${esc(S.email)}</a></p></div>`}
+function wcard(){if(!V.w)return'';const miss=V.w.athletes.filter(a=>!V.w.signed.includes(a.index));
+return `<div class="card tile mytile" id="wvcard"><p class="kicker accent">Waiver</p>${miss.length?`<h3>Waiver needed for ${esc(miss.map(a=>a.athlete).join(', '))}</h3><p class="mut">A parent or legal guardian signs online before training. It takes about 2 minutes.</p><div class="cta2 left"><button class="btn sm" type="button" data-wsign>Sign the waiver</button></div>`:`<h3>Signed <span class="badge ok">On file</span></h3><p class="mut">${esc(V.w.athletes.map(a=>a.athlete).join(', '))}. Your signed copy was emailed to you.</p>`}</div>`}
+document.addEventListener('click',e=>{if(!e.target.closest('[data-wsign]'))return;const c=document.getElementById('wvcard');if(c&&window.WaiverPanel)window.WaiverPanel(c,{token:tok},async()=>{const w=await rpc('parent_waivers',{p_token:tok});if(w.ok&&w.j&&!w.j.error)V.w=w.j;draw()})});
 function sessRow(r){const late=new Date(r.starts_at)-Date.now()<CUT,past=new Date(r.starts_at)<Date.now(),ok=r.status==='confirmed';
 return `<div class="srow${open===r.id?' open':''}" data-id="${r.id}"><div class="sinfo"><b>${fd(r.starts_at,{weekday:'short',month:'short',day:'numeric'})}</b><span>${range(r.starts_at,r.duration_min)} · ${esc(r.workout_type)}</span>
 <i class="pillst ${ok?'ok':'pend'}">${past?'Done':ok?'Confirmed':'Pending'}</i>${r.moved_from?`<small>Moved from ${fd(r.moved_from,{month:'short',day:'numeric'})}, ${range(r.moved_from,r.duration_min)}</small>`:''}</div>

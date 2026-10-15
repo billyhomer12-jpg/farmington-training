@@ -51,13 +51,12 @@ ${box(sessionRows(sessions))}
 ${where()}
 <p style="margin:0 0 14px;font-size:15px;line-height:1.5">See your sessions or move one (up to 24 hours before it starts) on your dashboard:</p>
 <p style="margin:0 0 8px">${btn(link, 'My sessions & reschedule')}</p>
-<p style="margin:22px 0 8px;font-size:15px;line-height:1.5"><b>Waiver:</b> Download &amp; sign the waiver and bring it to your first session (or sign a paper copy at drop-off).</p>
-<p style="margin:0 0 8px">${btn(`${SITE}/waiver.pdf`, 'Download the waiver (PDF)', false)}</p>
+<p style="margin:22px 0 8px;font-size:15px;line-height:1.5"><b>Waiver:</b> signed online. Your signed copy was emailed when you signed. If a waiver is still missing, we'll email you a link to sign it.</p>
 <p style="margin:14px 0 0;font-size:12px;color:#86868b;line-height:1.5">This link is private to your booking. Don't share it.</p>`;
   return { subject: `You're booked: ${sessions.length === 1 ? '1 session' : sessions.length + ' sessions'} with ${BRAND}`, html: shell("You're booked.", 'Payment confirmed', body),
     text: `Payment confirmed. ${names(s)} is booked: ${PKG[s.package] || s.package}, ${money(s.amount_paid_cents ?? s.price_cents)}.\n` +
       sessions.map(r => `- ${day(r.starts_at)}, ${range(r.starts_at, r.duration_min || 120)}, ${r.workout_type} (${r.status})`).join('\n') +
-      `\n\nWhere: ${LOCATION.name}, ${LOCATION.address}\nMaps: ${LOCATION.apple}\nMy sessions & reschedule: ${link}\nWaiver (download, sign, bring to your first session): ${SITE}/waiver.pdf\nQuestions? Reply or call/text ${PHONE}.` };
+      `\n\nWhere: ${LOCATION.name}, ${LOCATION.address}\nMaps: ${LOCATION.apple}\nMy sessions & reschedule: ${link}\nWaiver: signed online (your signed copy was emailed separately).\nQuestions? Reply or call/text ${PHONE}.` };
 }
 
 export function rescheduledEmail({ signup: s, sessions, token, from, to, session_id }) {
@@ -70,4 +69,21 @@ ${where()}
 <p style="margin:0 0 8px">${btn(link, 'My sessions')}</p>`;
   return { subject: `Reschedule confirmed: ${day(to)}, ${range(to, r.duration_min)}`, html: shell('Reschedule confirmed.', 'Session moved', body),
     text: `Your session moved from ${day(from)}, ${range(from, r.duration_min)} to ${day(to)}, ${range(to, r.duration_min)} (${r.workout_type}). A coach will confirm.\nMy sessions: ${link}\nQuestions? Reply or call/text ${PHONE}.` };
+}
+
+export function waiverCopyEmail({ signup: s, payload: p }) {
+  const body = `<p style="margin:0 0 16px;font-size:16px;line-height:1.5">Hi ${esc((s.parent || '').split(' ')[0])}, thanks for signing the waiver for <b>${esc(p.athlete)}</b>.</p>
+${box(`<tr><td style="padding:16px 14px;font-size:15px;line-height:1.6">Signed by <b>${esc(p.signer)}</b><br>${esc(fmt(p.signed_at, { month: 'long', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' }))} MT<br>Waiver version ${esc(p.version)}</td></tr>`)}
+<p style="margin:0 0 14px;font-size:15px;line-height:1.5">Download your signed copy (this link expires in 7 days; ask us any time for another copy):</p>
+<p style="margin:0 0 8px">${btn(p.url, 'Download signed waiver (PDF)')}</p>`;
+  return { subject: `Signed waiver: ${p.athlete}`, html: shell('Waiver signed.', 'Your copy', body),
+    text: `Thanks for signing the waiver for ${p.athlete} (signed by ${p.signer}, version ${p.version}).\nDownload your signed copy (link expires in 7 days): ${p.url}\nQuestions? Reply or call/text ${PHONE}.` };
+}
+export function waiverReminderEmail({ signup: s, wtoken }) {
+  const link = `${SITE}/book.html?sign=${encodeURIComponent(wtoken)}`;
+  const body = `<p style="margin:0 0 16px;font-size:16px;line-height:1.5">Hi ${esc((s.parent || '').split(' ')[0])}, we still need a signed waiver for <b>${esc(names(s))}</b> before training starts. It takes about 2 minutes.</p>
+<p style="margin:0 0 8px">${btn(link, 'Sign the waiver online')}</p>
+<p style="margin:14px 0 0;font-size:12px;color:#86868b;line-height:1.5">This link is private to your booking and works for 30 days. Don't share it.</p>`;
+  return { subject: `Please sign your waiver · ${BRAND}`, html: shell('One more step.', 'Waiver needed', body),
+    text: `We still need a signed waiver for ${names(s)} before training starts.\nSign online (link works 30 days): ${link}\nQuestions? Reply or call/text ${PHONE}.` };
 }
