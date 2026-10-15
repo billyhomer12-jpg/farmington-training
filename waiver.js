@@ -6,7 +6,6 @@
 const esc=v=>String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 // 20 s timeout on every call; network/timeout errors come back as {error} so callers always leave the busy state.
 const call=async b=>{const ac=new AbortController(),tm=setTimeout(()=>ac.abort(),20000);try{const r=await fetch(FN,{method:'POST',headers:{'Content-Type':'application/json',apikey:S.supabaseKey},body:JSON.stringify(b),signal:ac.signal});const j=await r.json().catch(()=>({}));return r.ok?j:{error:j.error||'Something went wrong saving the waiver. Please tap the button to try again.'}}catch(e){return{error:e&&e.name==='AbortError'?'This is taking too long (connection timed out). Check your signal and tap the button to try again. Your answers are still filled in.':'Network error. Check your connection and tap the button to try again. Your answers are still filled in.'}}finally{clearTimeout(tm)}};
-const T5=new URLSearchParams(location.search).get('test5')==='1';
 const body=t=>t.split(/\n\n+/).map(b=>b.startsWith('# ')?`<h3>${esc(b.slice(2))}</h3>`:b.startsWith('## ')?`<h4>${esc(b.slice(3))}</h4>`:`<p>${esc(b)}</p>`).join('');
 window.WaiverPanel=async(el,cred,onDone,opt={})=>{el.innerHTML='<div class="card"><p class="mut">Loading the waiver…</p></div>';
 const ctx=await call({action:'context',...cred});if(ctx.error){el.innerHTML=`<div class="card"><h3>Waiver</h3><p>${esc(ctx.error)}</p></div>`;return}
@@ -18,8 +17,8 @@ el.innerHTML=`<div class="card wsign"><h3>${solo?`Waiver for ${esc(a.athlete)}`:
 <div class="wform"><div class="grid2">
 <label>Athlete first &amp; last name<input name="athlete_name" required value="${esc(a.athlete)}" autocomplete="off"></label>
 <label>Athlete date of birth<input name="athlete_dob" type="date" required></label>
-<label>Emergency contact name<input name="emergency_name" required autocomplete="off"${T5?' value="Jane Smith"':''}></label>
-<label>Emergency phone<input name="emergency_phone" type="tel" required inputmode="tel" autocomplete="off"${T5?' value="505-555-0101"':''}></label></div>
+<label>Emergency contact name<input name="emergency_name" required autocomplete="off"></label>
+<label>Emergency phone<input name="emergency_phone" type="tel" required inputmode="tel" autocomplete="off"></label></div>
 <label>Allergies, conditions &amp; medications <small class="mut">(optional)</small><textarea name="medical_notes" rows="2" maxlength="2000"></textarea></label>
 <label class="chk"><input type="checkbox" name="photo_opt_in"> Photo/video opt-in: you may use photos and video of the athlete on your website and social media.</label>
 <div class="grid2"><label>Your first &amp; last name (parent/guardian)<input name="signer_name" required autocomplete="name" value="${a.index===0&&ctx.parent?esc(ctx.parent):''}"></label>
