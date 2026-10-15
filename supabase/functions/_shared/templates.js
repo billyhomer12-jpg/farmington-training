@@ -59,7 +59,7 @@ ${where()}
 <p style="margin:22px 0 8px;font-size:15px;line-height:1.5"><b>Waiver:</b> signed online. Your signed copy was emailed when you signed. If a waiver is still missing, we'll email you a link to sign it.</p>
 <p style="margin:14px 0 0;font-size:12px;color:#86868b;line-height:1.5">This link is private to your booking. Don't share it.</p>`;
   return { subject: `You're booked: ${sessions.length === 1 ? '1 session' : sessions.length + ' sessions'} with ${BRAND}`, html: shell("You're booked.", 'Payment confirmed', body),
-    text: `Payment confirmed. ${names(s)} is booked: ${PKG[s.package] || s.package}, ${money(s.amount_paid_cents ?? s.price_cents)}.\n` +
+    text: `Payment confirmed. ${names(s)} ${(s.additional_players||[]).length?'are':'is'} booked: ${PKG[s.package] || s.package}, ${money(s.amount_paid_cents ?? s.price_cents)}.\n` +
       (group ? `Group: ${groupName(group)} (${groupWhen(group)}), ${group.taken} of ${group.capacity} spots filled. Runs with ${group.min_players || 2}+ players; if not, we'll email you to move groups or get a refund.\n` : '') +
       sessions.map(r => `- ${day(r.starts_at)}, ${range(r.starts_at, r.duration_min || 120)}, ${r.workout_type} (${r.status})`).join('\n') +
       `\n\nWhere: ${LOCATION.name}, ${LOCATION.address}\nMaps: ${LOCATION.apple}\nMy sessions & reschedule: ${link}\nWaiver: signed online (your signed copy was emailed separately).\nQuestions? Reply, email ${REPLY_TO}, or call/text ${PHONE}.` };

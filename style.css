@@ -218,3 +218,10 @@ h2{font-size:clamp(2.1rem,5vw,3.5rem);letter-spacing:-.015em}
 @media (max-width:700px){.mchips,.oglist{grid-template-columns:1fr}.solo{flex-direction:column;align-items:flex-start}}
 .achip.grp{background:#E1F5E6;color:var(--ac2);cursor:default}.achip.grp:hover{transform:none;box-shadow:none}.sec.alt .aday .achip.grp{background:#E1F5E6}.achip.grp small{color:var(--ac2)}
 .werr{outline:2px solid #B3261E;outline-offset:2px;border-radius:8px}.wform input.werr,.wform select.werr{border-color:#B3261E}
+
+a[href^="mailto:"]{overflow-wrap:anywhere;word-break:break-word}
+@media(max-width:700px){
+  /* phones: header scrolls away instead of covering ~29% of the screen; floating scroll buttons off on form pages so they never cover inputs/slots */
+  .gnav{position:relative}
+  body:has(form,#booking-root,.oglist,#alist) .scrollhint{display:none}
+}
