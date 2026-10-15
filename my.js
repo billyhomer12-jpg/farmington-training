@@ -1,25 +1,26 @@
 // Parent dashboard: my.html?token=...  (the private token in the email link is the access; no sign-in)
 (()=>{const S=window.SITE,tz='America/Denver',$=id=>document.getElementById(id),R=$('my-root');
-const tok=new URLSearchParams(location.search).get('token')||'';
+const tok=new URLSearchParams(location.search).get('token')||'',mv=new URLSearchParams(location.search).get('move')||'';
 const esc=v=>String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const fd=(d,o)=>new Date(d).toLocaleString('en-US',{timeZone:tz,...o});
 const range=(t,m=120)=>{const a=fd(t,{hour:'numeric'}),b=fd(new Date(new Date(t).getTime()+m*6e4),{hour:'numeric'});return (a.slice(-2)===b.slice(-2)?a.slice(0,-3):a)+'–'+b};
 const kd=d=>new Date(d).toLocaleDateString('en-CA',{timeZone:tz}),CUT=24*36e5,TWO=2*36e5;
 const rpc=(fn,b)=>fetch(S.supabaseUrl+'/rest/v1/rpc/'+fn,{method:'POST',headers:{apikey:S.supabaseKey,'Content-Type':'application/json'},body:JSON.stringify(b)}).then(async r=>({ok:r.ok,status:r.status,j:await r.json().catch(()=>null)}));
-const PKG={'1on1':'1-on-1','group2':'Small group · 2 players','group3':'Small group · 3 players','group4':'Small group · 4 players'};
+const PKG={'1on1':'1-on-1','group2':'Small group · 2 players','group3':'Small group · 3 players','group4':'Small group · 4 players','single':'Single 1-on-1 session','open_group':'Join a group solo'};
+const DN=['','Mon','Tue','Wed','Thu','Fri','Sat'],gname=g=>g.label||g.weekdays.map(d=>DN[d]).join('/')+' group',gdays=g=>g.weekdays.map(d=>DN[d]).join(' & ');
 let V=null,open=null,slots=[],selDay=null,selT=null;
 const fail=m=>{R.innerHTML=`<div class="card tile mytile center"><h3>${esc(m)}</h3><p class="mut">Use the link from your confirmation email. Questions? Call or text <a href="tel:${esc(S.phoneTel||S.phone)}">${esc(S.phone)}</a> or email <a href="mailto:${esc(S.email)}">${esc(S.email)}</a>.</p></div>`};
-async function load(){if(tok.length<32)return fail('This link isn’t valid.');const r=await rpc('parent_view',{p_token:tok});
+async function load(){if(mv)return moveView();if(tok.length<32)return fail('This link isn’t valid.');const r=await rpc('parent_view',{p_token:tok});
 if(r.status===404)return fail('Your dashboard is almost ready.');if(!r.ok||!r.j||r.j.error)return fail('This link isn’t valid.');V=r.j;const w=await rpc('parent_waivers',{p_token:tok});V.w=w.ok&&w.j&&!w.j.error?w.j:null;draw()}
 function draw(){const s=V.signup,names=[s.athlete,...(s.additional_players||[]).map(p=>p.athlete)].filter(Boolean),paid=s.payment_status==='paid';
 document.getElementById('hi').textContent='Hi '+(s.parent||'').split(' ')[0]+'.';
 R.innerHTML=`<div class="card tile mytile"><p class="kicker accent">Your package</p><h3>${esc(names.join(', '))}</h3>
-<div class="kv"><span>Package</span><b>${esc(PKG[s.package]||s.package)} · 4 sessions · 2 hrs each</b></div>
+<div class="kv"><span>Package</span><b>${esc(PKG[s.package]||s.package)} · ${V.sessions.length} session${V.sessions.length===1?'':'s'} · 2 hrs${V.sessions.length===1?'':' each'}</b></div>${V.group?`<div class="kv"><span>Group</span><b>${esc(gname(V.group))} · ${esc(gdays(V.group))} · ${V.group.taken} of ${V.group.capacity} spots filled</b></div><p class="mut small">${V.group.status==='running'?'Your group is set and running.':V.group.status==='cancelled'?'This group was cancelled. A coach will contact you about another group or a refund.':'The group runs once it has '+(V.group.min_players||2)+' players. If it doesn\'t fill 2 days before the first session, we\'ll email you to move to another group or get a full refund.'}</p>`:''}
 <div class="kv"><span>Payment</span><b><i class="pillst ${paid?'ok':'pend'}">${paid?'Paid':'Pending'}</i>${s.amount_paid_cents!=null?' $'+(s.amount_paid_cents/100):''}</b></div>
 <div class="kv"><span>Programs</span><b>${esc((s.programs||[]).map(progLabel).join(' + '))}</b></div>
 <div class="kv"><span>Workout types</span><b>${esc((s.workout_types||[...new Set(V.sessions.map(x=>x.workout_type))]).join(', '))}</b></div></div>
 ${wcard()}<div class="card tile mytile"><p class="kicker accent">Your sessions</p><h3>${V.sessions.length} session${V.sessions.length===1?"":"s"} · Denver time</h3><div class="slist">${V.sessions.map(sessRow).join('')}</div>
-<p class="mut small">You can move a session up to 24 hours before it starts. Moved sessions show as pending until a coach confirms.</p></div>
+<p class="mut small">${V.group?'Group sessions are set by the coaches. To change groups, call, text or email us.':'You can move a session up to 24 hours before it starts. Moved sessions show as pending until a coach confirms.'}</p></div>
 <div class="card tile mytile"><p class="kicker accent">Where</p><h3>${esc(S.locationName||'San Juan College Health & Human Performance Center')}</h3><p class="mut">4601 College Blvd, Farmington, NM 87402, United States</p>
 <div class="cta2 left"><a class="btn sm" href="${esc(S.appleMaps)}" target="_blank" rel="noopener">Open in Maps</a><a class="btn sm ghost" href="https://www.google.com/maps/search/?api=1&query=36.770237,-108.173952" target="_blank" rel="noopener">Google Maps</a></div></div>
 <div class="card tile mytile center"><h3>Questions?</h3><p class="mut">Call or text <a href="tel:${esc(S.phoneTel||S.phone)}">${esc(S.phone)}</a> · <a href="mailto:${esc(S.email)}">${esc(S.email)}</a></p></div>`}
@@ -29,7 +30,7 @@ document.addEventListener('click',e=>{if(!e.target.closest('[data-wsign]'))retur
 function sessRow(r){const late=new Date(r.starts_at)-Date.now()<CUT,past=new Date(r.starts_at)<Date.now(),ok=r.status==='confirmed';
 return `<div class="srow${open===r.id?' open':''}" data-id="${r.id}"><div class="sinfo"><b>${fd(r.starts_at,{weekday:'short',month:'short',day:'numeric'})}</b><span>${range(r.starts_at,r.duration_min)} · ${esc(r.workout_type)}</span>
 <i class="pillst ${ok?'ok':'pend'}">${past?'Done':ok?'Confirmed':'Pending'}</i>${r.moved_from?`<small>Moved from ${fd(r.moved_from,{month:'short',day:'numeric'})}, ${range(r.moved_from,r.duration_min)}</small>`:''}</div>
-${past?'':late?'<small class="mut">Within 24 hrs: call or text to change</small>':`<button class="btn sm ${open===r.id?'':'ghost'}" type="button" data-move="${r.id}">${open===r.id?'Close':'Reschedule'}</button>`}
+${r.group?'':past?'':late?'<small class="mut">Within 24 hrs: call or text to change</small>':`<button class="btn sm ${open===r.id?'':'ghost'}" type="button" data-move="${r.id}">${open===r.id?'Close':'Reschedule'}</button>`}
 ${open===r.id?`<div class="mover" id="mover"><p class="note">Loading open ${esc(r.workout_type)} times…</p></div>`:''}</div>`}
 R.addEventListener('click',async e=>{const m=e.target.closest('[data-move]');if(m){const id=+m.dataset.move;open=open===id?null:id;selDay=selT=null;draw();if(open)loadSlots();return}
 const d=e.target.closest('[data-d]');if(d){selDay=d.dataset.d;selT=null;drawMover();return}
@@ -50,4 +51,14 @@ const r=await rpc('parent_move',{p_token:tok,p_session:open,p_start:selT});
 if(!r.ok||!r.j||r.j.error){$('mv-msg').textContent=(r.j&&(r.j.error||r.j.message))||'Couldn’t move it. Please try again or call us.';b.disabled=false;b.textContent='Try again';return}
 fetch(S.supabaseUrl+'/functions/v1/notify',{method:'POST',headers:{'Content-Type':'application/json',apikey:S.supabaseKey,Authorization:'Bearer '+S.supabaseKey},body:JSON.stringify({token:tok})}).catch(()=>{});
 const id=open;open=null;await load();const row=R.querySelector(`[data-id="${id}"]`);if(row){row.classList.add('moved');const n=document.createElement('p');n.className='note okmsg';n.textContent='Moved. We emailed you a confirmation; a coach will confirm the new time.';row.appendChild(n)}}
+async function moveView(){const r=await rpc('group_move_view',{p_move:mv});if(!r.ok||!r.j||r.j.error)return fail((r.j&&r.j.error)||'This link isn’t valid.');const v=r.j;
+document.getElementById('hi').textContent='Hi '+(v.parent||'').split(' ')[0]+'.';
+if(v.used){R.innerHTML=`<div class="card tile mytile center"><h3>Got it, thanks.</h3><p class="mut">We already have your choice. A coach will follow up. Questions? Call or text <a href="tel:${esc(S.phoneTel)}">${esc(S.phone)}</a> or email <a href="mailto:${esc(S.email)}">${esc(S.email)}</a>.</p></div>`;return}
+const c=v.current;R.innerHTML=`<div class="card tile mytile"><p class="kicker accent">Your open group</p><h3>${esc(gname(c))} needs more players</h3><p class="mut">${esc(v.athlete)}'s group (${esc(gdays(c))}, ${range(c.sessions[0])}) has ${c.paid} of the ${c.min_players} players it needs to run. Move to another group below, or ask for a full refund.</p></div>
+<div class="card tile mytile"><p class="kicker accent">Move to another group</p>${v.options.length?`<div class="oglist">${v.options.map(g=>`<label class="ogcard"><input type="radio" name="og" value="${g.id}"><b>${esc(gname(g))}</b><span>${esc(gdays(g))} · ${range(g.sessions[0])} · starts ${fd(g.sessions[0],{weekday:'short',month:'short',day:'numeric'})}</span><i class="spots">${g.spots_left} of ${g.capacity} spots left</i></label>`).join('')}</div><div class="cta2 left"><button class="btn" type="button" id="og-move">Move to this group</button></div>`:'<p class="mut">No other groups have open spots right now. You can ask for a refund, or call us and we\'ll work something out.</p>'}
+<div class="cta2 left"><button class="btn ghost" type="button" id="og-refund">I'd like a full refund</button></div><p class="note" id="og-msg" role="status"></p></div>`;
+R.onclick=async e=>{const id=e.target.id;if(id!=='og-move'&&id!=='og-refund')return;const g=R.querySelector('[name=og]:checked');if(id==='og-move'&&!g){$('og-msg').textContent='Pick a group first.';return}
+e.target.disabled=true;const x=await rpc('group_move',{p_move:mv,p_group:id==='og-move'?+g.value:null});if(!x.ok||!x.j||x.j.error){$('og-msg').textContent=(x.j&&(x.j.error||x.j.message))||'Something went wrong. Please call us.';e.target.disabled=false;return}
+if(x.j.group)fetch(S.supabaseUrl+'/functions/v1/notify',{method:'POST',headers:{'Content-Type':'application/json',apikey:S.supabaseKey,Authorization:'Bearer '+S.supabaseKey},body:JSON.stringify({action:'group-moved',move:mv})}).catch(()=>{});
+R.innerHTML=`<div class="card tile mytile center"><h3>${x.j.refund?'Refund requested':'You\'re in '+esc(gname(x.j.group))}</h3><p class="mut">${x.j.refund?'A coach will process your full refund and email you once it\'s done (usually within 2 business days).':'We emailed you the new session times.'} Questions? Call or text <a href="tel:${esc(S.phoneTel)}">${esc(S.phone)}</a>.</p></div>`}}
 load()})();

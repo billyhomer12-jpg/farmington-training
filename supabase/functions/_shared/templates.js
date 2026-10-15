@@ -9,7 +9,7 @@ export const LOCATION = { name: 'San Juan College Health & Human Performance Cen
   apple: 'https://maps.apple.com/place?address=4601%20College%20Blvd,%20Farmington,%20NM%20%2087402,%20United%20States&coordinate=36.770237,-108.173952&name=San%20Juan%20College%20Health%20%26%20Human%20Performance%20Center&place-id=IBC9B4F4B78DAE618&map=explore' };
 export const SITE = 'https://fourcornershoopsandperformance.com';
 const PROG = { 'Basketball Skills': 'Basketball Training', 'Youth Strength Training': 'Weightlifting', 'Athletic Performance': 'Conditioning' };
-const PKG = { single: 'Single 1-on-1 session', '1on1': '1-on-1', group2: 'Small group · 2 players', group3: 'Small group · 3 players', group4: 'Small group · 4 players' };
+const PKG = { single: 'Single 1-on-1 session', '1on1': '1-on-1', group2: 'Small group · 2 players', group3: 'Small group · 3 players', group4: 'Small group · 4 players', open_group: 'Open group (joined solo)' };
 const TZ = 'America/Denver';
 const esc = v => String(v ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const fmt = (d, o) => new Date(d).toLocaleString('en-US', { timeZone: TZ, ...o });
@@ -41,20 +41,26 @@ const where = () => `<p style="margin:0 0 6px;font-size:13px;color:#6e6e73;text-
 <p style="margin:0 0 12px;font-size:15px;line-height:1.5"><b>${esc(LOCATION.name)}</b><br>${esc(LOCATION.address)}</p><p style="margin:0 0 24px">${btn(LOCATION.apple, 'Open in Maps', false)}</p>`;
 
 const n = ss => ss.length === 1 ? '1 session · 2 hrs' : `${ss.length} sessions · 2 hrs each`;
-export function confirmationEmail({ signup: s, sessions, token }) {
+const DAYS = ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+export const groupName = g => g.label || (g.weekdays || []).map(d => DAYS[d]).join('/') + ' group';
+export const groupWhen = g => (g.weekdays || []).map(d => DAYS[d]).join(' & ') + (g.sessions && g.sessions[0] ? ', ' + range(g.sessions[0]) : '');
+const groupBox = g => box(`<tr><td style="padding:16px 14px;font-size:15px;line-height:1.6"><b>${esc(groupName(g))}</b><br>${esc(groupWhen(g))}<br>${g.taken} of ${g.capacity} spots filled · runs with ${g.min_players || 2}+ players</td></tr>`);
+export function confirmationEmail({ signup: s, sessions, token, group }) {
   const link = `${SITE}/my.html?token=${encodeURIComponent(token)}`;
   const progs = (s.programs || [s.program]).map(k => PROG[k] || k).join(' + ');
   const body = `<p style="margin:0 0 16px;font-size:16px;line-height:1.5">Hi ${esc((s.parent || '').split(' ')[0])}, thanks! Your payment is complete and <b>${esc(names(s))}</b> ${(s.additional_players||[]).length?'are':'is'} booked.</p>
+${group ? groupBox(group) + `<p style="margin:0 0 16px;font-size:15px;line-height:1.5">We'll add other athletes to this group as families sign up. If it has fewer than ${group.min_players || 2} players 2 days before the first session, we'll email you to move to another group or get a full refund.</p>` : ''}
 ${box(`<tr><td style="padding:16px 14px;font-size:15px;line-height:1.6"><b>${esc(PKG[s.package] || s.package)}</b> · ${n(sessions)}<br>Paid: <b>${money(s.amount_paid_cents ?? s.price_cents)}</b><br>${esc(progs)}</td></tr>`)}
 <p style="margin:0 0 6px;font-size:13px;color:#6e6e73;text-transform:uppercase;letter-spacing:.04em;font-weight:600">Your ${sessions.length === 1 ? 'session' : sessions.length + ' sessions'} (Denver time)</p>
 ${box(sessionRows(sessions))}
 ${where()}
-<p style="margin:0 0 14px;font-size:15px;line-height:1.5">See your sessions or move one (up to 24 hours before it starts) on your dashboard:</p>
+<p style="margin:0 0 14px;font-size:15px;line-height:1.5">${group ? 'See your group sessions on your dashboard:' : 'See your sessions or move one (up to 24 hours before it starts) on your dashboard:'}</p>
 <p style="margin:0 0 8px">${btn(link, 'My sessions & reschedule')}</p>
 <p style="margin:22px 0 8px;font-size:15px;line-height:1.5"><b>Waiver:</b> signed online. Your signed copy was emailed when you signed. If a waiver is still missing, we'll email you a link to sign it.</p>
 <p style="margin:14px 0 0;font-size:12px;color:#86868b;line-height:1.5">This link is private to your booking. Don't share it.</p>`;
   return { subject: `You're booked: ${sessions.length === 1 ? '1 session' : sessions.length + ' sessions'} with ${BRAND}`, html: shell("You're booked.", 'Payment confirmed', body),
     text: `Payment confirmed. ${names(s)} is booked: ${PKG[s.package] || s.package}, ${money(s.amount_paid_cents ?? s.price_cents)}.\n` +
+      (group ? `Group: ${groupName(group)} (${groupWhen(group)}), ${group.taken} of ${group.capacity} spots filled. Runs with ${group.min_players || 2}+ players; if not, we'll email you to move groups or get a refund.\n` : '') +
       sessions.map(r => `- ${day(r.starts_at)}, ${range(r.starts_at, r.duration_min || 120)}, ${r.workout_type} (${r.status})`).join('\n') +
       `\n\nWhere: ${LOCATION.name}, ${LOCATION.address}\nMaps: ${LOCATION.apple}\nMy sessions & reschedule: ${link}\nWaiver: signed online (your signed copy was emailed separately).\nQuestions? Reply or call/text ${PHONE}.` };
 }
@@ -107,4 +113,24 @@ ${box(rows)}
   return { subject: `Send the waiver links to your group · ${BRAND}`, html: shell('Waivers still needed.', 'Share with your group', body),
     text: `These players in your group still need a signed waiver (not cleared for the court until signed). Send each family their link:\n` +
       links.map(l => `- ${l.athlete}: ${athleteLink(l)}`).join('\n') + `\nLinks work for 30 days. Questions? Reply or call/text ${PHONE}.` };
+}
+
+// Open group under minimum 48 h before start: offer a move (link) or a refund. Refunds are handled by the coach.
+export function groupUnderMinEmail({ signup: s, payload: p }) {
+  const g = p.group, first = esc((s.parent || '').split(' ')[0]);
+  const body = `<p style="margin:0 0 16px;font-size:16px;line-height:1.5">Hi ${first}, the open group <b>${esc(s.athlete)}</b> joined doesn't have the ${g.min_players || 2} players it needs to run yet.</p>
+${groupBox(g)}
+<p style="margin:0 0 14px;font-size:15px;line-height:1.5">You can move ${esc((s.athlete || '').split(' ')[0])} to another group with open spots, or ask for a full refund. Either takes one tap:</p>
+<p style="margin:0 0 8px">${btn(p.move_url, 'Move to another group or get a refund')}</p>
+<p style="margin:14px 0 0;font-size:14px;line-height:1.5;color:#424245">Prefer to talk it through? Reply to this email or call/text ${PHONE}. A coach will reach out too.</p>`;
+  return { subject: `Your open group needs one more player · ${BRAND}`, html: shell('Your group is short a player.', 'Open group update', body),
+    text: `The open group ${s.athlete} joined (${groupName(g)}, ${groupWhen(g)}) has ${g.paid} of ${g.min_players || 2} players needed. Move to another group or ask for a full refund: ${p.move_url}\nQuestions? Reply or call/text ${PHONE}.` };
+}
+export function groupMovedEmail({ signup: s, sessions, group }) {
+  const body = `<p style="margin:0 0 16px;font-size:16px;line-height:1.5">Hi ${esc((s.parent || '').split(' ')[0])}, <b>${esc(s.athlete)}</b> is now in a new open group.</p>
+${groupBox(group)}
+<p style="margin:0 0 6px;font-size:13px;color:#6e6e73;text-transform:uppercase;letter-spacing:.04em;font-weight:600">Sessions (Denver time)</p>
+${box(sessionRows(sessions))}${where()}`;
+  return { subject: `Group changed: ${groupName(group)} · ${BRAND}`, html: shell('New group confirmed.', 'Open group', body),
+    text: `${s.athlete} moved to ${groupName(group)} (${groupWhen(group)}), ${group.taken} of ${group.capacity} spots filled.\n` + sessions.map(r => `- ${day(r.starts_at)}, ${range(r.starts_at)}`).join('\n') + `\nQuestions? Reply or call/text ${PHONE}.` };
 }

@@ -206,3 +206,14 @@ h2{font-size:clamp(2.1rem,5vw,3.5rem);letter-spacing:-.015em}
 .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}.hide{display:none!important}
 .rvst{display:inline-block;border-radius:980px;padding:2px 10px;font-size:.78rem;font-weight:600;background:var(--bg2)}.rvst.approved{background:#E1F5E6;color:var(--ac2)}
 @media (max-width:600px){.rvform .btn{width:100%}}
+/* Open groups / booking mode chooser */
+.mode{border:0;padding:0;margin:0 0 18px}.mode legend{font-weight:600;margin-bottom:8px}
+.mchips,.oglist{display:grid;gap:10px;grid-template-columns:repeat(3,1fr)}.oglist{grid-template-columns:repeat(2,1fr)}
+.mcard,.ogcard{position:relative;display:flex;flex-direction:column;gap:4px;background:var(--bg2);border:1.5px solid transparent;border-radius:16px;padding:14px;cursor:pointer}
+.mcard input,.ogcard input{position:absolute;opacity:0}.mcard small,.ogcard small{color:var(--mut);font-size:.85rem;line-height:1.35}
+.mcard:has(input:checked),.ogcard:has(input:checked){border-color:var(--ac2);background:#E1F5E6}.mcard:has(input:focus-visible),.ogcard:has(input:focus-visible){outline:3px solid var(--fg)}
+.ogcard span{font-size:.95rem}.ogcard .spots{font-style:normal;font-weight:600;color:var(--ac2);font-size:.9rem}.ogcard.off{opacity:.45;cursor:not-allowed}.ogcard.off .spots{color:var(--mut)}
+.solo{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:16px;border:2px solid var(--ac);padding:22px}.solo h3{margin:2px 0 6px}.solo p{margin:0}.solo .kicker{color:var(--ac2)}
+.price.feat{border:2px solid var(--ac)}
+@media (max-width:700px){.mchips,.oglist{grid-template-columns:1fr}.solo{flex-direction:column;align-items:flex-start}}
+.achip.grp{background:#E1F5E6;color:var(--ac2);cursor:default}.achip.grp:hover{transform:none;box-shadow:none}.sec.alt .aday .achip.grp{background:#E1F5E6}.achip.grp small{color:var(--ac2)}

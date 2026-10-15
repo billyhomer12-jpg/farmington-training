@@ -27,10 +27,11 @@ window.SITE = {
     "1on1":   { label: "1-on-1",                 players: 1, price: 250 },
     "group2": { label: "Small group · 2 players", players: 2, price: 300 },
     "group3": { label: "Small group · 3 players", players: 3, price: 350 },
-    "group4": { label: "Small group · 4 players", players: 4, price: 375 }
+    "group4": { label: "Small group · 4 players", players: 4, price: 375 },
+    "open_group": { label: "Join a group solo", players: 1, price: 125, solo: true }
   },
   // Stripe Payment Links per package (leave "" until created in Stripe). ?client_reference_id=<booking ref> is appended.
-  paymentLinks: { "single": "https://buy.stripe.com/8x200l3xBc866AX8Gh8Zq04", "1on1": "https://buy.stripe.com/5kQ3cx3xBegebVhg8J8Zq00", "group2": "https://buy.stripe.com/cNi3cxfgj6NMcZl7Cd8Zq01", "group3": "https://buy.stripe.com/14A6oJ8RV9ZYaRd09L8Zq02", "group4": "https://buy.stripe.com/dRm8wR5FJ9ZYaRd4q18Zq03" }
+  paymentLinks: { "single": "https://buy.stripe.com/8x200l3xBc866AX8Gh8Zq04", "1on1": "https://buy.stripe.com/5kQ3cx3xBegebVhg8J8Zq00", "group2": "https://buy.stripe.com/cNi3cxfgj6NMcZl7Cd8Zq01", "group3": "https://buy.stripe.com/14A6oJ8RV9ZYaRd09L8Zq02", "group4": "https://buy.stripe.com/dRm8wR5FJ9ZYaRd4q18Zq03", "open_group": "TODO_OPEN_GROUP_LINK" }
 };
 
 window.progLabel=k=>((window.SITE.programs||[]).find(p=>p.key===k||p.label===k)||{label:k}).label;
