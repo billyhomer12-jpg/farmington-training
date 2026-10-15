@@ -181,3 +181,4 @@ h2{font-size:clamp(2.1rem,5vw,3.5rem);letter-spacing:-.015em}
 
 .scrollhint.up{bottom:calc(72px + env(safe-area-inset-bottom));animation:none}
 .scrollhint.dn.gone~.scrollhint.up,.scrollhint.up:only-of-type{bottom:calc(20px + env(safe-area-inset-bottom))}
+.day.more small{font-size:.62rem}
