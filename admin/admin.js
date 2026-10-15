@@ -22,6 +22,9 @@ const ty=r=>TYPES[r.program]||[String(r.program||'?').slice(0,2).toUpperCase(),'
 const grp=r=>/group|clinic|team/i.test(r.format||'');
 const first=id=>String(who(id).athlete||'?').replace(/^DEMO\s+/i,'').split(/\s+/)[0];
 const reqsOn=k=>D.requests.filter(r=>K(r.starts_at)===k&&r.status!=='cancelled'&&r.status!=='declined').sort((a,b)=>a.starts_at<b.starts_at?-1:1);
+// Gym closures (live from training_gym_closures via coach_data): any closure overlapping the Denver day.
+const nextK=k=>{const d=new Date(k+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+1);return d.toISOString().slice(0,10)},clOn=k=>(D.closures||[]).filter(c=>new Date(c.starts_at)<new Date(at(nextK(k),'00:00'))&&new Date(c.ends_at)>new Date(at(k,'00:00')));
+const clTag=k=>{const c=clOn(k);return c.length?`<span class="clz" title="${esc(c.map(x=>x.reason||'Closure').join('; '))}">Gym closed – outdoor conditioning only<small>${esc(c.map(x=>x.reason||'Closure').join('; '))}</small></span>`:''};
 const blksOn=k=>D.blocks.filter(b=>K(b.starts_at)===k);
 const WT={'Gym':'🏀','Outdoor':'🌤','Weight room':'🏋'},wti=r=>r.workout_type?' '+(WT[r.workout_type]||''):'';
 const pill=r=>`<button class="pl t-${ty(r)[1]}${grp(r)?' grp':''}${r.status==='requested'?' rq':''}" data-req="${r.id}">${esc(first(r.signup_id))}${who(r.signup_id).plus?' +'+who(r.signup_id).plus:''} · ${esc(who(r.signup_id).prog_abbr||ty(r)[0])}${r.format?(grp(r)?' Grp':' 1:1'):''}${wti(r)}</button>`;
@@ -36,11 +39,11 @@ h+=`<button class="te t-${ty(x)[1]}${grp(x)?' grp':''}${x.status==='requested'?'
 A.innerHTML=h+`<div style="height:${16*H+20}px"></div></div>`+(r.length?'':'<p class="note">No sessions this day.</p>');return}
 if(mode==='week'){const st=new Date(view);st.setDate(st.getDate()-st.getDay());$('cal-title').textContent='Week of '+st.toLocaleDateString('en-US',{month:'short',day:'numeric'});C.className='cal hide';
 A.innerHTML=[...Array(7)].map((_,i)=>{const d=new Date(st);d.setDate(st.getDate()+i);const k=kd(d),r=reqsOn(k),b=blksOn(k);
-return `<div class="wd"><button class="wdh" data-day="${k}">${d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})}</button><div class="pls">${r.map(pill).join('')}${b.length?'<span class="pl blk">Blocked</span>':''}${r.length||b.length?'':'<span class="note">—</span>'}</div></div>`}).join('');return}
+return `<div class="wd${clOn(k).length?' closed':''}"><button class="wdh" data-day="${k}">${d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})}</button><div class="pls">${clTag(k)}${r.map(pill).join('')}${b.length?'<span class="pl blk">Blocked</span>':''}${r.length||b.length||clOn(k).length?'':'<span class="note">—</span>'}</div></div>`}).join('');return}
 const f=new Date(view.getFullYear(),view.getMonth(),1),st=new Date(f);st.setDate(1-f.getDay());$('cal-title').textContent=f.toLocaleDateString('en-US',{month:'long',year:'numeric'});C.className='cal';
 let h=['S','M','T','W','T','F','S'].map(d=>`<div class="h">${d}</div>`).join('');const today=kd(new Date());
 for(let i=0;i<42;i++){const d=new Date(st);d.setDate(st.getDate()+i);const k=kd(d),r=reqsOn(k),b=blksOn(k);
-h+=`<div class="c${d.getMonth()!==view.getMonth()?' o':''}${k===today?' today':''}"><button class="dn" data-day="${k}">${d.getDate()}</button>${b.length?'<span class="bd" title="Blocked time"></span>':''}${r.slice(0,4).map(pill).join('')}${r.length>4?`<button class="more" data-day="${k}">+${r.length-4}</button>`:''}</div>`}
+h+=`<div class="c${d.getMonth()!==view.getMonth()?' o':''}${k===today?' today':''}${clOn(k).length?' closed':''}"><button class="dn" data-day="${k}">${d.getDate()}</button>${clTag(k)}${b.length?'<span class="bd" title="Blocked time"></span>':''}${r.slice(0,4).map(pill).join('')}${r.length>4?`<button class="more" data-day="${k}">+${r.length-4}</button>`:''}</div>`}
 C.innerHTML=h}
 $('t-cal').addEventListener('click',e=>{const d=e.target.closest('[data-day]');if(d){sel=d.dataset.day;mode='day';drawCal();return}const m=e.target.closest('[data-mode]');if(m){mode=m.dataset.mode;if(mode==='day'&&!sel)sel=kd(new Date());drawCal()}});
 const step=n=>{if(mode==='day'){const d=kdate(sel);d.setDate(d.getDate()+n);sel=kd(d);view=new Date(d)}else if(mode==='week')view.setDate(view.getDate()+7*n);else view.setMonth(view.getMonth()+n);drawCal()};
