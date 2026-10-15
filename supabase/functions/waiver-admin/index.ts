@@ -1,7 +1,8 @@
 // Coach back office: POST {email, pin, action:'download', id} -> 5-minute signed URL for a signed waiver PDF
-//                    POST {email, pin, action:'resend', signup_id} -> emails the parent a fresh 30-day signing link
+//                    POST {email, pin, action:'resend', signup_id} -> emails each unsigned athlete's parent their 30-day link (or the booking parent the share links)
 // Every call is PIN-checked in the database (same lockout as the back office). Deploy: --no-verify-jwt --use-api
-import { db, flushOutbox, cors } from '../_shared/send.ts';
+import { db, cors } from '../_shared/send.ts';
+import { remindUnsigned } from '../_shared/remind.ts';
 const J = (b: unknown, status = 200) => new Response(JSON.stringify(b), { status, headers: { ...cors, 'Content-Type': 'application/json' } });
 
 Deno.serve(async req => {
@@ -20,10 +21,8 @@ Deno.serve(async req => {
   if (b.action === 'resend') {
     const { data: ok } = await sb.rpc('coach_pin_ok', { p_email: email, p_pin: pin });
     if (!ok || ok.error) return J({ error: ok?.error || 'Wrong PIN.' }, 403);
-    const { data: t, error } = await sb.rpc('training_waiver_issue_token', { p_signup: Number(b.signup_id), p_kind: 'coach_resend' });
-    if (error || t?.error) return J({ error: t?.error || 'Request failed' }, 400);
-    const sent = await flushOutbox(Number(b.signup_id), '', { wtoken: t.token });
-    return J({ ok: true, sent });
+    try { const r = await remindUnsigned(Number(b.signup_id), true); if (!r.unsigned) return J({ error: 'All waivers are already signed.' }, 400); return J({ ok: true, ...r }); }
+    catch { return J({ error: 'Request failed' }, 400); }
   }
   return J({ error: 'bad request' }, 400);
 });

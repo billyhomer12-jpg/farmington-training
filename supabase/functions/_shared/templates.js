@@ -87,3 +87,24 @@ export function waiverReminderEmail({ signup: s, wtoken }) {
   return { subject: `Please sign your waiver · ${BRAND}`, html: shell('One more step.', 'Waiver needed', body),
     text: `We still need a signed waiver for ${names(s)} before training starts.\nSign online (link works 30 days): ${link}\nQuestions? Reply or call/text ${PHONE}.` };
 }
+// Per-athlete link: book.html?sign=<token>&athlete=N (N = 1-based player number).
+export const athleteLink = l => `${SITE}/book.html?sign=${encodeURIComponent(l.token)}&athlete=${l.index + 1}`;
+// To the parent of one unsigned athlete (their own email was given at booking), or the booking parent for athlete 1.
+export function waiverAthleteEmail({ signup: s, link: l }) {
+  const url = athleteLink(l), first = esc((l.parent || '').split(' ')[0]);
+  const body = `<p style="margin:0 0 16px;font-size:16px;line-height:1.5">Hi ${first}, <b>${esc(l.athlete)}</b> is booked for training with ${BRAND}${l.index ? ` (booked by ${esc(s.parent)})` : ''}. A parent or legal guardian needs to sign the waiver online before ${esc((l.athlete || '').split(' ')[0])} can get on the court. It takes about 2 minutes on your phone.</p>
+<p style="margin:0 0 8px">${btn(url, 'Sign the waiver')}</p>
+<p style="margin:14px 0 0;font-size:12px;color:#86868b;line-height:1.5">This link is only for ${esc(l.athlete)}'s waiver and works for 30 days.</p>`;
+  return { subject: `Please sign ${l.athlete}'s waiver · ${BRAND}`, html: shell('Waiver needed.', 'Before the first session', body),
+    text: `${l.athlete} is booked for training with ${BRAND}. Please sign the waiver online before training (about 2 minutes): ${url}\nThe link works for 30 days. Questions? Reply or call/text ${PHONE}.` };
+}
+// To the booking parent: other players' waivers are unsigned and we have no email for them.
+export function waiverShareEmail({ signup: s, links }) {
+  const rows = links.map((l, i) => `<tr><td style="padding:12px 14px;border-top:${i ? '1px solid #e8e8ed' : '0'};font-size:15px;line-height:1.5"><b>${esc(l.athlete)}</b>${l.parent ? ` · parent ${esc(l.parent)}` : ''}<br><a href="${esc(athleteLink(l))}" style="color:#248A3D;word-break:break-all">${esc(athleteLink(l))}</a></td></tr>`).join('');
+  const body = `<p style="margin:0 0 16px;font-size:16px;line-height:1.5">Hi ${esc((s.parent || '').split(' ')[0])}, ${links.length === 1 ? 'one player in your group still needs' : links.length + ' players in your group still need'} a signed waiver. Players without a signed waiver aren't cleared for the court. Please text or email each family their link:</p>
+${box(rows)}
+<p style="margin:0 0 8px;font-size:14px;line-height:1.5;color:#424245">Each link is for that player only, works for 30 days, and takes about 2 minutes on a phone. You can also share them from your booking dashboard.</p>`;
+  return { subject: `Send the waiver links to your group · ${BRAND}`, html: shell('Waivers still needed.', 'Share with your group', body),
+    text: `These players in your group still need a signed waiver (not cleared for the court until signed). Send each family their link:\n` +
+      links.map(l => `- ${l.athlete}: ${athleteLink(l)}`).join('\n') + `\nLinks work for 30 days. Questions? Reply or call/text ${PHONE}.` };
+}

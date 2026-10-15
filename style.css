@@ -191,3 +191,11 @@ h2{font-size:clamp(2.1rem,5vw,3.5rem);letter-spacing:-.015em}
 .sigclear{position:absolute;right:8px;bottom:8px}.wst{min-height:1.2em;color:var(--ac2);font-weight:600}
 .badge{display:inline-block;padding:2px 9px;border-radius:980px;font-size:.78rem;font-weight:600;white-space:nowrap}.badge.ok{background:rgba(52,199,89,.15);color:var(--ac2)}.badge.no{background:var(--bg2);color:var(--fg);border:1px solid var(--fg)}
 .wvadm{margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}.wvadm p{margin:6px 0}
+/* Group waiver share links + per-athlete signing page */
+.signonly .sm-hero,.signonly #contact .note{display:none}.signonly #contact{padding-top:calc(var(--navh,64px) + 16px)}
+.wshare{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}.wshare h4{margin:0 0 4px}
+.wsrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;padding:12px 0;border-top:1px solid var(--line)}
+.wsrow>span{display:flex;flex-direction:column;gap:2px}.wsrow>span .badge{align-self:flex-start;margin-top:4px}
+.wsbtn{display:flex;flex-wrap:wrap;gap:8px}
+@media (max-width:600px){.wsign .grid2{grid-template-columns:1fr}.wsbtn{width:100%}.wsbtn .btn{flex:1 1 40%;text-align:center}.wsbtn [data-a=send]{flex-basis:100%}}
+.notcleared{color:#c00;font-weight:600}

@@ -3,6 +3,7 @@
 // Secrets: STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, RESEND_API_KEY (+ optional EMAIL_FROM, EMAIL_DRY_RUN=1)
 import Stripe from 'npm:stripe@16';
 import { db, flushOutbox } from '../_shared/send.ts';
+import { remindUnsigned } from '../_shared/remind.ts';
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') ?? '', { apiVersion: '2024-06-20' });
 const crypto = Stripe.createSubtleCryptoProvider();
@@ -22,13 +23,11 @@ Deno.serve(async req => {
   if (error) return new Response('db error: ' + error.message, { status: 500 }); // Stripe retries
   if (data?.error || data?.duplicate) return new Response(JSON.stringify(data), { status: 200 });
   let sent = await flushOutbox(data.signup_id, data.token);
-  // Waivers are signed before payment; if one is somehow missing, email a signing link right away.
+  // Athlete 1 signs before payment; other group players sign from their own link. Remind right away:
+  // players with an email get their link, the booking parent gets the links for the rest.
   try {
     const { data: missing } = await db().rpc('training_waiver_unsigned', { p_signup: data.signup_id });
-    if (missing > 0) {
-      const { data: t } = await db().rpc('training_waiver_issue_token', { p_signup: data.signup_id, p_kind: 'paid_unsigned' });
-      if (t?.token) sent += await flushOutbox(data.signup_id, '', { wtoken: t.token });
-    }
+    if (missing > 0) sent += (await remindUnsigned(data.signup_id)).sent;
   } catch (e) { console.error('waiver reminder failed', e); }
   return new Response(JSON.stringify({ ok: true, sent }), { status: 200, headers: { 'Content-Type': 'application/json' } });
 });

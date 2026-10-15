@@ -4,8 +4,10 @@
 //       medical_notes, photo_opt_in, signer_name, signer_relationship, consent, version, version_sha256, signature (data:image/png;base64)}
 // Rejects missing/invalid credentials, unsigned forms and blank signatures. Files go to the PRIVATE "waivers" bucket.
 // Deploy: supabase functions deploy waiver-sign --no-verify-jwt --use-api
-import { db, flushOutbox, cors } from '../_shared/send.ts';
+import { db, flushOutbox, sendEmail, cors } from '../_shared/send.ts';
+import { waiverCopyEmail } from '../_shared/templates.js';
 import { waiverPdf } from '../_shared/waiverpdf.ts';
+import { remindUnsigned } from '../_shared/remind.ts';
 
 const J = (b: unknown, status = 200) => new Response(JSON.stringify(b), { status, headers: { ...cors, 'Content-Type': 'application/json' } });
 const hex = async (b: Uint8Array) => [...new Uint8Array(await crypto.subtle.digest('SHA-256', b))].map(x => x.toString(16).padStart(2, '0')).join('');
@@ -16,20 +18,38 @@ Deno.serve(async req => {
   if (req.method !== 'POST') return J({ error: 'method not allowed' }, 405);
   const b = await req.json().catch(() => null);
   if (!b || typeof b !== 'object') return J({ error: 'bad request' }, 400);
+  // Daily pg_cron run: remind every paid booking that still has an unsigned athlete (each link at most every 2 days, 4 times).
+  if (b.action === 'cron') {
+    const sb0 = db(); const { data: ok } = await sb0.rpc('training_cron_key_ok', { p: String(b.key || '') });
+    if (ok !== true) return J({ error: 'forbidden' }, 403);
+    const { data: ids } = await sb0.rpc('training_waiver_due'); let sent = 0;
+    for (const id of (ids || []) as number[]) { try { sent += (await remindUnsigned(Number(id))).sent; } catch (e) { console.error('cron remind', id, e); } }
+    return J({ ok: true, bookings: (ids || []).length, sent });
+  }
   const ref = typeof b.ref === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(b.ref) ? b.ref : null;
   const token = typeof b.token === 'string' && b.token.length >= 32 && b.token.length < 200 ? b.token : null;
   const wtoken = typeof b.wtoken === 'string' && b.wtoken.length >= 32 && b.wtoken.length < 200 ? b.wtoken : null;
   if (!ref && !token && !wtoken) return J({ error: 'invalid link' }, 401);
   const sb = db();
+  // Share links for the other group players (booking parent: book.html by ref, my.html by dashboard token).
+  if (b.action === 'links') {
+    const { data: L, error: le } = await sb.rpc('training_waiver_share_links', { p_ref: ref, p_token: ref ? null : token });
+    if (le || !L || L.error) return J({ error: 'This link is invalid or has expired.' }, 401);
+    return J({ links: L.links.map((l: any) => ({ index: l.index, athlete: l.athlete, parent: l.parent, expires_at: l.expires_at,
+      url: `https://fourcornershoopsandperformance.com/book.html?sign=${encodeURIComponent(l.token)}&athlete=${l.index + 1}` })) });
+  }
   const { data: ctx, error } = await sb.rpc('training_waiver_ctx', { p_ref: ref, p_token: ref ? null : token, p_wtoken: ref || token ? null : wtoken });
   if (error) return J({ error: 'Something went wrong. Please try again.' }, 500);
   if (!ctx || ctx.error) return J({ error: 'This signing link is invalid or has expired. Please call or text us.' }, 401);
-  if (b.action === 'context') return J({ athletes: ctx.athletes.map((a: any) => ({ index: a.index, athlete: a.athlete })), signed: ctx.signed, parent: ctx.parent, version: ctx.version });
+  // A per-athlete link (ctx.only) opens just that athlete; its signer is that athlete's parent.
+  const only = Number.isInteger(ctx.only) ? ctx.only : null;
+  if (b.action === 'context') return J({ athletes: ctx.athletes.filter((a: any) => only === null || a.index === only).map((a: any) => ({ index: a.index, athlete: a.athlete, parent: a.parent })),
+    total: ctx.athletes.length, only, signed: ctx.signed, parent: only ? null : ctx.parent, version: ctx.version });
   if (b.action !== 'sign') return J({ error: 'bad request' }, 400);
 
   // ---- validate the form (server side; the browser checks are only for convenience)
   const idx = Number(b.athlete_index), a = ctx.athletes.find((x: any) => x.index === idx);
-  if (!Number.isInteger(idx) || !a) return J({ error: 'Unknown athlete.' }, 400);
+  if (!Number.isInteger(idx) || !a || (only !== null && idx !== only)) return J({ error: 'Unknown athlete.' }, 400);
   if (ctx.signed.includes(idx)) return J({ error: 'This athlete\'s waiver is already signed.' }, 409);
   const f = { athlete_name: str(b.athlete_name), athlete_dob: str(b.athlete_dob, 10), emergency_name: str(b.emergency_name), emergency_phone: str(b.emergency_phone, 50),
     medical_notes: str(b.medical_notes, 2000), photo_opt_in: b.photo_opt_in === true, signer_name: str(b.signer_name), signer_relationship: str(b.signer_relationship, 40) };
@@ -78,7 +98,11 @@ Deno.serve(async req => {
     const { data: su } = await st.createSignedUrl(`${base}/waiver.pdf`, 7 * 86400, { download: `waiver-${f.athlete_name.replace(/[^A-Za-z0-9]+/g, '-')}.pdf` });
     if (su?.signedUrl) {
       await sb.rpc('training_waiver_queue_copy', { p_signup: ctx.signup_id, p_payload: { waiver_id: id, url: su.signedUrl, athlete: f.athlete_name, signer: f.signer_name, signed_at: signedAt, version: ctx.version.version } });
-      await flushOutbox(ctx.signup_id, token || '');
+      // Copy goes to whoever was emailed for this athlete; a group player's parent without an email gets none (booking parent does).
+      const to = idx === 0 ? null : ctx.athletes.find((x: any) => x.index === idx)?.email;
+      if (to) {
+        await sendEmail(to, waiverCopyEmail({ signup: { parent: a.parent || f.signer_name }, payload: { url: su.signedUrl, athlete: f.athlete_name, signer: f.signer_name, signed_at: signedAt, version: ctx.version.version } }));
+      } else await flushOutbox(ctx.signup_id, token || '');
     }
   } catch (e) { console.error('copy email', e); }
   return J({ ok: true, id, remaining: ins.remaining, signed_at: signedAt });

@@ -1,15 +1,17 @@
 // Online waiver signing panel (book.html before payment, book.html?sign=<link token>, my.html).
-// WaiverPanel(el, cred, onDone): cred = {ref} | {token} | {wtoken}. onDone() runs once every athlete is signed.
+// WaiverPanel(el, cred, onDone, opt): cred = {ref} | {token} | {wtoken}. opt.only = sign just that athlete index
+// (book.html group flow: athlete 1 only). onDone() runs once the athletes in scope are signed.
+// WaiverShare(el, cred): 'Send waiver link' buttons for unsigned group players (cred = {ref} | {token}).
 (()=>{const S=window.SITE,FN=S.supabaseUrl+'/functions/v1/waiver-sign';
 const esc=v=>String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const call=async b=>{try{const r=await fetch(FN,{method:'POST',headers:{'Content-Type':'application/json',apikey:S.supabaseKey},body:JSON.stringify(b)});const j=await r.json().catch(()=>({}));return r.ok?j:{error:j.error||'Something went wrong. Please try again.'}}catch{return{error:'Network error. Please try again.'}}};
 const body=t=>t.split(/\n\n+/).map(b=>b.startsWith('# ')?`<h3>${esc(b.slice(2))}</h3>`:b.startsWith('## ')?`<h4>${esc(b.slice(3))}</h4>`:`<p>${esc(b)}</p>`).join('');
-window.WaiverPanel=async(el,cred,onDone)=>{el.innerHTML='<div class="card"><p class="mut">Loading the waiver…</p></div>';
+window.WaiverPanel=async(el,cred,onDone,opt={})=>{el.innerHTML='<div class="card"><p class="mut">Loading the waiver…</p></div>';
 const ctx=await call({action:'context',...cred});if(ctx.error){el.innerHTML=`<div class="card"><h3>Waiver</h3><p>${esc(ctx.error)}</p></div>`;return}
-const todo=ctx.athletes.filter(a=>!ctx.signed.includes(a.index));if(!todo.length){onDone&&onDone();return}
-const a=todo[0],n=ctx.athletes.length,k=n-todo.length+1;
-el.innerHTML=`<div class="card wsign"><h3>Sign the waiver${n>1?` · player ${k} of ${n}`:''}</h3>
-<p>A parent or legal guardian of <b>${esc(a.athlete)}</b> signs before payment.${n>1?' Each athlete needs their own waiver; another player\'s parent can sign on this device.':''} <a href="waiver.pdf" download>Paper copy (PDF)</a></p>
+const only=opt.only!=null?opt.only:ctx.only,todo=ctx.athletes.filter(a=>!ctx.signed.includes(a.index)&&(only==null||a.index===only));if(!todo.length){if(onDone)onDone();else if(ctx.only!=null)el.innerHTML='<div class="card"><h3>Already signed</h3><p>This athlete\'s waiver is signed and on file. Thanks!</p></div>';return}
+const a=todo[0],n=only!=null?(ctx.total||ctx.athletes.length):ctx.athletes.length,k=n-todo.length+1,solo=only!=null&&(ctx.only!=null||n>1);
+el.innerHTML=`<div class="card wsign"><h3>${solo?`Waiver for ${esc(a.athlete)}`:`Sign the waiver${n>1?` · player ${k} of ${n}`:''}`}</h3>
+<p>${solo&&a.index>0?`A parent or legal guardian of <b>${esc(a.athlete)}</b> signs before ${esc(a.athlete.split(' ')[0])} trains. It takes about 2 minutes.`:solo&&n>1&&cred.ref?`Sign for <b>${esc(a.athlete)}</b> now to unlock payment. Next you'll get a link to send each other player's parent so they can sign on their own phone.`:`A parent or legal guardian of <b>${esc(a.athlete)}</b> signs${cred.ref?' before payment':''}.${n>1&&!solo?' Each athlete needs their own waiver; another player\'s parent can sign on this device.':''}`} <a href="waiver.pdf" download>Paper copy (PDF)</a></p>
 <div class="wtext" tabindex="0" role="region" aria-label="Waiver text">${body(ctx.version.body)}<p class="mut"><small>Version ${esc(ctx.version.version)}</small></p></div>
 <div class="wform"><div class="grid2">
 <label>Athlete first &amp; last name<input name="athlete_name" required value="${esc(a.athlete)}" autocomplete="off"></label>
@@ -18,7 +20,7 @@ el.innerHTML=`<div class="card wsign"><h3>Sign the waiver${n>1?` · player ${k} 
 <label>Emergency phone<input name="emergency_phone" type="tel" required inputmode="tel" autocomplete="off"></label></div>
 <label>Allergies, conditions &amp; medications <small class="mut">(optional)</small><textarea name="medical_notes" rows="2" maxlength="2000"></textarea></label>
 <label class="chk"><input type="checkbox" name="photo_opt_in"> Photo/video opt-in: you may use photos and video of the athlete on your website and social media.</label>
-<div class="grid2"><label>Your first &amp; last name (parent/guardian)<input name="signer_name" required autocomplete="name" value="${k===1&&ctx.parent?esc(ctx.parent):''}"></label>
+<div class="grid2"><label>Your first &amp; last name (parent/guardian)<input name="signer_name" required autocomplete="name" value="${a.index===0&&ctx.parent?esc(ctx.parent):''}"></label>
 <label>Relationship to athlete<select name="signer_relationship" required><option value="">Choose…</option><option>Parent</option><option>Legal guardian</option></select></label></div>
 <label class="chk"><input type="checkbox" name="consent" required> I am the athlete's parent or legal guardian, 18 or older. I have read this waiver, agree to it, and sign it electronically. My electronic signature is the same as a handwritten one.</label>
 <div class="sigwrap"><span>Sign here with your finger or mouse</span><canvas class="sig" aria-label="Signature pad" role="img"></canvas><button type="button" class="btn sm ghost sigclear">Clear</button></div>
@@ -39,4 +41,9 @@ if(!q('consent').checked)miss.push('consent checkbox');if(ink<40)miss.push('sign
 const b=F.querySelector('.wsubmit');b.disabled=true;W.textContent='Saving your signed waiver…';
 const j=await call({action:'sign',...cred,athlete_index:a.index,...d,photo_opt_in:q('photo_opt_in').checked,consent:true,version:ctx.version.version,version_sha256:ctx.version.sha256,signature:C.toDataURL('image/png'),ink:Math.round(ink)});
 if(j.error){W.textContent=j.error;b.disabled=false;return}
-W.textContent='Signed. A copy is on its way to your email.';setTimeout(()=>window.WaiverPanel(el,cred,onDone),600)};};})();
+W.textContent='Signed. A copy is on its way to your email.';setTimeout(()=>window.WaiverPanel(el,cred,onDone,opt),600)};};
+window.WaiverShare=async(el,cred)=>{const j=await call({action:'links',...cred});if(j.error||!j.links||!j.links.length){el.innerHTML=j.links&&!j.links.length?'':`<p class="mut small">${esc(j.error||'')}</p>`;return}
+const mob=navigator.share&&matchMedia('(pointer:coarse)').matches,msg=l=>`Hi${l.parent?' '+l.parent.split(' ')[0]:''}, please sign ${l.athlete}'s waiver for Four Corners Hoops & Performance (about 2 minutes): ${l.url}`;
+el.innerHTML=`<div class="wshare"><h4>Other players' waivers</h4><p class="mut small">Each player's parent signs on their own phone. Players without a signed waiver aren't cleared for the court. Links work for 30 days.</p>${j.links.map((l,i)=>`<div class="wsrow" data-i="${i}"><span><b>${esc(l.athlete)}</b>${l.parent?`<small>Parent: ${esc(l.parent)}</small>`:''}<i class="badge no">Unsigned</i></span><div class="wsbtn"><button type="button" class="btn sm" data-a="send">Send waiver link</button><button type="button" class="btn sm ghost" data-a="copy">Copy link</button><a class="btn sm ghost" href="sms:?body=${encodeURIComponent(msg(l))}">Text</a><a class="btn sm ghost" href="mailto:?subject=${encodeURIComponent('Please sign '+l.athlete+'\'s waiver')}&body=${encodeURIComponent(msg(l))}">Email</a></div></div>`).join('')}<p class="wst small" role="status" aria-live="polite"></p></div>`;
+const W=el.querySelector('.wst'),copy=async l=>{try{await navigator.clipboard.writeText(l.url);W.textContent='Link for '+l.athlete+' copied.'}catch{prompt('Copy this link:',l.url)}};
+el.querySelectorAll('.wsrow').forEach(r=>{const l=j.links[+r.dataset.i];r.querySelector('[data-a=copy]').onclick=()=>copy(l);r.querySelector('[data-a=send]').onclick=async()=>{if(navigator.share){try{await navigator.share({title:'Waiver for '+l.athlete,text:msg(l).replace(' '+l.url,''),url:l.url});W.textContent='Link for '+l.athlete+' shared.';return}catch(e){if(e&&e.name==='AbortError')return}}copy(l)};if(!mob)r.querySelector('[data-a=send]').textContent='Send waiver link'})};})();

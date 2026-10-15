@@ -7,6 +7,8 @@ export const db = () => createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get
 export async function sendEmail(to: string, m: { subject: string; html: string; text: string }) {
   const key = Deno.env.get('RESEND_API_KEY');
   if (!key) throw new Error('RESEND_API_KEY not set');
+  // Reserved test domain (TEST bookings): never hand these to Resend.
+  if (/@example\.(com|org|net)$/i.test(to)) { console.log('[test-skip] email to', to, m.subject); return; }
   if (Deno.env.get('EMAIL_DRY_RUN') === '1') { console.log('[dry-run] email to', to, m.subject); return; }
   const r = await fetch('https://api.resend.com/emails', { method: 'POST', headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({ from: Deno.env.get('EMAIL_FROM') || FROM, to: [to], reply_to: REPLY_TO, subject: m.subject, html: m.html, text: m.text }) });
