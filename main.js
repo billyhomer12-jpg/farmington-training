@@ -3,7 +3,7 @@ $$('[data-brand]').forEach(e=>e.textContent=S.brand);document.title=S.brand;
 $$('[data-tagline]').forEach(e=>e.textContent=S.tagline);$$('[data-location]').forEach(e=>e.textContent=S.location);
 $$('[data-phone]').forEach(e=>{e.textContent=S.phone;e.href='tel:'+S.phone.replace(/\D/g,'')});
 $$('[data-email]').forEach(e=>{e.textContent=S.email;e.href='mailto:'+S.email});
-[['ig','instagram'],['fb','facebook'],['tt','tiktok']].forEach(([a,b])=>$$('[data-'+a+']').forEach(e=>e.href=S[b]));
+[['ig','instagram'],['tt','tiktok']].forEach(([a,b])=>$$('[data-'+a+']').forEach(e=>e.href=S[b]));
 const m=document.querySelector('.menu'),n=document.getElementById('links');
 m.onclick=()=>{const o=n.classList.toggle('open');m.setAttribute('aria-expanded',o)};n.onclick=e=>{if(e.target.tagName==='A'){n.classList.remove('open');m.setAttribute('aria-expanded',false)}};
 const f=document.getElementById('form'),st=document.getElementById('status'),steps=[...f.querySelectorAll('.step')],dots=[...document.querySelectorAll('.stepper li')];
