@@ -57,6 +57,7 @@ P.innerHTML=link?`<h3>You're booked!</h3><p>${esc(pkg().label)} package: $${pkg(
 :`<h3>You're booked!</h3><p>${esc(pkg().label)} package: $${pkg().price} for 4 sessions · 2 hrs each.</p><p>Payment coming soon, we'll confirm with you. Your booking is saved as pending.</p><small>Ref: ${esc(ref)}</small>`};
 
 // Preselect from availability page: ?program=..&type=..&t=ISO#contact
+(()=>{const q=new URLSearchParams(location.search),k=q.get('package');if(k&&S.packages[k]){f.ptype.value=k==='1on1'?'1on1':'group';if(k!=='1on1')f.players.value=String(S.packages[k].players);pkgUI();st.textContent=pkgText(k)+'. Fill in your info, then continue.'}})();
 (()=>{const q=new URLSearchParams(location.search),p=q.get('program'),w=q.get('type'),t=q.get('t');if(!p&&!w&&!t)return;
 if(p&&[...f.program.options].some(o=>o.value===p))f.program.value=p;
 const r=w&&f.querySelector('[name=workout_type][value="'+w.replace(/"/g,'')+'"]');if(r)r.checked=true;
