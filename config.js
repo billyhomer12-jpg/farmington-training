@@ -2,9 +2,9 @@
 window.SITE = {
   // Programs: "key" is the database value (don't change); "label" is what parents/coaches see. Order = dropdown order.
   programs: [
+    { key: "Basketball Skills",       label: "Basketball Training", abbr: "BB" },
     { key: "Youth Strength Training", label: "Weightlifting", abbr: "WL" },
-    { key: "Athletic Performance",    label: "Conditioning",  abbr: "COND" },
-    { key: "Basketball Skills",       label: "Basketball Training", abbr: "BB" }
+    { key: "Athletic Performance",    label: "Conditioning",  abbr: "COND" }
   ],
   brand: "Four Corners Hoops & Performance", // PLACEHOLDER brand name
   tagline: "Basketball skills, speed and safe strength training for Farmington-area athletes, ages 12-18.",
