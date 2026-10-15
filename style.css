@@ -178,3 +178,6 @@ h2{font-size:clamp(2.1rem,5vw,3.5rem);letter-spacing:-.015em}
 .scrollhint.gone{opacity:0;pointer-events:none;animation:none;transform:translateY(10px)}
 @keyframes hintbob{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
 @media(prefers-reduced-motion:reduce){.scrollhint{animation:none}}
+
+.scrollhint.up{bottom:calc(72px + env(safe-area-inset-bottom));animation:none}
+.scrollhint.dn.gone~.scrollhint.up,.scrollhint.up:only-of-type{bottom:calc(20px + env(safe-area-inset-bottom))}
