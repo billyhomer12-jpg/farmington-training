@@ -159,3 +159,4 @@ h2{font-size:clamp(2.1rem,5vw,3.5rem);letter-spacing:-.015em}
 .tchip.on{background:#1d1d1f;border-color:#1d1d1f;color:#fff}.tchip i{font-style:normal;font-size:.72rem;background:var(--ac);color:#1d1d1f;border-radius:980px;min-width:18px;height:18px;display:inline-grid;place-items:center;padding:0 5px}
 .hours .hr small{display:block}
 .extra{display:grid;gap:12px;margin:6px 0 0}.pbox{border:0;margin:0;padding:16px;background:#f5f5f7;border-radius:18px;min-width:0}.pbox legend{float:left;width:100%;font-weight:600;margin:0 0 8px;padding:0}.pbox label{margin-bottom:10px}.pbox label:last-child{margin-bottom:0}
+#plabel[hidden],#extra[hidden]{display:none!important}
