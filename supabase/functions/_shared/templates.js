@@ -134,3 +134,16 @@ ${box(sessionRows(sessions))}${where()}`;
   return { subject: `Group changed: ${groupName(group)} · ${BRAND}`, html: shell('New group confirmed.', 'Open group', body),
     text: `${s.athlete} moved to ${groupName(group)} (${groupWhen(group)}), ${group.taken} of ${group.capacity} spots filled.\n` + sessions.map(r => `- ${day(r.starts_at)}, ${range(r.starts_at)}`).join('\n') + `\nQuestions? Reply, email ${REPLY_TO}, or call/text ${PHONE}.` };
 }
+
+// To the business inbox: a solo parent paid to join an open group, or a group is under minimum 48 h out.
+export function coachNoticeEmail({ signup: s, payload: p }) {
+  const g = p.group || {}, under = p.type === 'under_min';
+  const title = under ? `Refund/move needed: ${groupName(g)}` : `New group player: ${s.athlete} joined ${groupName(g)}`;
+  const body = `<p style="margin:0 0 16px;font-size:16px;line-height:1.5">${under
+    ? `<b>${esc(groupName(g))}</b> starts within 48 hours with ${g.paid} of the ${g.min_players || 2} paid players it needs. Each paid parent was emailed a link to move groups or ask for a refund. Refunds are done by hand in Stripe.`
+    : `<b>${esc(s.athlete)}</b> (age ${esc(s.age)}) paid ${money(s.amount_paid_cents ?? s.price_cents)} to join <b>${esc(groupName(g))}</b>. Parent: ${esc(s.parent)} · ${esc(s.phone)} · ${esc(s.email)}.`}</p>
+${groupBox(g)}${p.flag ? `<p style="margin:0 0 16px;font-size:15px;color:#B3261E"><b>${esc(p.flag)}</b></p>` : ''}
+<p style="margin:0 0 8px">${btn(SITE + '/admin/', 'Open the back office')}</p>`;
+  return { subject: title, html: shell(under ? 'Group needs attention.' : 'New group player.', 'Coach notice', body),
+    text: `${title}\n${groupWhen(g)} · ${g.taken} of ${g.capacity} filled, ${g.paid} paid.${p.flag ? '\n' + p.flag : ''}\nBack office: ${SITE}/admin/` };
+}

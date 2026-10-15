@@ -1,6 +1,6 @@
 // Shared: Supabase service client, Resend sender, outbox processor.
 import { createClient } from 'npm:@supabase/supabase-js@2';
-import { FROM, REPLY_TO, confirmationEmail, rescheduledEmail, waiverCopyEmail, waiverReminderEmail, groupUnderMinEmail, groupMovedEmail } from './templates.js';
+import { FROM, REPLY_TO, confirmationEmail, rescheduledEmail, waiverCopyEmail, waiverReminderEmail, groupUnderMinEmail, groupMovedEmail, coachNoticeEmail } from './templates.js';
 
 export const db = () => createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, { auth: { persistSession: false } });
 
@@ -27,12 +27,13 @@ export async function flushOutbox(signupId: number, token: string, opt: { wtoken
       if ((e.kind === 'confirmation' || e.kind === 'rescheduled') && !token) continue; // needs the dashboard token
       if (e.kind === 'waiver_reminder' && !opt.wtoken) continue; // needs the waiver token issued with it
       const m = e.kind === 'confirmation' ? confirmationEmail({ signup, sessions, token, group })
+        : e.kind === 'coach_notice' ? coachNoticeEmail({ signup, payload: e.payload })
         : e.kind === 'group_under_min' ? groupUnderMinEmail({ signup, payload: e.payload })
         : e.kind === 'group_moved' ? groupMovedEmail({ signup, sessions, group })
         : e.kind === 'waiver_copy' ? waiverCopyEmail({ signup, payload: e.payload })
         : e.kind === 'waiver_reminder' ? waiverReminderEmail({ signup, wtoken: opt.wtoken })
         : rescheduledEmail({ signup, sessions, token, from: e.payload.from, to: e.payload.to, session_id: e.payload.session_id });
-      await sendEmail(signup.email, m);
+      await sendEmail(e.kind === 'coach_notice' ? REPLY_TO : signup.email, m);
       await sb.rpc('training_outbox_done', { p_id: e.id, p_error: null }); sent++;
     } catch (err) { await sb.rpc('training_outbox_done', { p_id: e.id, p_error: String(err).slice(0, 500) }); }
   }
