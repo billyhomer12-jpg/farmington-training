@@ -3,7 +3,7 @@ window.SITE = {
   brand: "Four Corners Hoops & Performance", // PLACEHOLDER brand name
   tagline: "Basketball skills, speed and safe strength training for Farmington-area athletes, ages 12-18.",
   phone: "(505) 469-3851",
-  email: "fourcornershoopsandperformance@gmail.com",
+  email: "billyhomer12@gmail.com",
   location: "Gym address TBD, Farmington, NM", // PLACEHOLDER
   instagram: "#", tiktok: "#",  // PLACEHOLDER links
   // Form: "mailto" (opens the parent's email app) or "formspree" (paste your endpoint)
