@@ -6,6 +6,11 @@ $$('[data-email]').forEach(e=>{e.textContent=S.email;e.href='mailto:'+S.email});
 [['ig','instagram'],['tt','tiktok']].forEach(([a,b])=>$$('[data-'+a+']').forEach(e=>e.href=S[b]));
 const m=document.querySelector('.menu'),n=document.getElementById('links');
 m.onclick=()=>{const o=n.classList.toggle('open');m.setAttribute('aria-expanded',o)};n.onclick=e=>{if(e.target.tagName==='A'){n.classList.remove('open');m.setAttribute('aria-expanded',false)}};
+// Scroll fade-ins (respects reduced motion)
+(()=>{const els=document.querySelectorAll('main h2,main .sub,.tiles .card,.coach,.pills,#contact form,.aday,main article');if(matchMedia('(prefers-reduced-motion: reduce)').matches||!('IntersectionObserver' in window))return;
+els.forEach(e=>e.classList.add('reveal'));const io=new IntersectionObserver(es=>es.forEach(x=>{if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target)}}),{rootMargin:'0px 0px -8% 0px'});els.forEach(e=>io.observe(e));
+window.revealNew=n=>n.querySelectorAll('.aday').forEach(e=>{e.classList.add('reveal');io.observe(e)})})();
+if(document.getElementById('form')){
 const f=document.getElementById('form'),st=document.getElementById('status'),steps=[...f.querySelectorAll('.step')],dots=[...document.querySelectorAll('.stepper li')];
 let cur=0,closures=[],busy={},picked=new Set(),day=null,loadedFor=null;
 const tz='America/Denver',fd=(d,o)=>new Date(d).toLocaleString('en-US',{timeZone:tz,...o});
@@ -51,3 +56,5 @@ if(p&&[...f.program.options].some(o=>o.value===p))f.program.value=p;
 const r=w&&f.querySelector('[name=workout_type][value="'+w.replace(/"/g,'')+'"]');if(r)r.checked=true;
 if(t&&!isNaN(Date.parse(t))){const iso=new Date(t).toISOString();picked.add(iso);day=new Date(iso).toLocaleDateString('en-CA',{timeZone:tz})}
 const n=document.getElementById('picked');st.textContent=t?'Selected '+fd(t,{weekday:'short',month:'short',day:'numeric',hour:'numeric'})+' · '+(w||'')+' · '+(p?progLabel(p):'')+'. Fill in your info, then continue.':''})();
+
+}
