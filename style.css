@@ -153,3 +153,9 @@ h2{font-size:clamp(2.1rem,5vw,3.5rem);letter-spacing:-.015em}
 .bookcta{min-height:0;padding:56px 28px;justify-content:center}.bookcta .cta2{margin-top:22px}
 .note.center{text-align:center}
 .stepper{scroll-margin-top:110px}
+/* multi workout types + group players */
+.tsw{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 12px}.tsw span{font-size:.85rem;color:var(--mut);margin-right:2px}
+.tchip{font:inherit;font-size:.88rem;font-weight:500;border:1.5px solid var(--line);background:#fff;color:var(--fg);border-radius:980px;padding:7px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.tchip.on{background:#1d1d1f;border-color:#1d1d1f;color:#fff}.tchip i{font-style:normal;font-size:.72rem;background:var(--ac);color:#1d1d1f;border-radius:980px;min-width:18px;height:18px;display:inline-grid;place-items:center;padding:0 5px}
+.hours .hr small{display:block}
+.extra{display:grid;gap:12px;margin:6px 0 0}.pbox{border:0;margin:0;padding:16px;background:#f5f5f7;border-radius:18px;min-width:0}.pbox legend{float:left;width:100%;font-weight:600;margin:0 0 8px;padding:0}.pbox label{margin-bottom:10px}.pbox label:last-child{margin-bottom:0}
