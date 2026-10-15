@@ -130,7 +130,7 @@ h2{font-size:clamp(2.1rem,5vw,3.5rem);letter-spacing:-.015em}
 .atile{position:relative;overflow:hidden;background:#fff;border-radius:28px;padding:48px 28px 0;text-align:center;min-height:420px;display:flex;flex-direction:column;align-items:center;transition:transform .3s var(--ease)}
 .atile:hover{transform:scale(1.008)}
 .atile h3{font-size:clamp(1.8rem,3.4vw,2.5rem);letter-spacing:-.01em}.atile .tsub{font-size:1.15rem;color:var(--mut);margin:6px 0 0}
-.atile .tart{margin-top:auto;font-size:clamp(7rem,14vw,10rem);line-height:1;transform:translateY(14%);filter:saturate(.9)}
+.atile .tart{margin-top:auto;padding-top:24px;width:100%;max-width:420px;display:block}.atile .tart img{display:block;width:100%;height:auto;max-height:240px;object-fit:contain}
 .atile.dark{background:#000;color:#f5f5f7}.atile.dark .tsub{color:#a1a1a6}.atile.dark .btn.ghost{color:#f5f5f7}
 .atile.gold{background:var(--ac)}.atile.gold .tsub{color:#3a3320}
 .prices.grid2{max-width:760px;margin:0 auto}.price.c{text-align:center;align-items:center}
