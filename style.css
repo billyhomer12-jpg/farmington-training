@@ -96,3 +96,6 @@ nav a{display:block;margin:0;padding:12px 0;font-size:1.25rem;font-weight:600;op
 .sec.alt .aday .achip{background:var(--bg2)}
 footer,footer .wrap,footer p{text-align:center}footer p{margin:6px 0 0}footer b{display:block}
 .step>.btn,.step .row{display:flex;justify-content:center;margin-left:auto;margin-right:auto}.step>.btn{width:max-content}
+.prices{gap:12px}.price h3{font-size:1.5rem;margin-bottom:8px}.amt{font-size:2.2rem;font-weight:600;letter-spacing:-.02em;margin:4px 0;line-height:1.1}.amt small{font-size:.95rem;font-weight:500;color:var(--mut);letter-spacing:0}.per{font-weight:600;color:var(--ac2);margin:8px 0 6px}.sec:not(.alt) .tile{background:var(--bg2)}
+.faq{max-width:760px;margin:28px auto 0}.faq details{background:var(--bg2);border-radius:18px;padding:16px 20px;margin-bottom:8px}.faq summary{font-weight:600;cursor:pointer}.faq p{color:var(--mut);margin:8px 0 0}
+.pkgline{font-weight:600;color:var(--ac2);margin:-4px 0 14px}@media(max-width:760px){.prices{grid-template-columns:1fr}}

@@ -17,10 +17,18 @@ window.SITE = {
   supabaseUrl: "https://jrcozcrfbjcsuqkmoaki.supabase.co",
   supabaseKey: "sb_publishable_cAiiq9Vv_9H_3ZCGD6yOXA_NeDnSkAe",
   formspreeEndpoint: "https://formspree.io/f/YOUR_FORM_ID",
-  // Stripe Payment Links per program (leave "" until Billy creates them in Stripe).
-  // The booking ref is appended as ?client_reference_id=<ref> so a webhook can mark it paid.
-  stripePaymentLinks: { "Basketball Skills": "", "Athletic Performance": "", "Youth Strength Training": "" }
+  // Packages: every package = FOUR 2-hour sessions. Price is the TOTAL for the 4 sessions (small group: total for the group).
+  sessionsPerPackage: 4, sessionHours: 2,
+  packages: {
+    "1on1":   { label: "1-on-1",                 players: 1, price: 250 },
+    "group2": { label: "Small group · 2 players", players: 2, price: 300 },
+    "group3": { label: "Small group · 3 players", players: 3, price: 350 },
+    "group4": { label: "Small group · 4 players", players: 4, price: 375 }
+  },
+  // Stripe Payment Links per package (leave "" until created in Stripe). ?client_reference_id=<booking ref> is appended.
+  paymentLinks: { "1on1": "", "group2": "", "group3": "", "group4": "" }
 };
 
 window.progLabel=k=>((window.SITE.programs||[]).find(p=>p.key===k||p.label===k)||{label:k}).label;
 window.progOptions=()=>(window.SITE.programs||[]).map(p=>`<option value="${p.key}">${p.label}</option>`).join("");
+window.pkgText=k=>{const p=(window.SITE.packages||{})[k];return p?`${p.label} — $${p.price} · 4 sessions · 2 hrs each`:""};
