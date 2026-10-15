@@ -28,7 +28,7 @@ function shell(title, pre, body) {
 <tr><td align="center" style="padding:0 0 18px;font-size:14px;font-weight:600;letter-spacing:-.01em"><span style="display:inline-block;width:22px;height:22px;border-radius:50%;background:#34C759;vertical-align:-6px;margin-right:8px"></span>${BRAND}</td></tr>
 <tr><td style="background:#000;border-radius:24px 24px 0 0;padding:34px 28px 30px;text-align:center"><div style="color:#34C759;font-size:14px;font-weight:600;margin-bottom:8px">${esc(pre)}</div><div style="color:#fff;font-size:30px;line-height:1.15;font-weight:700;letter-spacing:-.02em">${esc(title)}</div></td></tr>
 <tr><td style="background:#fff;border-radius:0 0 24px 24px;padding:28px">${body}</td></tr>
-<tr><td align="center" style="padding:22px 10px;font-size:12px;line-height:1.6;color:#6e6e73">${BRAND} · Farmington, NM<br>Questions? Reply to this email or call/text <a href="tel:${PHONE_TEL}" style="color:#248A3D">${PHONE}</a>.<br>${esc(LOCATION.name)}, ${esc(LOCATION.address)}</td></tr>
+<tr><td align="center" style="padding:22px 10px;font-size:12px;line-height:1.6;color:#6e6e73">${BRAND} · Farmington, NM<br>Questions? Reply to this email, write to <a href="mailto:${REPLY_TO}" style="color:#248A3D">${REPLY_TO}</a>, or call/text <a href="tel:${PHONE_TEL}" style="color:#248A3D">${PHONE}</a>.<br>${esc(LOCATION.name)}, ${esc(LOCATION.address)}</td></tr>
 </table></td></tr></table></body></html>`;
 }
 function sessionRows(sessions, hi) {
@@ -62,7 +62,7 @@ ${where()}
     text: `Payment confirmed. ${names(s)} is booked: ${PKG[s.package] || s.package}, ${money(s.amount_paid_cents ?? s.price_cents)}.\n` +
       (group ? `Group: ${groupName(group)} (${groupWhen(group)}), ${group.taken} of ${group.capacity} spots filled. Runs with ${group.min_players || 2}+ players; if not, we'll email you to move groups or get a refund.\n` : '') +
       sessions.map(r => `- ${day(r.starts_at)}, ${range(r.starts_at, r.duration_min || 120)}, ${r.workout_type} (${r.status})`).join('\n') +
-      `\n\nWhere: ${LOCATION.name}, ${LOCATION.address}\nMaps: ${LOCATION.apple}\nMy sessions & reschedule: ${link}\nWaiver: signed online (your signed copy was emailed separately).\nQuestions? Reply or call/text ${PHONE}.` };
+      `\n\nWhere: ${LOCATION.name}, ${LOCATION.address}\nMaps: ${LOCATION.apple}\nMy sessions & reschedule: ${link}\nWaiver: signed online (your signed copy was emailed separately).\nQuestions? Reply, email ${REPLY_TO}, or call/text ${PHONE}.` };
 }
 
 export function rescheduledEmail({ signup: s, sessions, token, from, to, session_id }) {
@@ -74,7 +74,7 @@ ${box(sessionRows(sessions, session_id))}
 ${where()}
 <p style="margin:0 0 8px">${btn(link, 'My sessions')}</p>`;
   return { subject: `Reschedule confirmed: ${day(to)}, ${range(to, r.duration_min)}`, html: shell('Reschedule confirmed.', 'Session moved', body),
-    text: `Your session moved from ${day(from)}, ${range(from, r.duration_min)} to ${day(to)}, ${range(to, r.duration_min)} (${r.workout_type}). A coach will confirm.\nMy sessions: ${link}\nQuestions? Reply or call/text ${PHONE}.` };
+    text: `Your session moved from ${day(from)}, ${range(from, r.duration_min)} to ${day(to)}, ${range(to, r.duration_min)} (${r.workout_type}). A coach will confirm.\nMy sessions: ${link}\nQuestions? Reply, email ${REPLY_TO}, or call/text ${PHONE}.` };
 }
 
 export function waiverCopyEmail({ signup: s, payload: p }) {
@@ -83,7 +83,7 @@ ${box(`<tr><td style="padding:16px 14px;font-size:15px;line-height:1.6">Signed b
 <p style="margin:0 0 14px;font-size:15px;line-height:1.5">Download your signed copy (this link expires in 7 days; ask us any time for another copy):</p>
 <p style="margin:0 0 8px">${btn(p.url, 'Download signed waiver (PDF)')}</p>`;
   return { subject: `Signed waiver: ${p.athlete}`, html: shell('Waiver signed.', 'Your copy', body),
-    text: `Thanks for signing the waiver for ${p.athlete} (signed by ${p.signer}, version ${p.version}).\nDownload your signed copy (link expires in 7 days): ${p.url}\nQuestions? Reply or call/text ${PHONE}.` };
+    text: `Thanks for signing the waiver for ${p.athlete} (signed by ${p.signer}, version ${p.version}).\nDownload your signed copy (link expires in 7 days): ${p.url}\nQuestions? Reply, email ${REPLY_TO}, or call/text ${PHONE}.` };
 }
 export function waiverReminderEmail({ signup: s, wtoken }) {
   const link = `${SITE}/book.html?sign=${encodeURIComponent(wtoken)}`;
@@ -91,7 +91,7 @@ export function waiverReminderEmail({ signup: s, wtoken }) {
 <p style="margin:0 0 8px">${btn(link, 'Sign the waiver online')}</p>
 <p style="margin:14px 0 0;font-size:12px;color:#86868b;line-height:1.5">This link is private to your booking and works for 30 days. Don't share it.</p>`;
   return { subject: `Please sign your waiver · ${BRAND}`, html: shell('One more step.', 'Waiver needed', body),
-    text: `We still need a signed waiver for ${names(s)} before training starts.\nSign online (link works 30 days): ${link}\nQuestions? Reply or call/text ${PHONE}.` };
+    text: `We still need a signed waiver for ${names(s)} before training starts.\nSign online (link works 30 days): ${link}\nQuestions? Reply, email ${REPLY_TO}, or call/text ${PHONE}.` };
 }
 // Per-athlete link: book.html?sign=<token>&athlete=N (N = 1-based player number).
 export const athleteLink = l => `${SITE}/book.html?sign=${encodeURIComponent(l.token)}&athlete=${l.index + 1}`;
@@ -102,7 +102,7 @@ export function waiverAthleteEmail({ signup: s, link: l }) {
 <p style="margin:0 0 8px">${btn(url, 'Sign the waiver')}</p>
 <p style="margin:14px 0 0;font-size:12px;color:#86868b;line-height:1.5">This link is only for ${esc(l.athlete)}'s waiver and works for 30 days.</p>`;
   return { subject: `Please sign ${l.athlete}'s waiver · ${BRAND}`, html: shell('Waiver needed.', 'Before the first session', body),
-    text: `${l.athlete} is booked for training with ${BRAND}. Please sign the waiver online before training (about 2 minutes): ${url}\nThe link works for 30 days. Questions? Reply or call/text ${PHONE}.` };
+    text: `${l.athlete} is booked for training with ${BRAND}. Please sign the waiver online before training (about 2 minutes): ${url}\nThe link works for 30 days. Questions? Reply, email ${REPLY_TO}, or call/text ${PHONE}.` };
 }
 // To the booking parent: other players' waivers are unsigned and we have no email for them.
 export function waiverShareEmail({ signup: s, links }) {
@@ -112,7 +112,7 @@ ${box(rows)}
 <p style="margin:0 0 8px;font-size:14px;line-height:1.5;color:#424245">Each link is for that player only, works for 30 days, and takes about 2 minutes on a phone. You can also share them from your booking dashboard.</p>`;
   return { subject: `Send the waiver links to your group · ${BRAND}`, html: shell('Waivers still needed.', 'Share with your group', body),
     text: `These players in your group still need a signed waiver (not cleared for the court until signed). Send each family their link:\n` +
-      links.map(l => `- ${l.athlete}: ${athleteLink(l)}`).join('\n') + `\nLinks work for 30 days. Questions? Reply or call/text ${PHONE}.` };
+      links.map(l => `- ${l.athlete}: ${athleteLink(l)}`).join('\n') + `\nLinks work for 30 days. Questions? Reply, email ${REPLY_TO}, or call/text ${PHONE}.` };
 }
 
 // Open group under minimum 48 h before start: offer a move (link) or a refund. Refunds are handled by the coach.
@@ -124,7 +124,7 @@ ${groupBox(g)}
 <p style="margin:0 0 8px">${btn(p.move_url, 'Move to another group or get a refund')}</p>
 <p style="margin:14px 0 0;font-size:14px;line-height:1.5;color:#424245">Prefer to talk it through? Reply to this email or call/text ${PHONE}. A coach will reach out too.</p>`;
   return { subject: `Your open group needs one more player · ${BRAND}`, html: shell('Your group is short a player.', 'Open group update', body),
-    text: `The open group ${s.athlete} joined (${groupName(g)}, ${groupWhen(g)}) has ${g.paid} of ${g.min_players || 2} players needed. Move to another group or ask for a full refund: ${p.move_url}\nQuestions? Reply or call/text ${PHONE}.` };
+    text: `The open group ${s.athlete} joined (${groupName(g)}, ${groupWhen(g)}) has ${g.paid} of ${g.min_players || 2} players needed. Move to another group or ask for a full refund: ${p.move_url}\nQuestions? Reply, email ${REPLY_TO}, or call/text ${PHONE}.` };
 }
 export function groupMovedEmail({ signup: s, sessions, group }) {
   const body = `<p style="margin:0 0 16px;font-size:16px;line-height:1.5">Hi ${esc((s.parent || '').split(' ')[0])}, <b>${esc(s.athlete)}</b> is now in a new open group.</p>
@@ -132,5 +132,5 @@ ${groupBox(group)}
 <p style="margin:0 0 6px;font-size:13px;color:#6e6e73;text-transform:uppercase;letter-spacing:.04em;font-weight:600">Sessions (Denver time)</p>
 ${box(sessionRows(sessions))}${where()}`;
   return { subject: `Group changed: ${groupName(group)} · ${BRAND}`, html: shell('New group confirmed.', 'Open group', body),
-    text: `${s.athlete} moved to ${groupName(group)} (${groupWhen(group)}), ${group.taken} of ${group.capacity} spots filled.\n` + sessions.map(r => `- ${day(r.starts_at)}, ${range(r.starts_at)}`).join('\n') + `\nQuestions? Reply or call/text ${PHONE}.` };
+    text: `${s.athlete} moved to ${groupName(group)} (${groupWhen(group)}), ${group.taken} of ${group.capacity} spots filled.\n` + sessions.map(r => `- ${day(r.starts_at)}, ${range(r.starts_at)}`).join('\n') + `\nQuestions? Reply, email ${REPLY_TO}, or call/text ${PHONE}.` };
 }

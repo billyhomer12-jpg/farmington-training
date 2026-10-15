@@ -1,8 +1,8 @@
 -- Farmington training sign-ups (separate from trading journal tables)
 create schema if not exists training;
 create table if not exists training.coaches (email text primary key);
-insert into training.coaches(email) values ('billyhomer12@gmail.com') on conflict do nothing;
-insert into training.coaches(email) values ('collins.devin2018@gmail.com') on conflict do nothing;
+insert into training.coaches(email) values ('<coach-email>') on conflict do nothing;
+insert into training.coaches(email) values ('<coach2-email>') on conflict do nothing;
 
 create table if not exists public.training_signups (
   id bigint generated always as identity primary key,

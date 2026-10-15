@@ -115,8 +115,9 @@ create index if not exists pin_attempts_email_at on training.pin_attempts(email,
 revoke all on training.coach_pins, training.pin_attempts from anon, authenticated;
 -- One-time setup codes (bcrypt). Only inserted if the coach row doesn't exist yet; re-running won't reset a chosen PIN.
 insert into training.coach_pins(email, name, setup_hash) values
-  ('billyhomer12@gmail.com', 'Billy', '$2a$10$wGZXLXHuNZS8Rd1gj2ku4e93PjEb9W5fgTEifk5S6U2eB/t.YcSCi'),
-  ('collins.devin2018@gmail.com', 'Devin', '$2a$10$cySADeSjl0rGyekcTgF87OFd8rBq2v/U0mA2GWknlZTjFv9vVyiy.')
+  -- (coach emails and setup-code hashes removed from the public repo; already applied in the database)
+  ('<coach1-email>', 'Billy', '<bcrypt setup hash>'),
+  ('<coach2-email>', 'Devin', '<bcrypt setup hash>')
 on conflict (email) do nothing;
 
 -- Locked if 5 failed tries in the last 15 minutes (per coach), or 30 failed tries site-wide in 15 minutes.
