@@ -121,3 +121,8 @@ const n=document.getElementById('picked');st.textContent=t?'Selected '+fd(t,{wee
 function init(){var dn=mk('dn','Scroll down','M6 9l6 6 6-6',function(){scrollBy({top:innerHeight*0.8,behavior:'smooth'})});var up=mk('up','Back to top','M6 15l6-6 6 6',function(){scrollTo({top:0,behavior:'smooth'})});
 var u=function(){var y=scrollY,more=document.documentElement.scrollHeight-(y+innerHeight)>80;dn.classList.toggle('gone',!more);up.classList.toggle('gone',y<200)};addEventListener('scroll',u,{passive:true});addEventListener('resize',u);u();setTimeout(u,800)}
 if(document.readyState!=='loading')init();else document.addEventListener('DOMContentLoaded',init)})();
+// Back from Stripe: Payment Links have no cancel_url, so detect Back ourselves. bfcache restore (event.persisted) or a
+// normal back/forward navigation with a recent pending booking -> never show the cached pay screen. Re-check the booking and show paid or "Payment not completed".
+addEventListener('pageshow',e=>{const nav=(performance.getEntriesByType&&performance.getEntriesByType('navigation')[0]||{}).type,q=new URLSearchParams(location.search);if(!document.getElementById('booking-root')||q.has('paid')||q.has('canceled')||q.has('sign'))return;if(!e.persisted&&nav!=='back_forward')return;let p=null;try{p=JSON.parse(localStorage.getItem('fc_pending')||'null')}catch{}
+if(!p||!p.ref||Date.now()-(p.at||0)>6*36e5){if(e.persisted)location.reload();return}const S=window.SITE;fetch(S.supabaseUrl+'/rest/v1/rpc/training_payment_status',{method:'POST',headers:{apikey:S.supabaseKey,'Content-Type':'application/json'},body:JSON.stringify({p_ref:p.ref})}).then(r=>r.json()).catch(()=>null)
+.then(j=>{location.replace('book.html?'+(j==='paid'?'paid=1&ref=':'canceled=1&ref=')+encodeURIComponent(p.ref))})});
