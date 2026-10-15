@@ -44,3 +44,10 @@ if(r.ok)ref=await r.json();else{const j=await r.json().catch(()=>({}));st.textCo
 const link=(S.stripePaymentLinks||{})[d.program],P=document.getElementById('pay');go(3);
 P.innerHTML=link?`<h3>You're booked!</h3><p>Finish by paying securely with Stripe.</p><a class="btn" href="${link}?client_reference_id=${encodeURIComponent(ref)}&prefilled_email=${encodeURIComponent(d.email)}">Pay now</a>`
 :`<h3>You're booked!</h3><p>Payment coming soon, we'll confirm with you. Your booking is saved as pending.</p><small>Ref: ${esc(ref)}</small>`};
+
+// Preselect from availability page: ?program=..&type=..&t=ISO#contact
+(()=>{const q=new URLSearchParams(location.search),p=q.get('program'),w=q.get('type'),t=q.get('t');if(!p&&!w&&!t)return;
+if(p&&[...f.program.options].some(o=>o.value===p))f.program.value=p;
+const r=w&&f.querySelector('[name=workout_type][value="'+w.replace(/"/g,'')+'"]');if(r)r.checked=true;
+if(t&&!isNaN(Date.parse(t))){const iso=new Date(t).toISOString();picked.add(iso);day=new Date(iso).toLocaleDateString('en-CA',{timeZone:tz})}
+const n=document.getElementById('picked');st.textContent=t?'Selected '+fd(t,{weekday:'short',month:'short',day:'numeric',hour:'numeric'})+' · '+(w||'')+' · '+(p||'')+'. Fill in your info, then continue.':''})();
