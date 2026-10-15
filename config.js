@@ -20,18 +20,22 @@ window.SITE = {
   supabaseUrl: "https://jrcozcrfbjcsuqkmoaki.supabase.co",
   supabaseKey: "sb_publishable_cAiiq9Vv_9H_3ZCGD6yOXA_NeDnSkAe",
   formspreeEndpoint: "https://formspree.io/f/YOUR_FORM_ID",
-  // Packages: every package = FOUR 2-hour sessions. Price is the TOTAL for the 4 sessions (small group: total for the group).
+  // Packages: 2-hour sessions. "sessions" = how many sessions the package books (default 4). Price is the TOTAL (small group: total for the group).
   sessionsPerPackage: 4, sessionHours: 2,
   packages: {
+    "single": { label: "Single 1-on-1 session",  players: 1, price: 75, sessions: 1 },
     "1on1":   { label: "1-on-1",                 players: 1, price: 250 },
     "group2": { label: "Small group · 2 players", players: 2, price: 300 },
     "group3": { label: "Small group · 3 players", players: 3, price: 350 },
     "group4": { label: "Small group · 4 players", players: 4, price: 375 }
   },
   // Stripe Payment Links per package (leave "" until created in Stripe). ?client_reference_id=<booking ref> is appended.
-  paymentLinks: { "1on1": "https://buy.stripe.com/5kQ3cx3xBegebVhg8J8Zq00", "group2": "https://buy.stripe.com/cNi3cxfgj6NMcZl7Cd8Zq01", "group3": "https://buy.stripe.com/14A6oJ8RV9ZYaRd09L8Zq02", "group4": "https://buy.stripe.com/dRm8wR5FJ9ZYaRd4q18Zq03" }
+  paymentLinks: { "single": "TODO_SINGLE_LINK", "1on1": "https://buy.stripe.com/5kQ3cx3xBegebVhg8J8Zq00", "group2": "https://buy.stripe.com/cNi3cxfgj6NMcZl7Cd8Zq01", "group3": "https://buy.stripe.com/14A6oJ8RV9ZYaRd09L8Zq02", "group4": "https://buy.stripe.com/dRm8wR5FJ9ZYaRd4q18Zq03" }
 };
 
 window.progLabel=k=>((window.SITE.programs||[]).find(p=>p.key===k||p.label===k)||{label:k}).label;
 window.progOptions=()=>(window.SITE.programs||[]).map(p=>`<option value="${p.key}">${p.label}</option>`).join("");
-window.pkgText=k=>{const p=(window.SITE.packages||{})[k];return p?`${p.label} — $${p.price} · 4 sessions · 2 hrs each`:""};
+window.pkgSessions=k=>(((window.SITE.packages||{})[k]||{}).sessions)||window.SITE.sessionsPerPackage||4;
+// Only real https Stripe links count; placeholders like TODO_SINGLE_LINK are treated as not set up.
+window.payLink=k=>{const l=((window.SITE.paymentLinks||{})[k])||"";return /^https:\/\//.test(l)?l:""};
+window.pkgText=k=>{const p=(window.SITE.packages||{})[k];return p?`${p.label} — $${p.price} · ${window.pkgSessions(k)} session${window.pkgSessions(k)>1?"s":""} · 2 hrs ${window.pkgSessions(k)>1?"each":""}`.trim():""};

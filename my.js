@@ -18,7 +18,7 @@ R.innerHTML=`<div class="card tile mytile"><p class="kicker accent">Your package
 <div class="kv"><span>Payment</span><b><i class="pillst ${paid?'ok':'pend'}">${paid?'Paid':'Pending'}</i>${s.amount_paid_cents!=null?' $'+(s.amount_paid_cents/100):''}</b></div>
 <div class="kv"><span>Programs</span><b>${esc((s.programs||[]).map(progLabel).join(' + '))}</b></div>
 <div class="kv"><span>Workout types</span><b>${esc((s.workout_types||[...new Set(V.sessions.map(x=>x.workout_type))]).join(', '))}</b></div></div>
-<div class="card tile mytile"><p class="kicker accent">Your sessions</p><h3>4 sessions · Denver time</h3><div class="slist">${V.sessions.map(sessRow).join('')}</div>
+<div class="card tile mytile"><p class="kicker accent">Your sessions</p><h3>${V.sessions.length} session${V.sessions.length===1?"":"s"} · Denver time</h3><div class="slist">${V.sessions.map(sessRow).join('')}</div>
 <p class="mut small">You can move a session up to 24 hours before it starts. Moved sessions show as pending until a coach confirms.</p></div>
 <div class="card tile mytile"><p class="kicker accent">Where</p><h3>${esc(S.locationName||'San Juan College Health & Human Performance Center')}</h3><p class="mut">4601 College Blvd, Farmington, NM 87402, United States</p>
 <div class="cta2 left"><a class="btn sm" href="${esc(S.appleMaps)}" target="_blank" rel="noopener">Open in Maps</a><a class="btn sm ghost" href="https://www.google.com/maps/search/?api=1&query=36.770237,-108.173952" target="_blank" rel="noopener">Google Maps</a></div></div>

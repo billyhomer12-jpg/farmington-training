@@ -9,7 +9,7 @@ export const LOCATION = { name: 'San Juan College Health & Human Performance Cen
   apple: 'https://maps.apple.com/place?address=4601%20College%20Blvd,%20Farmington,%20NM%20%2087402,%20United%20States&coordinate=36.770237,-108.173952&name=San%20Juan%20College%20Health%20%26%20Human%20Performance%20Center&place-id=IBC9B4F4B78DAE618&map=explore' };
 export const SITE = 'https://fourcornershoopsandperformance.com';
 const PROG = { 'Basketball Skills': 'Basketball Training', 'Youth Strength Training': 'Weightlifting', 'Athletic Performance': 'Conditioning' };
-const PKG = { '1on1': '1-on-1', group2: 'Small group · 2 players', group3: 'Small group · 3 players', group4: 'Small group · 4 players' };
+const PKG = { single: 'Single 1-on-1 session', '1on1': '1-on-1', group2: 'Small group · 2 players', group3: 'Small group · 3 players', group4: 'Small group · 4 players' };
 const TZ = 'America/Denver';
 const esc = v => String(v ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const fmt = (d, o) => new Date(d).toLocaleString('en-US', { timeZone: TZ, ...o });
@@ -40,12 +40,13 @@ const box = inner => `<table role="presentation" width="100%" cellpadding="0" ce
 const where = () => `<p style="margin:0 0 6px;font-size:13px;color:#6e6e73;text-transform:uppercase;letter-spacing:.04em;font-weight:600">Where</p>
 <p style="margin:0 0 12px;font-size:15px;line-height:1.5"><b>${esc(LOCATION.name)}</b><br>${esc(LOCATION.address)}</p><p style="margin:0 0 24px">${btn(LOCATION.apple, 'Open in Maps', false)}</p>`;
 
+const n = ss => ss.length === 1 ? '1 session · 2 hrs' : `${ss.length} sessions · 2 hrs each`;
 export function confirmationEmail({ signup: s, sessions, token }) {
   const link = `${SITE}/my.html?token=${encodeURIComponent(token)}`;
   const progs = (s.programs || [s.program]).map(k => PROG[k] || k).join(' + ');
   const body = `<p style="margin:0 0 16px;font-size:16px;line-height:1.5">Hi ${esc((s.parent || '').split(' ')[0])}, thanks! Your payment is complete and <b>${esc(names(s))}</b> ${(s.additional_players||[]).length?'are':'is'} booked.</p>
-${box(`<tr><td style="padding:16px 14px;font-size:15px;line-height:1.6"><b>${esc(PKG[s.package] || s.package)}</b> · 4 sessions · 2 hrs each<br>Paid: <b>${money(s.amount_paid_cents ?? s.price_cents)}</b><br>${esc(progs)}</td></tr>`)}
-<p style="margin:0 0 6px;font-size:13px;color:#6e6e73;text-transform:uppercase;letter-spacing:.04em;font-weight:600">Your 4 sessions (Denver time)</p>
+${box(`<tr><td style="padding:16px 14px;font-size:15px;line-height:1.6"><b>${esc(PKG[s.package] || s.package)}</b> · ${n(sessions)}<br>Paid: <b>${money(s.amount_paid_cents ?? s.price_cents)}</b><br>${esc(progs)}</td></tr>`)}
+<p style="margin:0 0 6px;font-size:13px;color:#6e6e73;text-transform:uppercase;letter-spacing:.04em;font-weight:600">Your ${sessions.length === 1 ? 'session' : sessions.length + ' sessions'} (Denver time)</p>
 ${box(sessionRows(sessions))}
 ${where()}
 <p style="margin:0 0 14px;font-size:15px;line-height:1.5">See your sessions or move one (up to 24 hours before it starts) on your dashboard:</p>
@@ -53,7 +54,7 @@ ${where()}
 <p style="margin:22px 0 8px;font-size:15px;line-height:1.5"><b>Waiver:</b> Download &amp; sign the waiver and bring it to your first session (or sign a paper copy at drop-off).</p>
 <p style="margin:0 0 8px">${btn(`${SITE}/waiver.pdf`, 'Download the waiver (PDF)', false)}</p>
 <p style="margin:14px 0 0;font-size:12px;color:#86868b;line-height:1.5">This link is private to your booking. Don't share it.</p>`;
-  return { subject: `You're booked: 4 sessions with ${BRAND}`, html: shell("You're booked.", 'Payment confirmed', body),
+  return { subject: `You're booked: ${sessions.length === 1 ? '1 session' : sessions.length + ' sessions'} with ${BRAND}`, html: shell("You're booked.", 'Payment confirmed', body),
     text: `Payment confirmed. ${names(s)} is booked: ${PKG[s.package] || s.package}, ${money(s.amount_paid_cents ?? s.price_cents)}.\n` +
       sessions.map(r => `- ${day(r.starts_at)}, ${range(r.starts_at, r.duration_min || 120)}, ${r.workout_type} (${r.status})`).join('\n') +
       `\n\nWhere: ${LOCATION.name}, ${LOCATION.address}\nMaps: ${LOCATION.apple}\nMy sessions & reschedule: ${link}\nWaiver (download, sign, bring to your first session): ${SITE}/waiver.pdf\nQuestions? Reply or call/text ${PHONE}.` };
