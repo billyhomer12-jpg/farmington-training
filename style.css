@@ -144,3 +144,12 @@ h2{font-size:clamp(2.1rem,5vw,3.5rem);letter-spacing:-.015em}
 @media(max-width:760px){.sec{padding:56px 0}.hero{padding:64px 0 72px}.tgrid{grid-template-columns:1fr}.atile{min-height:380px;padding-top:40px}.fcols{grid-template-columns:1fr;gap:6px}.fcols div{padding:8px 0;border-top:1px solid var(--line)}.fcols div:first-child{border-top:0}}
 .prices4 .price{text-align:center;align-items:center}.prices4 .btn{align-self:center}
 @media(max-width:760px){.ctas{flex-wrap:nowrap}.ctas .btn{padding:10px 18px;font-size:1rem}}
+/* book.html stepper + homepage CTA tile */
+.stepper{gap:8px;margin:8px 0 22px}.stepper li{border:0;padding:0;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:.78rem;color:var(--mut);position:relative}
+.stepper li i{font-style:normal;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#e8e8ed;color:#6e6e73;font-weight:600;font-size:.85rem;transition:background .25s,color .25s}
+.stepper li.on{color:var(--fg)}.stepper li.on i{background:var(--ac);color:#1d1d1f}
+.stepper li+li::before{content:"";position:absolute;top:15px;right:calc(50% + 20px);width:calc(100% - 40px + 8px);height:2px;background:#e8e8ed}.stepper li.on+li.on::before{background:var(--ac)}
+#form .row{display:flex;justify-content:space-between;gap:12px;margin-top:18px}
+.bookcta{min-height:0;padding:56px 28px;justify-content:center}.bookcta .cta2{margin-top:22px}
+.note.center{text-align:center}
+.stepper{scroll-margin-top:110px}
