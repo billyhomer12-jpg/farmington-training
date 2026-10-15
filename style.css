@@ -106,8 +106,8 @@ footer,footer .wrap,footer p{text-align:center}footer p{margin:6px 0 0}footer b{
 .gnav-in{max-width:1024px;margin:0 auto;height:48px;padding:0 22px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:16px}
 .gnav .logo{min-width:0}.gnav .brand{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.82rem}
 .tabsnav{display:flex;justify-content:center;gap:2px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}.tabsnav::-webkit-scrollbar{display:none}
-.tabsnav a{flex:none;display:flex;align-items:center;min-height:40px;padding:0 10px;color:#424245;text-decoration:none;font-size:.75rem;letter-spacing:-.01em;border-bottom:2px solid transparent}
-.tabsnav a:hover{color:#1d1d1f}.tabsnav a[aria-current]{color:#1d1d1f;font-weight:600;border-bottom-color:var(--ac)}
+.tabsnav a{flex:none;display:flex;align-items:center;min-height:40px;padding:0 10px;color:#424245;text-decoration:none;font-size:.75rem;letter-spacing:-.01em;position:relative;z-index:0}
+.tabsnav a:hover{color:#1d1d1f}.tabsnav a[aria-current]{color:#000;font-weight:700}.tabsnav a[aria-current]::before{content:"";position:absolute;z-index:-1;left:1px;right:1px;top:7px;bottom:7px;border-radius:999px;background:rgba(197,179,88,.28);-webkit-backdrop-filter:blur(12px) saturate(180%);backdrop-filter:blur(12px) saturate(180%);border:1px solid rgba(197,179,88,.6);box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 2px 8px rgba(111,95,34,.15)}
 .gnav .book{padding:6px 14px;font-size:.75rem}
 @media(max-width:900px){.gnav .brand{max-width:150px}}
 @media(max-width:760px){html{scroll-padding-top:100px}
