@@ -34,8 +34,8 @@ const rpc=(fn,body)=>fetch(S.supabaseUrl+'/rest/v1/rpc/'+fn,{method:'POST',heade
 const wts=()=>[...f.querySelectorAll('[name=workout_type]:checked')].map(x=>x.value),wt=()=>ctype&&wts().includes(ctype)?ctype:(ctype=wts()[0]||null);
 const TYPE_OF={'Basketball Skills':'Gym','Youth Strength Training':'Weight room','Athletic Performance':'Outdoor'},setType=(v,on)=>{const c=f.querySelector('[name=workout_type][value="'+v+'"]');if(c)c.checked=on};
 // Mirrors server rules (training.hour_allowed). Gym = HHPC hours; Outdoor/Weight room = 6 AM-8 PM starts daily.
-// 2-hour sessions must end by close: Gym Mon-Thu starts 5 AM-7 PM, Fri 5 AM-6 PM, Sat 7 AM-3 PM; Outdoor/Weight room 6 AM-7 PM.
-function allowed(k,h,t){const dow=new Date(k+'T12:00:00Z').getUTCDay();if(t==='Gym'){const ok=dow>=1&&dow<=4?h>=5&&h<=19:dow===5?h>=5&&h<=18:dow===6?h>=7&&h<=15:false;return ok&&!closedAt(at(k,h))}return h>=6&&h<=19}
+// 2-hour sessions must end by close: Gym ends 15 min before HHPC close: Mon-Thu starts 5 AM-6 PM, Fri 5 AM-5 PM, Sat 7 AM-2 PM; Outdoor/Weight room 6 AM-7 PM.
+function allowed(k,h,t){const dow=new Date(k+'T12:00:00Z').getUTCDay();if(t==='Gym'){const ok=dow>=1&&dow<=4?h>=5&&h<=18:dow===5?h>=5&&h<=17:dow===6?h>=7&&h<=14:false;return ok&&!closedAt(at(k,h))}return h>=6&&h<=19}
 const closedAt=t=>closures.some(c=>new Date(c.starts_at)<new Date(new Date(t).getTime()+TWO)&&new Date(c.ends_at)>new Date(t));
 const progsSel=()=>[...f.querySelectorAll('[name=programs]:checked')].map(x=>x.value),abbr=k=>((S.programs||[]).find(p=>p.key===k)||{}).abbr||k;
 f.querySelector('.pchips').innerHTML=(S.programs||[]).map((p,i)=>`<label class="pchip"><input type="checkbox" name="programs" value="${p.key}"${i===0?' checked':''}> ${p.label}</label>`).join('');
