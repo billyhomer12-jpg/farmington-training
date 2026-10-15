@@ -25,6 +25,9 @@ const reqsOn=k=>D.requests.filter(r=>K(r.starts_at)===k&&r.status!=='cancelled'&
 // Gym closures (live from training_gym_closures via coach_data): any closure overlapping the Denver day.
 const nextK=k=>{const d=new Date(k+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+1);return d.toISOString().slice(0,10)},clOn=k=>(D.closures||[]).filter(c=>new Date(c.starts_at)<new Date(at(nextK(k),'00:00'))&&new Date(c.ends_at)>new Date(at(k,'00:00')));
 const clTag=k=>{const c=clOn(k);return c.length?`<span class="clz" title="${esc(c.map(x=>x.reason||'Closure').join('; '))}">Gym closed – outdoor conditioning only<small>${esc(c.map(x=>x.reason||'Closure').join('; '))}</small></span>`:''};
+// Open-group sessions on the calendar (groups with players), from the Groups data.
+const ogOn=k=>(typeof OGS==='undefined'?[]:OGS).filter(g=>g.status!=='cancelled'&&g.taken>0).flatMap(g=>g.sessions.filter(t=>K(t)===k).map(t=>({g,t})));
+const ogPill=({g,t})=>`<button class="pl t-bb grp" data-og="${g.id}" title="Open group · ${g.taken} of ${g.capacity} filled">${esc(g.label||'Group')} · ${g.taken}/${g.capacity}${g.taken>=g.capacity?' full':''}</button>`;
 const blksOn=k=>D.blocks.filter(b=>K(b.starts_at)===k);
 const WT={'Gym':'🏀','Outdoor':'🌤','Weight room':'🏋'},wti=r=>r.workout_type?' '+(WT[r.workout_type]||''):'';
 const pill=r=>`<button class="pl t-${ty(r)[1]}${grp(r)?' grp':''}${r.status==='requested'?' rq':''}" data-req="${r.id}">${esc(first(r.signup_id))}${who(r.signup_id).plus?' +'+who(r.signup_id).plus:''} · ${esc(who(r.signup_id).prog_abbr||ty(r)[0])}${r.format?(grp(r)?' Grp':' 1:1'):''}${wti(r)}</button>`;
@@ -39,11 +42,11 @@ h+=`<button class="te t-${ty(x)[1]}${grp(x)?' grp':''}${x.status==='requested'?'
 A.innerHTML=h+`<div style="height:${16*H+20}px"></div></div>`+(r.length?'':'<p class="note">No sessions this day.</p>');return}
 if(mode==='week'){const st=new Date(view);st.setDate(st.getDate()-st.getDay());$('cal-title').textContent='Week of '+st.toLocaleDateString('en-US',{month:'short',day:'numeric'});C.className='cal hide';
 A.innerHTML=[...Array(7)].map((_,i)=>{const d=new Date(st);d.setDate(st.getDate()+i);const k=kd(d),r=reqsOn(k),b=blksOn(k);
-return `<div class="wd${clOn(k).length?' closed':''}"><button class="wdh" data-day="${k}">${d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})}</button><div class="pls">${clTag(k)}${r.map(pill).join('')}${b.length?'<span class="pl blk">Blocked</span>':''}${r.length||b.length||clOn(k).length?'':'<span class="note">—</span>'}</div></div>`}).join('');return}
+return `<div class="wd${clOn(k).length?' closed':''}"><button class="wdh" data-day="${k}">${d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})}</button><div class="pls">${clTag(k)}${ogOn(k).map(ogPill).join('')}${r.map(pill).join('')}${b.length?'<span class="pl blk">Blocked</span>':''}${r.length||b.length||clOn(k).length||ogOn(k).length?'':'<span class="note">—</span>'}</div></div>`}).join('');return}
 const f=new Date(view.getFullYear(),view.getMonth(),1),st=new Date(f);st.setDate(1-f.getDay());$('cal-title').textContent=f.toLocaleDateString('en-US',{month:'long',year:'numeric'});C.className='cal';
 let h=['S','M','T','W','T','F','S'].map(d=>`<div class="h">${d}</div>`).join('');const today=kd(new Date());
 for(let i=0;i<42;i++){const d=new Date(st);d.setDate(st.getDate()+i);const k=kd(d),r=reqsOn(k),b=blksOn(k);
-h+=`<div class="c${d.getMonth()!==view.getMonth()?' o':''}${k===today?' today':''}${clOn(k).length?' closed':''}"><button class="dn" data-day="${k}">${d.getDate()}</button>${clTag(k)}${b.length?'<span class="bd" title="Blocked time"></span>':''}${r.slice(0,4).map(pill).join('')}${r.length>4?`<button class="more" data-day="${k}">+${r.length-4}</button>`:''}</div>`}
+h+=`<div class="c${d.getMonth()!==view.getMonth()?' o':''}${k===today?' today':''}${clOn(k).length?' closed':''}"><button class="dn" data-day="${k}">${d.getDate()}</button>${clTag(k)}${b.length?'<span class="bd" title="Blocked time"></span>':''}${ogOn(k).map(ogPill).join('')}${r.slice(0,4).map(pill).join('')}${r.length>4?`<button class="more" data-day="${k}">+${r.length-4}</button>`:''}</div>`}
 C.innerHTML=h}
 $('t-cal').addEventListener('click',e=>{const d=e.target.closest('[data-day]');if(d){sel=d.dataset.day;mode='day';drawCal();return}const m=e.target.closest('[data-mode]');if(m){mode=m.dataset.mode;if(mode==='day'&&!sel)sel=kd(new Date());drawCal()}});
 const step=n=>{if(mode==='day'){const d=kdate(sel);d.setDate(d.getDate()+n);sel=kd(d);view=new Date(d)}else if(mode==='week')view.setDate(view.getDate()+7*n);else view.setMonth(view.getMonth()+n);drawCal()};
@@ -52,7 +55,7 @@ const rng=r=>{const a=new Date(r.starts_at),b=new Date(a.getTime()+(r.duration_m
 function openRq(id){const r=D.requests.find(x=>x.id==id);if(!r)return;const s=who(r.signup_id);
 $('rq-info').innerHTML=`<b>${esc(s.athlete)}</b> (age ${esc(s.age)}) · ${esc(s.program||r.program)}<br>${F(r.starts_at,{weekday:'long',month:'short',day:'numeric'})}, ${rng(r)} · ${esc(r.workout_type||'')} · <i>${r.status}</i>${r.moved_from?'<br><small>Moved by parent from '+F(r.moved_from,{weekday:'short',month:'short',day:'numeric'})+', '+rng({starts_at:r.moved_from,duration_min:r.duration_min})+'. Confirm or move.</small>':''}${s.package_txt?'<br>'+esc(s.package_txt):''}<br>Parent ${esc(s.parent)} · <a href="tel:${esc(s.phone)}">${esc(s.phone||'')}</a> · <a href="mailto:${esc(s.email)}">${esc(s.email)}</a><br>Payment: ${esc(s.payment_status)}${(s.additional_players||[]).map((p,i)=>'<br>Player '+(i+2)+': <b>'+esc(p.athlete)+'</b> · parent '+esc(p.parent)+' · <a href="tel:'+esc(p.phone)+'">'+esc(p.phone)+'</a>').join('')}`;
 $('rq-date').value=K(r.starts_at);$('rq-time').value=F(r.starts_at,{hour:'2-digit',minute:'2-digit',hourCycle:'h23'});$('rq').dataset.id=r.id;$('rq').showModal()}
-$('t-cal').onclick=e=>{const b=e.target.closest('[data-req]');if(!b||e.target.closest('[data-day],[data-mode]'))return;openRq(b.dataset.req)};
+$('t-cal').onclick=e=>{const og=e.target.closest('[data-og]');if(og){tab('t-og');return}const b=e.target.closest('[data-req]');if(!b||e.target.closest('[data-day],[data-mode]'))return;openRq(b.dataset.req)};
 // Stats tiles
 let fromList=false,onlyNew=false,onlyUnsigned=false,open=new Set();
 const pend=()=>D.requests.filter(r=>r.status==='requested'&&new Date(r.starts_at)>Date.now()).sort((a,b)=>a.starts_at<b.starts_at?-1:1);
@@ -115,9 +118,9 @@ $('rvt').onclick=async e=>{const b=e.target.closest('[data-rva]');if(!b)return;c
 const j=await rpc('coach_review_action',{...auth(),p_id:+b.dataset.id,p_action:a});if(j.error)return msg(j.error);msg(a==='approved'?'Review approved. It now shows on the Reviews page.':a==='hidden'?'Review hidden.':'Review deleted.');loadRv()};
 
 // Open groups (PIN-checked coach RPCs)
-let OGS=[];const DNm=['','Mon','Tue','Wed','Thu','Fri','Sat'];
+var OGS=[];const DNm=['','Mon','Tue','Wed','Thu','Fri','Sat'];
 $('og-hour').innerHTML=[...Array(16)].map((_,i)=>{const h=5+i;return `<option value="${h}">${h%12||12}:00 ${h<12?'AM':'PM'}</option>`}).join('');$('og-hour').value='16';
-async function loadOg(){const j=await rpc('coach_open_groups',auth());OGS=j.error?[]:j.groups||[];drawOg()}
+async function loadOg(){const j=await rpc('coach_open_groups',auth());OGS=j.error?[]:j.groups||[];OGS.forEach(g=>g.roster.forEach(m=>{const s=D.signups.find(x=>x.id===m.signup_id);if(s)s.package_txt='Join a group solo · '+(g.label||'Group')+' · '+g.taken+'/'+g.capacity+(g.taken>=g.capacity?' full':'')}));drawOg();drawCal();drawList()}
 function drawOg(){const need=OGS.filter(g=>g.needs_action||g.roster.some(m=>m.flag)).length;$('ogn').textContent=need?'('+need+')':'';
 $('oglist').innerHTML=OGS.length?OGS.map(g=>{const flag=g.needs_action||g.roster.some(m=>m.flag),st=g.status==='cancelled'?'Closed':g.status==='running'?'Running':'Forming';
 return `<div class="card ogrow${g.status==='cancelled'?' o':''}"><div class="ogh"><div><b>${esc(g.label||g.weekdays.map(d=>DNm[d]).join('/'))}</b> <i class="pillst ${g.status==='running'?'ok':'pend'}">${st}</i>${flag?' <i class="pillst bad">Refund/move needed</i>':''}${g.blocked?' <i class="pillst bad">Time taken by another booking: hidden, no joins</i>':''}
