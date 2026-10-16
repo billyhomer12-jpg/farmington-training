@@ -1,6 +1,8 @@
 import re,glob
 p=open('pricing.html').read()
-p=re.sub(r'href="sms:\+15054693851[^"]*" data-tier="([^"]+)">Text us to join</a><p class="fine soon">[^<]*</p>',r'href="member-signup.html?tier=\1" data-tier="\1">Start membership</a>',p)
+p,n1=re.subn(r'<a class="btn sm" href="sms:\+15054693851[^"]*" data-tier="([^"]+)">Text us to join</a><p class="fine soon">[^<]*</p>',r'<a class="btn sm" href="member-signup.html?tier=\1" data-tier="\1">Start membership</a>',p)
+p,n2=re.subn(r'<span class="btn sm soonbtn" role="button" aria-disabled="true" data-tier="([^"]+)">[^<]*</span><p class="fine soon">[^<]*</p>',r'<a class="btn sm" href="member-signup.html?tier=\1" data-tier="\1">Start membership</a>',p)
+assert n1+n2==3, 'button swap matched %d of 3 monthly buttons'%(n1+n2)
 p=p.replace(' class="fine mem-rule" hidden',' class="fine mem-rule"').replace('<span class="mem-rule" hidden>','<span class="mem-rule">')
 open('pricing.html','w').write(p)
 c=open('config.js').read()

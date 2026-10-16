@@ -17,6 +17,7 @@ gen_live_fns(){ # live copies: MEMBERSHIP_LIVE_* secrets, separate function name
 }
 case "$CMD" in
 go)
+  if [ "$EXEC" = "--execute" ]; then echo "== gate: scripts/prelive_gate.sh (TEST mode)"; scripts/prelive_gate.sh || { echo "GATE FAILED: aborting live switch"; exit 1; }; else echo "[dry-run] scripts/prelive_gate.sh (must pass or --execute aborts)"; fi
   echo "== 0. DB: member sessions block regular availability (no effect on test rows)"
   run "python3 -c \"import requests;t=open('/workspace/.sbtoken').read().strip();r=requests.post('https://api.supabase.com/v1/projects/$REF/database/query',headers={'Authorization':'Bearer '+t},json={'query':open('supabase/2026-10-16-memberships-golive-seats.sql').read()});print(r.status_code)\""
   echo "== 1. Live Stripe objects (products, monthly prices, portal config, webhook) on acct_1UR0vSRpcc5zZV0D"
@@ -27,11 +28,12 @@ go)
   gen_live_fns
   for f in membership-webhook membership-checkout; do run "SUPABASE_ACCESS_TOKEN=\$(cat /workspace/.sbtoken) npx -y supabase@latest functions deploy $f --project-ref $REF --no-verify-jwt --use-api"; done
   echo "== 4. Front end: buttons -> on-site checkout, config points at live function, bump v"
-  run "python3 scripts/live_frontend_swap.py && git add -A && git -c user.name='Billy Homer' -c user.email=billyhomer12@gmail.com commit -m 'Memberships live: on-site checkout' && git fetch && git rebase origin/main && git push origin HEAD:main"
+  G="git -c user.name='Billy Homer' -c user.email=billyhomer12@gmail.com"; export GIT_COMMITTER_NAME='Billy Homer' GIT_COMMITTER_EMAIL=billyhomer12@gmail.com
+  run "git fetch origin && $G merge --no-edit origin/main && python3 scripts/live_frontend_swap.py && git add -A && $G commit -m 'Memberships live: on-site checkout' && git push origin HEAD:main"
   echo "== 5. Verify: curl pricing (cache-busted) shows member-signup links; signed bad-sig to membership-webhook returns 400"
   ;;
 rollback)
-  echo "== Front end back to 'Text us to join' (revert the go-live commit; no force-push)"
+  echo "== Front end back to disabled 'Coming soon' buttons (revert the go-live commit; no force-push)"
   run "git fetch && git checkout -B rollback origin/main && git revert --no-edit \$(git log origin/main --grep='Memberships live: on-site checkout' -n1 --format=%H) && git push origin HEAD:main"
   echo "== Stop new live checkouts immediately (existing subscriptions keep working via the webhook)"
   run "printf 'MEMBERSHIP_LIVE_CHECKOUT_OFF=1\n' > /tmp/off.env && SUPABASE_ACCESS_TOKEN=\$(cat /workspace/.sbtoken) npx -y supabase@latest secrets set --env-file /tmp/off.env --project-ref $REF; rm /tmp/off.env"
