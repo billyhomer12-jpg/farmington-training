@@ -1,5 +1,5 @@
 // PRICING-TABS: ARIA tabs (1-on-1 / Groups / Monthly) + group size selector. Panels stay in the DOM.
-(()=>{const run=()=>{const seg=document.querySelector('.ptab-sec .seg');if(!seg)return;document.documentElement.classList.add('js-ptabs');
+(()=>{const run=()=>{const seg=document.querySelector('.ptab-sec .seg');if(!seg)return;document.documentElement.classList.add('js-ptabs','ptabs-ready');
 const tabs=[...seg.querySelectorAll('[role=tab]')],panels=tabs.map(t=>document.getElementById(t.getAttribute('aria-controls'))),ids=['private','groups','monthly'];
 const sel=(i,focus,anim=true,hash=true)=>{tabs.forEach((t,j)=>{t.setAttribute('aria-selected',j===i);t.tabIndex=j===i?0:-1;panels[j].hidden=j!==i;panels[j].classList.toggle('in',j===i&&anim);
  t.querySelector('.dot')?.remove();t.removeAttribute('aria-label');if(j!==i&&panels[j].querySelector('.deal-badge')){const d=document.createElement('span');d.className='dot';d.setAttribute('aria-hidden','true');t.append(d);t.setAttribute('aria-label',t.textContent+', offer applies')}});
