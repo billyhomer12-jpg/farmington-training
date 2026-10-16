@@ -106,17 +106,17 @@ footer,footer .wrap,footer p{text-align:center}footer p{margin:6px 0 0}footer b{
 .gnav-in{max-width:1024px;margin:0 auto;height:48px;padding:0 22px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:16px}
 .gnav .logo{min-width:0}.gnav .brand{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.82rem}
 .tabsnav{display:flex;justify-content:center;gap:2px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}.tabsnav::-webkit-scrollbar{display:none}
-.tabsnav a{flex:none;display:flex;align-items:center;min-height:40px;padding:0 10px;color:#424245;text-decoration:none;font-size:.75rem;letter-spacing:-.01em;position:relative;z-index:0}
-.tabsnav a:hover{color:#1d1d1f}.tabsnav a[aria-current]{color:#000;font-weight:700}.tabsnav a[aria-current]::before{content:"";position:absolute;z-index:-1;left:1px;right:1px;top:7px;bottom:7px;border-radius:999px;background:rgba(52,199,89,.28);-webkit-backdrop-filter:blur(12px) saturate(180%);backdrop-filter:blur(12px) saturate(180%);border:1px solid rgba(52,199,89,.6);box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 2px 8px rgba(36,138,61,.15)}
-.gnav .book{padding:6px 14px;font-size:.75rem}
+.tabsnav a{flex:none;display:flex;align-items:center;min-height:44px;min-width:44px;justify-content:center;padding:0 10px;color:#424245;text-decoration:none;font-size:.75rem;letter-spacing:-.01em;position:relative;z-index:0}
+.tabsnav a:hover{color:#1d1d1f}.tabsnav a[aria-current]{color:#000;font-weight:700}.tabsnav a[aria-current]::before{content:"";position:absolute;z-index:-1;left:1px;right:1px;top:9px;bottom:9px;border-radius:999px;background:rgba(52,199,89,.28);-webkit-backdrop-filter:blur(12px) saturate(180%);backdrop-filter:blur(12px) saturate(180%);border:1px solid rgba(52,199,89,.6);box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 2px 8px rgba(36,138,61,.15)}
+.gnav .book{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;min-height:44px;min-width:44px;padding:0 14px;border:9px solid transparent;background-clip:padding-box;font-size:.75rem;line-height:1}
 @media(max-width:900px){.gnav .brand{max-width:150px}}
-@media(max-width:760px){html{scroll-padding-top:100px}
-.gnav-in{grid-template-columns:1fr auto;grid-template-rows:44px 40px;height:auto;padding:0;gap:0}
-.gnav .logo{padding-left:16px}.gnav .brand{max-width:none;font-size:.85rem}.gnav .book{margin-right:16px}
+@media(max-width:760px){html{scroll-padding-top:104px}
+.gnav-in{grid-template-columns:1fr auto;grid-template-rows:44px 44px;height:auto;padding:0;gap:0}
+.gnav .logo{padding-left:16px}.gnav .brand{max-width:none;font-size:.85rem}.gnav .book{margin-right:7px}
 .tabsnav{grid-column:1/-1;grid-row:2;justify-content:flex-start;padding:0 10px;border-top:1px solid rgba(0,0,0,.06);scroll-snap-type:x proximity}
 .tabsnav a{font-size:.8rem;padding:0 11px;scroll-snap-align:center}}
 @media(max-width:360px){.gnav .brand{font-size:.78rem}}
-section[id]{scroll-margin-top:60px}@media(max-width:760px){section[id]{scroll-margin-top:100px}}
+section[id]{scroll-margin-top:60px}@media(max-width:760px){section[id]{scroll-margin-top:104px}}
 /* rhythm + type */
 .sec{padding:80px 0}.wrap.wide{max-width:1240px}
 h2{font-size:clamp(2.1rem,5vw,3.5rem);letter-spacing:-.015em}
