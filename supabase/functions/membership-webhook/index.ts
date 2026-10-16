@@ -4,6 +4,7 @@ import Stripe from "npm:stripe@14";
 import { createClient } from "npm:@supabase/supabase-js@2";
 const stripe = new Stripe(Deno.env.get("MEMBERSHIP_TEST_STRIPE_KEY")!, { apiVersion: "2024-06-20" });
 const sb = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, { auth: { persistSession: false } });
+const KEY_LIVE = (Deno.env.get("MEMBERSHIP_TEST_STRIPE_KEY") ?? "").includes("_live_");
 const GRANT: Record<string, number> = { "1on1_monthly": 4, "1on1_monthly_plus": 8, "open_group_monthly": 4 };
 const NAME: Record<string, string> = { "1on1_monthly": "1-on-1 Monthly", "1on1_monthly_plus": "1-on-1 Monthly Plus", "open_group_monthly": "Open Group Monthly" };
 const POLICY = "Month to month. Cancel anytime, keep access through the end of your month. 1 reschedule per billing month. No partial refunds; memberships can't be paused.";
@@ -26,7 +27,7 @@ async function ensure(subId: string, email?: string, athlete?: string) {
   const c: any = s.customer;
   const tier = s.metadata?.tier;
   const ins = await sb.from("memberships").upsert({ parent_email: email ?? c.email, athlete: athlete ?? s.metadata?.athlete ?? "", tier,
-    stripe_customer_id: c.id, stripe_subscription_id: s.id, status: s.status }, { onConflict: "stripe_subscription_id" }).select().single();
+    stripe_customer_id: c.id, stripe_subscription_id: s.id, status: s.status, is_test: !KEY_LIVE }, { onConflict: "stripe_subscription_id" }).select().single();
   return ins.data;
 }
 Deno.serve(async (req) => {
@@ -34,7 +35,7 @@ Deno.serve(async (req) => {
   let ev: Stripe.Event;
   try { ev = await stripe.webhooks.constructEventAsync(body, req.headers.get("stripe-signature") ?? "", Deno.env.get("MEMBERSHIP_TEST_WEBHOOK_SECRET")!); }
   catch { return new Response("bad signature", { status: 400 }); }
-  if (ev.livemode) return new Response("live events not handled by test endpoint", { status: 200 });
+  if (ev.livemode !== KEY_LIVE) return new Response("mode mismatch, ignored", { status: 200 });
   const { error: dup } = await sb.from("stripe_events_processed").insert({ event_id: ev.id });
   if (dup) return new Response("duplicate", { status: 200 });
   const o: any = ev.data.object;

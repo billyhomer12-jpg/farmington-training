@@ -143,12 +143,17 @@ create or replace function public.membership_customer_for_token(p_token text) re
   select stripe_customer_id from memberships where token_hash = training.token_hash(p_token) and length(coalesce(p_token,''))>=32 $$;
 revoke all on function public.membership_customer_for_token(text) from anon, authenticated;
 
+
 create or replace function public.coach_memberships(p_email text, p_pin text) returns jsonb language plpgsql volatile security definer set search_path=public as $$
 declare e text := training.pin_check(p_email, p_pin);
 begin
   if e is not null then return jsonb_build_object('error', e); end if;
   return jsonb_build_object('members',(select coalesce(jsonb_agg(jsonb_build_object('id',id,'athlete',athlete,'parent_email',parent_email,'tier',tier,'status',status,'status_label',status_label,
-    'sessions_left',sessions_left,'rollover',rollover,'closure_rollover',closure_rollover,'reschedules_used',reschedules_used,'picks_flag',picks_flag,'picks_due',picks_due,
-    'payment_failed',payment_failed,'cancel_at_period_end',cancel_at_period_end,'current_period_end',current_period_end,'is_test',is_test) order by created_at desc),'[]') from membership_admin));
+    'sessions_granted',sessions_granted,'sessions_used',sessions_used,'sessions_left',sessions_left,
+    'plan_sessions_remaining',greatest(0,sessions_granted-sessions_used),
+    'rollover',rollover,'closure_rollover',closure_rollover,'reschedules_used',reschedules_used,
+    'reschedule_mode',reschedule_mode,'reschedules_allowed',(select value::int from membership_config where key='reschedule_limit'),
+    'picks_flag',picks_flag,'picks_due',picks_due,'sessions_picked',sessions_picked,
+    'payment_failed',payment_failed,'cancel_at_period_end',cancel_at_period_end,'current_period_start',current_period_start,'current_period_end',current_period_end,'is_test',is_test) order by created_at desc),'[]') from membership_admin));
 end $$;
 grant execute on function public.coach_memberships(text,text) to anon, authenticated;

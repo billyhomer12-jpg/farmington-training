@@ -37,5 +37,7 @@ def main():
         out.setdefault(p, []).append(r["id"])
         if p == "webhook_endpoints": print("Webhook signing secret -> store as MEMBERSHIP_WEBHOOK_SECRET (not printed). Saved to ./live_whsec (chmod 600).");
         if p == "webhook_endpoints": open("live_whsec", "w").write(r["secret"]); os.chmod("live_whsec", 0o600)
-    print(json.dumps(out, indent=1))
+    tiers=[t[0] for t in TIERS]
+    live={'prices':dict(zip(tiers,out['prices'])),'products':dict(zip(tiers,out['products'])),'portal_config':out['billing_portal/configurations'][0],'webhook':out['webhook_endpoints'][0]}
+    json.dump(live,open('live_ids.json','w'),indent=1); print(json.dumps(live, indent=1))
 if __name__ == "__main__": main()

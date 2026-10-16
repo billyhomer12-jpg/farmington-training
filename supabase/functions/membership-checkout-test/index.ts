@@ -19,6 +19,7 @@ Deno.serve(async (req) => {
         return_url: (["http://localhost:8765", SITE].includes(b.origin) ? b.origin : SITE) + "/member.html?m=" + b.portal_token });
       return j({ url: ps.url });
     }
+    if (Deno.env.get("MEMBERSHIP_TEST_CHECKOUT_OFF") === "1") return j({ error: "Online sign-up is paused. Text (505) 469-3851 to join." }, 503);
     const price = PRICE[b.tier]; if (!price) return j({ error: "Unknown plan" }, 400);
     if (!b.email || !b.athlete || !b.parent) return j({ error: "Parent, athlete and email are required." }, 400);
     const program = b.tier === "open_group_monthly" ? "Basketball Training" : (b.program || "Basketball Training");
