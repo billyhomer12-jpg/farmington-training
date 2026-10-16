@@ -1,16 +1,49 @@
-// DEAL-5 / LAUNCH-4: add/remove the window-only custom-text note on the 5 eligible Payment Links (never the single).
-// DRY RUN by default: prints and logs the before/after plan only. Nothing is sent to Stripe unless --apply is passed
-// AND STRIPE_KEY is set. Not scheduled. Needs Billy's OK before any --apply run (no price/product/coupon changes ever).
-// Usage: node tools/deal-checkout-note.mjs <holiday-4pack-2026|grand-opening-2026> <add|remove> [--apply]
+// DEAL-5 / LAUNCH-4: window-only checkout note on the 5 eligible package Payment Links (never the $75 single).
+// Changes ONLY custom_text.submit.message on each link. No price, product, coupon, or any other field.
+//
+//   node tools/deal-checkout-note.mjs <holiday-4pack-2026|grand-opening-2026> <apply|remove> [--live]
+//
+// Without --live: DRY RUN (reads links if a key is available, prints the before/after plan, writes nothing to Stripe).
+// With --live: requires a LIVE secret key for acct_1UR0vSRpcc5zZV0D in $STRIPE_LIVE_KEY or /workspace/.secrets/stripe_live_key
+// (a restricted key with Payment Links write is enough). Refuses any other account or a test key.
+// Before/after of every link is logged to /workspace/web-team/evidence/DEALS-SLOT/checkout-note-*.json.
+// remove restores the exact message each link had before apply (saved in checkout-note-state-<deal>.json); default empty.
+// Idempotent: apply skips links that already show the note; remove skips links that don't.
 import fs from 'node:fs';
+const ACCT='acct_1UR0vSRpcc5zZV0D';
+const NOTE={'holiday-4pack-2026':'Holiday bonus: free 5th session, redeem by 3/31/27','grand-opening-2026':'Founding Family bonus: free 5th session, use within 90 days'};
 const window={};eval(fs.readFileSync(new URL('../config.js',import.meta.url),'utf8'));
-const [id,act]=process.argv.slice(2),apply=process.argv.includes('--apply');
-const NOTE={'holiday-4pack-2026':'Holiday bonus: free 5th session, redeem by 3/31/27','grand-opening-2026':'Founding Family bonus: free 5th session, use within 90 days'}[id];
-const d=(window.SITE.deals||[]).find(x=>x.id===id);if(!d||!NOTE||!['add','remove'].includes(act)){console.error('usage: <deal id> <add|remove> [--apply]');process.exit(2)}
-const links=d.eligible_packages.filter(k=>k!=='single').map(k=>({pkg:k,url:window.SITE.paymentLinks[k]}));
-const plan={at:new Date().toISOString(),deal:id,action:act,note:act==='add'?NOTE:null,field:'custom_text.submit.message',links,apply};
-const dir=new URL('../../web-team/evidence/DEALS-SLOT/',import.meta.url);fs.mkdirSync(dir,{recursive:true});
-fs.writeFileSync(new URL(`checkout-note-${id}-${act}-${Date.now()}.json`,dir),JSON.stringify(plan,null,2));
-console.log(JSON.stringify(plan,null,2));
-if(!apply||!process.env.STRIPE_KEY){console.log('DRY RUN: no Stripe calls made.');process.exit(0)}
-console.error('Live apply is intentionally not implemented without an approved run; resolve plink ids and PATCH custom_text only.');process.exit(3);
+const [id,mode]=process.argv.slice(2),live=process.argv.includes('--live');
+const deal=(window.SITE.deals||[]).find(x=>x.id===id);
+if(!deal||!NOTE[id]||!['apply','remove'].includes(mode)){console.error('usage: node tools/deal-checkout-note.mjs <holiday-4pack-2026|grand-opening-2026> <apply|remove> [--live]');process.exit(2)}
+const pkgs=deal.eligible_packages.filter(k=>k!=='single');
+const urls=Object.fromEntries(pkgs.map(k=>[k,window.SITE.paymentLinks[k]]));
+if(Object.values(urls).includes(window.SITE.paymentLinks.single))throw new Error('single link in eligible set: refusing');
+const EV='/workspace/web-team/evidence/DEALS-SLOT/';fs.mkdirSync(EV,{recursive:true});
+const STATE=EV+`checkout-note-state-${id}.json`;
+const keyFile='/workspace/.secrets/stripe_live_key';
+const key=process.env.STRIPE_LIVE_KEY||(fs.existsSync(keyFile)?fs.readFileSync(keyFile,'utf8').trim():'');
+const api=async(path,body)=>{const r=await fetch('https://api.stripe.com/v1/'+path,{method:body?'POST':'GET',headers:{Authorization:'Bearer '+key,'Content-Type':'application/x-www-form-urlencoded','Stripe-Version':'2024-06-20'},body:body?new URLSearchParams(body):undefined});const j=await r.json();if(!r.ok)throw new Error(path+': '+(j.error&&j.error.message||r.status));return j};
+const log={at:new Date().toISOString(),deal:id,mode,live,account:null,note:NOTE[id],links:[]};
+const out=()=>{const f=EV+`checkout-note-${id}-${mode}-${live?'live':'dry'}-${Date.now()}.json`;fs.writeFileSync(f,JSON.stringify(log,null,2));console.log(JSON.stringify(log,null,2));console.log('log:',f)};
+if(!key){if(live){console.error('No live key: set STRIPE_LIVE_KEY or '+keyFile);process.exit(3)}
+  log.links=pkgs.map(k=>({pkg:k,url:urls[k],planned:mode==='apply'?NOTE[id]:'(restore saved / empty)'}));log.note_dry='no key: plan only, Stripe not contacted';out();process.exit(0)}
+if(live&&!key.startsWith('sk_live_')&&!key.startsWith('rk_live_')){console.error('Refusing: --live needs a live key');process.exit(3)}
+const acct=await api('account');log.account=acct.id;
+if(live&&acct.id!==ACCT){console.error('Refusing: key is for '+acct.id+', expected '+ACCT);process.exit(3)}
+// Resolve plink ids by URL (active links only).
+const all=[];let sa=null;for(;;){const p=await api('payment_links?limit=100&active=true'+(sa?'&starting_after='+sa:''));all.push(...p.data);if(!p.has_more)break;sa=p.data[p.data.length-1].id}
+const state=fs.existsSync(STATE)?JSON.parse(fs.readFileSync(STATE,'utf8')):{};
+let fail=0;
+for(const k of pkgs){const pl=all.find(x=>x.url===urls[k]);if(!pl){log.links.push({pkg:k,url:urls[k],error:'link not found on account'});fail++;continue}
+  const before=(pl.custom_text&&pl.custom_text.submit&&pl.custom_text.submit.message)||'';
+  let target;if(mode==='apply'){if(before===NOTE[id]){log.links.push({pkg:k,id:pl.id,before,after:before,skipped:'already applied'});continue}state[pl.id]=before;target=NOTE[id]}
+  else{if(before!==NOTE[id]){log.links.push({pkg:k,id:pl.id,before,after:before,skipped:'note not present'});continue}target=state[pl.id]||''}
+  if(!live){log.links.push({pkg:k,id:pl.id,before,planned_after:target});continue}
+  // Only the submit message. Empty string clears custom_text.submit; other custom_text parts are re-sent unchanged.
+  const body={};const ct=pl.custom_text||{};
+  for(const part of ['shipping_address','after_submit','terms_of_service_acceptance'])if(ct[part]&&ct[part].message)body[`custom_text[${part}][message]`]=ct[part].message;
+  if(target)body['custom_text[submit][message]']=target;else body['custom_text[submit]']='';
+  try{const u=await api('payment_links/'+pl.id,body);log.links.push({pkg:k,id:pl.id,before,after:(u.custom_text&&u.custom_text.submit&&u.custom_text.submit.message)||''})}catch(e){log.links.push({pkg:k,id:pl.id,before,error:String(e.message)});fail++}}
+if(live&&mode==='apply')fs.writeFileSync(STATE,JSON.stringify(state,null,2));
+out();process.exit(fail?1:0);
