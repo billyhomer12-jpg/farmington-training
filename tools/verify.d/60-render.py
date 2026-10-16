@@ -93,22 +93,11 @@ async def run_one(br,page,w,sem):
             try: await pg.screenshot(path=shot,full_page=True)
             except Exception: shot='(no shot)'
             for b in bad: fail(f"{tag}: {b}  [{shot}]")
-        # During the window (VERIFY_SALE_NOW, default 2026-10-17T12:00-06:00): every visible price element has a struck regular price beside it.
-        SN=os.environ.get('VERIFY_SALE_NOW','2026-10-17T12:00:00-06:00')
-        if any(is_discount(x) for x in S.get('deals',[])):
-            for page in P:
-                pg=await ctx.new_page(); await pg.goto(f"{BASE}/{page}?deal_now={urllib.parse.quote(SN)}"+('#groups' if page=='pricing.html' else ''),wait_until='load'); await pg.wait_for_timeout(1500)
-                miss=await pg.evaluate(STRUCK)
-                if miss:
-                    shot=os.path.join(SHOTS,f"struck-{page[:-5]}.png"); await pg.screenshot(path=shot,full_page=True)
-                    for m in miss[:5]: fail(f"{page} deal_now={SN}: price without struck regular price: {m} [{shot}]")
-                else: ok(f"{page} sale window: every visible price has a struck regular price")
-                await pg.close()
         await ctx.close(); return not bad
 async def main():
     async with async_playwright() as p:
         br=await p.chromium.launch(); sem=asyncio.Semaphore(int(os.environ.get('VERIFY_PAR','8')))
-        res=await asyncio.gather(*[run_one(br,pg,w,sem) for pg in P for w in W]); await br.close()
+        res=await asyncio.gather(*[run_one(br,pg,w,sem) for pg in P for w in W])
         ok(f"{sum(res)}/{len(res)} page x width combos clean")
         # Sale timing via ?deal_now: no sale banner / % off / struck prices 1 min before start or 1 min after end.
         from datetime import datetime, timedelta
@@ -124,5 +113,16 @@ async def main():
                         fail(f"{page} deal_now={when.isoformat()} ({tag}): sale state shown for {dl['id']} [{shot}]")
                     else: ok(f"{page} {tag} of {dl['id']}: no sale shown")
                     await pg.close()
-        await ctx.close()
+        # During the window (VERIFY_SALE_NOW, default 2026-10-17T12:00-06:00): every visible price element has a struck regular price beside it.
+        SN=os.environ.get('VERIFY_SALE_NOW','2026-10-17T12:00:00-06:00')
+        if any(is_discount(x) for x in S.get('deals',[])):
+            for page in P:
+                pg=await ctx.new_page(); await pg.goto(f"{BASE}/{page}?deal_now={urllib.parse.quote(SN)}"+('#groups' if page=='pricing.html' else ''),wait_until='load'); await pg.wait_for_timeout(1500)
+                miss=await pg.evaluate(STRUCK)
+                if miss:
+                    shot=os.path.join(SHOTS,f"struck-{page[:-5]}.png"); await pg.screenshot(path=shot,full_page=True)
+                    for m in miss[:5]: fail(f"{page} deal_now={SN}: price without struck regular price: {m} [{shot}]")
+                else: ok(f"{page} sale window: every visible price has a struck regular price")
+                await pg.close()
+        await ctx.close(); await br.close()
 asyncio.run(main()); done('render')
