@@ -258,3 +258,16 @@ a[href^="mailto:"]{white-space:nowrap;overflow-wrap:normal;word-break:normal}
 /* Back-to-top: 44x44, only shown where it sits in the empty side gutter so it never covers content */
 .scrollhint.up{width:44px;height:44px;bottom:calc(20px + env(safe-area-inset-bottom))}
 @media(max-width:1179px){.scrollhint.up{display:none!important}}
+/* POLISH-2: phone never wraps */
+a[href^="tel:"]{white-space:nowrap}
+/* POLISH-3: no one-word last lines */
+h1,h2,h3,summary,.sub,.tsub{text-wrap:balance}p,li{text-wrap:pretty}
+/* POLISH-6: 44px tap targets on touch (header Book already 44x44 via transparent border) */
+@media(pointer:coarse){.btn:not(.book),.btn.sm:not(.book){min-height:44px;padding:12px 20px;display:inline-flex;align-items:center;justify-content:center}.pchip{min-height:44px;display:inline-flex;align-items:center}footer .wrap a{display:inline-block;padding:12px 0;margin:0}.fcols a{display:block;padding:12px 0;margin:0}}
+/* POLISH-7: fade cue on scrolling tab nav */
+.tabsnav{scroll-padding-inline:16px;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 16px,#000 calc(100% - 16px),transparent);mask-image:linear-gradient(90deg,transparent 0,#000 16px,#000 calc(100% - 16px),transparent)}
+/* POLISH-9: footer fine print */
+.gfoot .fine{text-align:left;font-size:.8125rem;line-height:1.45;text-wrap:pretty}
+/* waiver card: less side padding on small phones so the email fits; ≤360 fallback wrap */
+@media(max-width:430px){.wv{padding:28px 18px!important}}
+@media(max-width:360px){main a[href^="mailto:"]:not(.btn){white-space:normal;overflow-wrap:anywhere}}
