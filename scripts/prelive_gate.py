@@ -35,6 +35,13 @@ src=open(os.path.join(os.path.dirname(__file__),'..','supabase/functions/members
 chk('wrong-mode events ignored (guard before any write)', src.find('ev.livemode !== KEY_LIVE')!=-1 and src.find('ev.livemode !== KEY_LIVE')<src.find('stripe_events_processed'))
 u=sql("select count(*) n from pg_indexes where tablename='stripe_events_processed' and indexdef ilike '%unique%' and indexdef ilike '%event_id%'")
 chk('duplicate events skipped (unique event_id + insert-first guard)', isinstance(u,list) and int(u[0]['n'])>=1 and 'if (dup) return' in src, str(u))
+# 1b test monthly prices == config.js (single source)
+import subprocess
+pr=subprocess.run(['node',os.path.join(os.path.dirname(os.path.abspath(__file__)),'config_plans.mjs')],capture_output=True,text=True)
+if pr.returncode: chk('config.js monthly plans present',False,pr.stderr.strip())
+else:
+    for t,v in json.loads(pr.stdout).items():
+        p=call('GET','prices/'+IDS[t]['price']); chk(f'test price {t} == config ${v["price"]}/mo',p['unit_amount']==round(v['price']*100) and p['recurring']['interval']=='month',f"${p['unit_amount']/100}")
 # 2 test-clock renewal, rollover cap 2, reschedule reset, cancel at period end
 clk=call('POST','test_helpers/test_clocks',{'frozen_time':int(time.time()),'name':'PRELIVE-GATE renewal'})['id']
 try:
@@ -76,7 +83,5 @@ try:
 finally:
     try: call('DELETE','test_helpers/test_clocks/'+clk)
     except Exception as e: print('note: clock cleanup',e)
-e=sql("select count(*) n from membership_email_log where created_at>now()-interval '30 minutes' and coalesce(sent,false)") 
-print('note: email log check',e)
 print('GATE RESULT:', 'PASS' if all(R) else 'FAIL', f'{sum(R)}/{len(R)}')
 sys.exit(0 if all(R) else 1)

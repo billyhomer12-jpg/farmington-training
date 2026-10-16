@@ -6,9 +6,11 @@ import os, sys, json, requests
 ACCT = "acct_1UR0vSRpcc5zZV0D"
 POLICY = "Month to month. Cancel anytime, keep access through the end of your month. No partial refunds; memberships can't be paused."
 SITE = "https://fourcornershoopsandperformance.com"
-TIERS = [("1on1_monthly", "1-on-1 Monthly", 24000, "4 two-hour 1-on-1 sessions per month"),
-         ("1on1_monthly_plus", "1-on-1 Monthly Plus", 46000, "8 two-hour 1-on-1 sessions per month"),
-         ("open_group_monthly", "Open Group Monthly", 12000, "4 two-hour open group sessions per month, per player")]
+import subprocess
+# Prices come from config.js on origin/main (single source of truth); abort if missing.
+_P = json.loads(subprocess.check_output(["node", os.path.join(os.path.dirname(os.path.abspath(__file__)), "config_plans.mjs")]))
+_DESC = {"1on1_monthly": "two-hour 1-on-1 sessions per month", "1on1_monthly_plus": "two-hour 1-on-1 sessions per month", "open_group_monthly": "two-hour open group sessions per month, per player"}
+TIERS = [(t, v["label"], int(round(v["price"] * 100)), f'{v["sessions"] or ""} {_DESC[t]}'.strip()) for t, v in _P.items()]
 PLAN = []
 for tier, name, amt, desc in TIERS:
     PLAN.append(("products", {"name": name, "description": desc, "metadata[tier]": tier}))
