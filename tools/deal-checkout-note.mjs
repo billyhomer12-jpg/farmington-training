@@ -29,7 +29,7 @@ const out=()=>{const f=EV+`checkout-note-${id}-${mode}-${live?'live':'dry'}-${Da
 if(!key){if(live){console.error('No live key: set STRIPE_LIVE_KEY or '+keyFile);process.exit(3)}
   log.links=pkgs.map(k=>({pkg:k,url:urls[k],planned:mode==='apply'?NOTE[id]:'(restore saved / empty)'}));log.note_dry='no key: plan only, Stripe not contacted';out();process.exit(0)}
 if(live&&!key.startsWith('sk_live_')&&!key.startsWith('rk_live_')){console.error('Refusing: --live needs a live key');process.exit(3)}
-const acct=await api('account');log.account=acct.id;
+let acct;try{acct=await api('account')}catch(e){const m=/on account '(acct_[A-Za-z0-9]+)'/.exec(e.message);if(!m)throw e;acct={id:m[1]}}log.account=acct.id; // restricted keys lack Accounts Read; Stripe's permission error still names the account
 if(live&&acct.id!==ACCT){console.error('Refusing: key is for '+acct.id+', expected '+ACCT);process.exit(3)}
 // Resolve plink ids by URL (active links only).
 const all=[];let sa=null;for(;;){const p=await api('payment_links?limit=100&active=true'+(sa?'&starting_after='+sa:''));all.push(...p.data);if(!p.has_more)break;sa=p.data[p.data.length-1].id}
