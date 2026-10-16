@@ -17,6 +17,8 @@ gen_live_fns(){ # live copies: MEMBERSHIP_LIVE_* secrets, separate function name
 }
 case "$CMD" in
 go)
+  echo "== 0. DB: member sessions block regular availability (no effect on test rows)"
+  run "python3 -c \"import requests;t=open('/workspace/.sbtoken').read().strip();r=requests.post('https://api.supabase.com/v1/projects/$REF/database/query',headers={'Authorization':'Bearer '+t},json={'query':open('supabase/2026-10-16-memberships-golive-seats.sql').read()});print(r.status_code)\""
   echo "== 1. Live Stripe objects (products, monthly prices, portal config, webhook) on acct_1UR0vSRpcc5zZV0D"
   run "python3 scripts/create_live_membership_objects.py --execute"   # writes live_ids.json + live_whsec (chmod 600, gitignored)
   echo "== 2. Live secrets (values read from files, never printed)"
