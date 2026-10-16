@@ -270,7 +270,7 @@ h1,h2,h3,summary,.sub,.tsub{text-wrap:balance}p,li{text-wrap:pretty}
 .gfoot .fine{text-align:left;font-size:.8125rem;line-height:1.45;text-wrap:pretty}
 /* waiver card: less side padding on small phones so the email fits; ≤360 fallback wrap */
 @media(max-width:430px){.wv{padding:28px 18px!important}}
-@media(max-width:360px){main a[href^="mailto:"]:not(.btn){white-space:normal;overflow-wrap:anywhere}}
+@media(max-width:360px){main a[href^="mailto:"]:not(.btn){white-space:normal;overflow-wrap:normal;word-break:normal}}
 /* MOBILE-1: sticky quick-book bar (phones only) */
 .qbook{display:none}
 @media(max-width:760px){
@@ -324,3 +324,6 @@ a.achip:hover,a.achip:focus-visible{box-shadow:inset 0 0 0 1.5px var(--ac2)}
 /* Wrap/orphan sweep 320-430 */
 @media(max-width:430px){.wv a[href^="mailto:"]{font-size:clamp(.68rem,3.5vw,.9rem)!important}.stepper li{text-wrap:balance;line-height:1.25}}
 small,.tsub,.note{text-wrap:pretty}
+/* POLISH-1: email may break only at the <wbr> after @ */
+a[href^="mailto:"]{overflow-wrap:normal!important;word-break:normal!important;hyphens:none}
+@media(max-width:360px){a[href^="mailto:"]{white-space:normal!important}}
