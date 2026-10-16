@@ -14,6 +14,9 @@ const ACCT='acct_1UR0vSRpcc5zZV0D';
 const NOTE={'holiday-4pack-2026':'Holiday bonus: free 5th session, redeem by 3/31/27','grand-opening-2026':'Founding Family bonus: free 5th session, use within 90 days'};
 const window={};eval(fs.readFileSync(new URL('../config.js',import.meta.url),'utf8'));
 const [id,mode]=process.argv.slice(2),live=process.argv.includes('--live');
+// RETIRED 2026-10-16 MT: the Founding Family +1 note is retired (Billy via Cisco 5:04 PM: Grand Opening is a straight 20% off; sale links carry their own note).
+const RETIRED={'grand-opening-2026':'Founding Family note retired: Grand Opening is 20% off via sale Payment Links; regular links cleared 10/16'};
+if(RETIRED[id]&&mode==='apply'){console.error('Refusing: '+RETIRED[id]);process.exit(2)}
 const deal=(window.SITE.deals||[]).find(x=>x.id===id);
 if(!deal||!NOTE[id]||!['apply','remove'].includes(mode)){console.error('usage: node tools/deal-checkout-note.mjs <holiday-4pack-2026|grand-opening-2026> <apply|remove> [--live]');process.exit(2)}
 const pkgs=deal.eligible_packages.filter(k=>k!=='single');
