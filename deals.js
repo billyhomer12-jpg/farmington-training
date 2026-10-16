@@ -6,7 +6,8 @@ const esc=v=>String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&g
 const now=nw?new Date(/^\d{4}-\d{2}-\d{2}$/.test(nw)?nw+'T12:00:00-07:00':nw):new Date();
 const list=(S.deals||[]).filter(d=>d&&d.id);
 const live=d=>['approved','live'].includes(d.status)&&d.start_at&&d.end_at&&new Date(d.start_at)<=now&&now<new Date(d.end_at);
-const d=pv?list.find(x=>x.id===pv):list.find(live);
+const d0=pv?list.find(x=>x.id===pv):list.find(live);
+const launched=!!(d0&&d0.launch_at&&now>=new Date(d0.launch_at));const d=d0&&launched&&d0.launch_copy?{...d0,...d0.launch_copy}:d0;
 const test=!!(pv||nw);
 if(test){const m=document.createElement('meta');m.name='robots';m.content='noindex';document.head.appendChild(m)}
 window.DEALS={active:d||null,eligible:k=>!!(d&&k&&k!=='single'&&(d.eligible_packages||[]).includes(k)),
@@ -28,7 +29,7 @@ function tag(){if(document.querySelector('.deal-pv'))return;const t=document.cre
 function run(){
  if(sf.includes('home_banner')&&['index','pricing','book'].includes(pg)&&(pv||!localStorage.getItem('deal-dismissed:'+d.id))&&!document.querySelector('.deal-bar')){
   const bar=document.createElement('div');bar.className='deal-bar';bar.setAttribute('role','region');bar.setAttribute('aria-label','Current offer');
-  const left=new Date(d.end_at)-now,cd=d.countdown_hours&&left>0&&left<=d.countdown_hours*3600e3?` · Ends in ${Math.ceil(left/3600e3)}h`:'';
+  const left=new Date(d.end_at)-now,cd=d.countdown_hours&&(!d.launch_at||launched)&&left>0&&left<=d.countdown_hours*3600e3?` · Ends in ${Math.ceil(left/3600e3)}h`:'';
   bar.innerHTML=`<span class="t">${d.banner_text?esc(d.banner_text):`${esc(d.headline)}<span class="long">: ${esc(d.banner_detail||d.offer_detail)}</span>`}${esc(cd)}</span>${pg==='pricing'?'':`<a href="${esc(d.cta_url||'pricing.html')}">${esc(d.cta_label||'See packages')}</a>`}<button type="button" class="x" aria-label="Dismiss offer">×</button>`;
   bar.querySelector('.x').onclick=()=>{try{localStorage.setItem('deal-dismissed:'+d.id,'1')}catch{}bar.remove();document.documentElement.classList.remove('deal-res')};document.body.prepend(bar)}
  if(sf.includes('pricing_badge'))document.querySelectorAll('article.price[data-package]:not([data-tier])').forEach(c=>{if(c.closest('#memberships')||c.querySelector('.deal-badge'))return;

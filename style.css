@@ -385,3 +385,12 @@ body.qb-on .scrollhint.dn.gone~.scrollhint.up{bottom:calc(81px + env(safe-area-i
 .hero .ctas .btn{min-height:44px;border-radius:14px;display:inline-flex;align-items:center;justify-content:center;margin:0}
 @media(max-width:400px){.hero .ctas{flex-direction:column;gap:12px;width:100%}.hero .ctas .btn{width:100%;height:48px;min-height:48px;padding:0 20px;font-size:17px;white-space:nowrap}}
 .js-ptabs:not(.ptabs-ready) .pstage>[role=tabpanel]:not(#panel-private){display:none}
+/* PQA-1..4 */
+.gsize{grid-template-columns:repeat(3,minmax(0,1fr));gap:0;padding:3px}
+.gsize label,.gsize label:has(input:checked){position:relative;min-width:0;align-items:center;justify-content:center;text-align:center;padding:4px 6px;line-height:1.1;border-radius:980px}
+.gsize input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;display:block;cursor:pointer}
+.gsize label b,.gsize label span{display:block;text-align:center;white-space:nowrap}
+.gpp{grid-column:1/-1;margin:8px 0 0;font-size:.875rem;color:#6e6e73}.gpp span{display:block}
+.js-ptabs .gpp span:not(.on){display:none}
+@media(min-width:761px) and (max-width:1023px){.ptab-sec .prices4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.ptab-sec #memberships .price .mut{position:static;width:auto;height:auto;overflow:visible;clip:auto;white-space:normal;grid-column:1/-1;margin:6px 0 0;font-size:.875rem}

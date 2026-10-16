@@ -78,5 +78,8 @@ window.SITE.deals = [
       if(!L)return {state:"prelaunch",start_at:P,end_at:new Date(cap).toISOString(),banner_text:"Grand Opening: Founding Family Bonus. Free 5th session with any 4-pack.",
         fine_print:"Use it within 90 days. Not valid on single sessions. One per package; can't be combined.",countdown:false};
       // Launched: 72h window, auto-ends at the earlier of LAUNCH_AT+72h or the cap; countdown only in the last 48h.
-      return {state:"launch",start_at:P,end_at:new Date(Math.min(new Date(L).getTime()+72*3600e3,cap)).toISOString(),countdown_hours:48}})()  }
+      // Before LAUNCH_AT the prelaunch copy stays; deals.js swaps in launch_copy once now >= LAUNCH_AT.
+      return {state:"launch",start_at:P,launch_at:L,end_at:new Date(Math.min(new Date(L).getTime()+72*3600e3,cap)).toISOString(),countdown_hours:48,
+        banner_text:"Grand Opening: Founding Family Bonus. Free 5th session with any 4-pack.",fine_print:"Use it within 90 days. Not valid on single sessions. One per package; can't be combined.",
+        launch_copy:{banner_text:null,fine_print:"Buy any 4-session package in our first 72 hours and get a 5th session free. Use it within 90 days. Not valid on single sessions. One per package; can't be combined."}}})()  }
 ];
