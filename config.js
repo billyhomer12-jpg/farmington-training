@@ -72,6 +72,7 @@ window.SITE.deals = [
     cta_label: "See prices", cta_url: "pricing.html",
     summary_line: "20% off for 72 hours.",
     fine_print: "First month only on monthly plans. Ends Mon 10/19 at 6:15 PM MT.",
+    membership_fine_print: "Grand Opening: 20% off your first month. Ends Mon 10/19 at 6:15 PM MT.",
     surfaces: ["home_banner", "pricing_badge", "book_page"],
     promo_code: null, countdown: false, spots_left: null, countdown_hours: 72,
     ...(()=>{const L=window.SITE.LAUNCH_AT;return L?{start_at:L,end_at:new Date(new Date(L).getTime()+72*3600e3).toISOString()}:{}})() }
