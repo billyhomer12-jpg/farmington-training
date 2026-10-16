@@ -1,25 +1,29 @@
 // DEALS-SLOT: one reusable deal component (banner, '+1 bonus session' card badges, booking summary line, confirmation line, FAQ).
 // Off state = no DOM output at all. Config: window.SITE.deals + LAUNCH_AT in config.js.
-(()=>{const S=window.SITE||{},q=new URLSearchParams(location.search),pv=q.get('deal_preview'),nw=q.get('deal_now');
+(()=>{const S=window.SITE||{},q=new URLSearchParams(location.search),pv=q.get('deal_preview')||(q.get('preview')==='deal'?'grand-opening-2026':null),nw=q.get('deal_now');
 const esc=v=>String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 // Fake clock: a bare date means noon Denver time that day.
 const now=nw?new Date(/^\d{4}-\d{2}-\d{2}$/.test(nw)?nw+'T12:00:00-07:00':nw):new Date();
 const list=(S.deals||[]).filter(d=>d&&d.id);
 const live=d=>['approved','live'].includes(d.status)&&d.start_at&&d.end_at&&new Date(d.start_at)<=now&&now<new Date(d.end_at);
 const d0=pv?list.find(x=>x.id===pv):list.find(live);
-const launched=!!(d0&&d0.launch_at&&now>=new Date(d0.launch_at));const d=d0&&launched&&d0.launch_copy?{...d0,...d0.launch_copy}:d0;
+const launched=!!(d0&&d0.launch_at&&now>=new Date(d0.launch_at));let d=d0&&launched&&d0.launch_copy?{...d0,...d0.launch_copy}:d0;if(d&&pv&&!d.end_at){const L=S.LAUNCH_AT||new Date().toISOString();d={...d,start_at:L,end_at:new Date(new Date(L).getTime()+72*3600e3).toISOString()}}
+const sale=!!(d&&d.offer_type==='percent_off');
 const test=!!(pv||nw);
 if(test){const m=document.createElement('meta');m.name='robots';m.content='noindex';document.head.appendChild(m)}
-window.DEALS={active:d||null,eligible:k=>!!(d&&k&&k!=='single'&&(d.eligible_packages||[]).includes(k)),
- line:k=>window.DEALS.eligible(k)?`<div class="deal-line"><b>${esc(d.headline)}:</b> ${esc(d.summary_line||d.offer_detail)}<small>${esc(d.fine_print)}</small></div>`:'',
+window.DEALS={active:d||null,sale,eligible:k=>!!(d&&k&&(sale||k!=='single')&&(d.eligible_packages||[]).includes(k)),
+ line:k=>window.DEALS.eligible(k)?`<div class="deal-line"><b>${esc(d.headline)}:</b> ${esc(d.summary_line||d.offer_detail)}${d.fine_print?`<small>${esc(d.fine_print)}</small>`:''}</div>`:'',
  confirm:b=>b&&b.line?`<div class="deal-line"><b>${esc(b.headline||'Bonus')}:</b> ${esc(b.line)}.</div>`:''};
-if(!d){if(test)tag(null);return}
+if(!d){if(test)document.readyState==='loading'?document.addEventListener('DOMContentLoaded',tag):tag();return}
+const money=n=>'$'+(Math.round(n*100)%100?n.toFixed(2):Math.round(n));
+if(sale){const P=S.packages||{},SL=S.saleLinks||{};for(const k in P)if(P[k].sale&&/^https:\/\//.test(SL[k]||'')){P[k].regular=P[k].price;P[k].price=P[k].sale}}
 const css=document.createElement('style');css.textContent=`.deal-res body{padding-top:40px}.deal-bar{position:absolute;top:0;left:0;right:0;z-index:31;height:40px;display:flex;align-items:center;justify-content:center;gap:12px;padding:0 48px 0 16px;background:#000;color:#fff;font:500 .875rem/1.2 var(--font)}
 .deal-bar .short{display:none}.deal-bar .t{text-align:center;line-height:1.25;overflow-wrap:break-word;min-width:0}.deal-bar a{color:var(--ac);text-decoration:underline;text-underline-offset:2px;white-space:nowrap}
 .deal-bar .x{position:absolute;right:0;top:0;width:44px;height:40px;border:0;background:none;color:#a1a1a6;font-size:20px;cursor:pointer}.deal-bar .x:focus-visible{outline:2px solid var(--ac);outline-offset:-4px}
 .deal-badge{display:inline-flex;align-items:center;align-self:center;height:24px;padding:0 10px;border-radius:980px;background:var(--ac-tint);color:var(--ac-deep);font:600 .75rem/1 var(--font);margin:0 0 10px}
 .deal-pills{display:flex;gap:6px;align-items:center;justify-content:center;flex-wrap:wrap}.deal-pills>*{margin-bottom:10px}
 .deal-line{margin:12px 0 0;padding:12px 14px;border-radius:12px;background:var(--ac-tint2);font-size:.9375rem;line-height:1.4}.deal-line b{color:var(--ac-deep)}.deal-line small{display:block;font-size:.8125rem;color:#6e6e73;margin-top:4px}
+.was{color:#86868b;font-weight:500;font-size:.7em;text-decoration:line-through}.now{color:inherit}.price .first{display:block;font-size:.8125rem;color:#6e6e73;font-weight:500}
 .deal-pv{display:inline-block;background:var(--ac2);color:#fff;font:700 .625rem/1 var(--font);letter-spacing:.06em;padding:3px 6px;border-radius:4px;margin-right:8px;vertical-align:middle;text-transform:uppercase}
 @media(max-width:760px){.deal-res body{padding-top:64px}.deal-bar{height:64px;font-size:.75rem;gap:8px}.deal-bar .short{display:inline}.deal-bar .x{height:64px}.deal-bar .long{display:none}}`;document.head.appendChild(css);
 const pg=(location.pathname.split('/').pop()||'index.html').replace(/\.html$/,'')||'index',sf=d.surfaces||[];
@@ -38,5 +42,13 @@ function run(){
   const s=document.createElement('span');s.className='deal-badge';s.textContent=d.offer_detail||'+1 bonus session';
   const pop=c.querySelector('.poplabel');if(pop){const w=document.createElement('div');w.className='deal-pills';pop.before(w);w.append(pop,s)}else c.prepend(s)});
  if(d.faq_q&&pg==='index'){const f=document.querySelector('.faq');if(f&&!f.querySelector('[data-deal]')){const x=document.createElement('details');x.dataset.deal=d.id;x.innerHTML=`<summary>${esc(d.faq_q)}</summary><p>${esc(d.fine_print)}</p>`;f.prepend(x)}}
+ if(sale){const P=S.packages||{},was=(r,s)=>`<s class="was">${money(r)}</s> <b class="now">${money(s)}</b>`;
+  document.querySelectorAll('article.price[data-package]').forEach(c=>{const k=c.dataset.package,a=c.querySelector('.amt');if(!a||c.dataset.sale)return;c.dataset.sale='1';
+   if(k==='group'){const sp=a.querySelectorAll('[data-size]');if(sp.length){sp.forEach(x=>{const p=P['group'+x.dataset.size];if(p)x.innerHTML=was(p.regular||p.price,p.sale)});
+     const gp=c.querySelector('.gpp');if(gp){const m={};[2,3,4].forEach(n=>{const p=P['group'+n];if(p)m[n]=money(p.sale/n)+' per player'});gp.querySelectorAll('[data-size]').forEach(x=>{if(m[x.dataset.size])x.textContent=m[x.dataset.size]});if(gp._t){Object.assign(gp._t,m);const on=c.querySelector('input[name=gsize]:checked');if(on&&m[on.value])gp.textContent=m[on.value]}}}
+     else if(P.group2&&P.group4)a.innerHTML=was(P.group2.price,P.group2.sale)+'<small>–'+money(P.group4.sale)+'</small>';return}
+   const p=P[k];if(p&&p.sale)a.innerHTML=was(p.regular||p.price,p.sale)});
+  if(d.fine_print&&pg==='pricing'&&!document.querySelector('.deal-fp')){const m=document.querySelector('#memberships>.wrap>p.fine');if(m){const x=document.createElement('p');x.className='fine deal-fp';x.textContent=d.headline+' sale: '+d.fine_print;m.before(x)}}
+  window.DEALS.renderMonthly&&window.DEALS.renderMonthly()}
  if(test)tag()}
 document.readyState==='loading'?document.addEventListener('DOMContentLoaded',run):run()})();
