@@ -150,3 +150,9 @@ async function loadMembers(){const r=await rpc('coach_memberships',auth());const
  document.querySelector('#memsum').textContent=L.length+' members · '+c+' canceling · '+f+' failed payments · '+p+' need date picks';
  document.querySelector('#memt tbody').innerHTML=L.map(m=>'<tr><td>'+esc(m.athlete)+'<br><span class="mut">'+esc(m.parent_email)+'</span></td><td>'+esc(NM[m.tier]||m.tier)+'</td><td>'+esc(m.status_label)+'</td><td>'+m.sessions_left+'</td><td>'+m.rollover+(m.closure_rollover?' + '+m.closure_rollover+' closure':'')+'</td><td>'+m.reschedules_used+' of 1'+(m.reschedules_used>=1?' (limit reached)':'')+'</td><td>'+(m.tier==='1on1_monthly_plus'?(m.picks_flag?'<b>Flag: '+m.sessions_left+' unpicked, due '+D(m.picks_due)+'</b>':(m.sessions_left>0?m.sessions_left+' to pick by '+D(m.picks_due):'All picked')):(m.sessions_left>0?m.sessions_left+' to pick':'All picked'))+'</td><td>'+D(m.current_period_end)+'</td></tr>').join('')||'<tr><td colspan="8">No members yet.</td></tr>'}
 document.querySelector('.tabs').addEventListener('click',e=>{if((e.target.closest('[data-tab]')||{dataset:{}}).dataset.tab==='t-mem')loadMembers()});})();
+
+// SB3: Members filter (BO-1/3/4), own section; filters rows rendered by loadMembers
+(()=>{const f=document.getElementById('memf'),t=document.querySelector('#memt tbody');if(!f||!t)return;let k='';
+const apply=()=>{[...t.rows].forEach(r=>{r.hidden=!!k&&r.cells.length>1&&!r.textContent.includes(k)})};
+f.addEventListener('click',e=>{const b=e.target.closest('[data-mf]');if(!b)return;k=b.dataset.mf;f.querySelectorAll('[data-mf]').forEach(x=>x.classList.toggle('ghost',x!==b));apply()});
+new MutationObserver(apply).observe(t,{childList:true});})();
