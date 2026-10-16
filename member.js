@@ -3,8 +3,8 @@ const rpc=(fn,b)=>fetch(S.supabaseUrl+'/rest/v1/rpc/'+fn,{method:'POST',headers:
 const TZ='America/Denver',NAMES={'1on1_monthly':['1-on-1 Monthly','$240/mo · 4 sessions/mo'],'1on1_monthly_plus':['1-on-1 Monthly Plus','$460/mo · 8 sessions/mo (pick 4 now, 4 more before week 3)'],'open_group_monthly':['Open Group Monthly','$120/mo · 4 sessions/mo']};
 const fmt=t=>new Date(t).toLocaleString('en-US',{timeZone:TZ,weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
 const day=t=>new Date(t).toLocaleDateString('en-US',{timeZone:TZ,weekday:'long',month:'short',day:'numeric'});
-async function slots(program,el,max,onPick,taken=[]){const from=new Date(Date.now()+864e5),to=new Date(Date.now()+28*864e5);
- const r=await rpc('membership_slots',{p_program:program,p_type:'Gym'});
+async function slots(program,el,max,onPick,taken=[],type='Gym'){const from=new Date(Date.now()+864e5),to=new Date(Date.now()+28*864e5);
+ const r=await rpc('membership_slots',{p_program:program,p_type:type});
  const ok=(Array.isArray(r)?r:[]).map(t=>({starts_at:t})).filter(x=>!taken.includes(+new Date(x.starts_at)));
  const g={};ok.forEach(x=>(g[day(x.starts_at)]=g[day(x.starts_at)]||[]).push(x.starts_at));
  el.innerHTML=Object.keys(g).length?'':'<p class="mut">No open times in the next 4 weeks. Text (505) 469-3851.</p>';
@@ -12,9 +12,9 @@ async function slots(program,el,max,onPick,taken=[]){const from=new Date(Date.no
   g[d].forEach(t=>{const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=new Date(t).toLocaleTimeString('en-US',{timeZone:TZ,hour:'numeric'});b.dataset.t=t;b.onclick=()=>onPick(t,b);w.appendChild(b)});el.appendChild(w)}}
 const q=new URLSearchParams(location.search);
 if($('#msign')){const tier=q.get('tier');const n=NAMES[tier];if(!n){$('#merr').textContent='Pick a plan on the Pricing page.';return}
- $('#mtitle').textContent=n[0];$('#mplan').textContent=n[1];const picks=new Set();
+ $('#mtitle').textContent=n[0];$('#mplan').textContent=n[1];const picks=new Set();const OG=tier==='open_group_monthly';if(OG){$('[name=program]').closest('label').hidden=true;$('#mhint').textContent='Open group times in the next 4 weeks. Pick 4 (one group, or mix groups). Each session is 2 hours.'}
  const upd=()=>{$('#mcount').textContent='('+picks.size+' of 4)';$('#mgo').disabled=picks.size!==4};
- const load=()=>{picks.clear();upd();slots($('[name=program]').value,$('#mdays'),4,(t,b)=>{if(picks.has(t)){picks.delete(t);b.classList.remove('on')}else if(picks.size<4){picks.add(t);b.classList.add('on')}upd()})};
+ const load=()=>{picks.clear();upd();slots(OG?'Basketball Skills':$('[name=program]').value,$('#mdays'),4,(t,b)=>{if(picks.has(t)){picks.delete(t);b.classList.remove('on')}else if(picks.size<4){picks.add(t);b.classList.add('on')}upd()},[],OG?'OpenGroup':'Gym')};
  $('[name=program]').onchange=load;load();
  $('#msign').onsubmit=async e=>{e.preventDefault();$('#merr').textContent='';$('#mgo').disabled=true;const f=new FormData(e.target);
   const r=await fetch(S.supabaseUrl+'/functions/v1/'+(S.membershipCheckoutFn||'membership-checkout-test'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tier,parent:f.get('parent'),athlete:f.get('athlete'),email:f.get('email'),phone:f.get('phone'),program:f.get('program'),starts:[...picks],origin:location.origin})}).then(r=>r.json()).catch(()=>({error:'Network error. Please try again.'}));
@@ -31,5 +31,5 @@ if($('#mbox')){const tok=q.get('m');let V;
   $('#mportal').onclick=async()=>{const r=await fetch(S.supabaseUrl+'/functions/v1/'+(S.membershipCheckoutFn||'membership-checkout-test'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({portal_token:tok,origin:location.origin})}).then(r=>r.json());if(r.url)location.href=r.url;else $('#merr').textContent=r.error}};
  const pick=id=>{$('#mpick').hidden=false;$('#mpickh').textContent=id?'Pick a new time':'Pick a session';$('#merr').textContent='';
   slots(V.program||'Basketball Skills',$('#mdays'),1,async t=>{const r=id?await rpc('membership_reschedule',{p_token:tok,p_session:id,p_start:t}):await rpc('membership_pick',{p_token:tok,p_start:t});
-   if(r.error)$('#merr').textContent=r.error;else{$('#mpick').hidden=true;show()}},V.sessions.map(s=>+new Date(s.starts_at)))};
+   if(r.error)$('#merr').textContent=r.error;else{$('#mpick').hidden=true;show()}},V.sessions.map(s=>+new Date(s.starts_at)),V.workout_type||'Gym')};
  show()}})();

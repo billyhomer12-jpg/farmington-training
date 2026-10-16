@@ -22,6 +22,14 @@ begin
   if p_start <> date_trunc('hour',p_start) then return 'Pick a time on the hour.'; end if;
   if p_start < now() + interval '24 hours' then return 'Pick a time at least 24 hours from now.'; end if;
   if p_start > now() + interval '4 weeks' then return 'Members can book up to 4 weeks ahead.'; end if;
+  if p_type = 'OpenGroup' then
+    if not exists (select 1 from training.open_group_sessions gs join training.open_groups g on g.id=gs.group_id
+        where gs.starts_at=p_start and g.status in ('forming','running','confirmed','open') and not coalesce(g.is_demo,false)
+        and g.capacity > (select count(*) from training.open_group_members om where om.group_id=g.id and om.status not in ('removed','canceled','cancelled'))
+                        + (select count(*) from membership_sessions ms where ms.status='confirmed' and ms.starts_at=p_start and (p_ignore is null or ms.id<>p_ignore)))
+      then return 'That open group time is full or not available.'; end if;
+    return null;
+  end if;
   if not training.hour_allowed(p_start, coalesce(p_type,'Gym')) then return 'That time is outside gym hours or the gym is closed.'; end if;
   if training.seats_left(p_start, p_program, null) < 1 then return 'That time is no longer available.'; end if;
   if exists (select 1 from membership_sessions s where s.status='confirmed' and (p_ignore is null or s.id<>p_ignore)
@@ -48,7 +56,7 @@ declare m memberships; lim int := (select value::int from membership_config wher
 begin
   select * into m from memberships where token_hash = training.token_hash(p_token) and length(coalesce(p_token,''))>=32;
   if not found then return jsonb_build_object('error','invalid link'); end if;
-  return jsonb_build_object('athlete',m.athlete,'program',m.program,'tier',m.tier,'status',m.status,'canceling',m.cancel_at_period_end,'period_end',m.current_period_end,
+  return jsonb_build_object('athlete',m.athlete,'program',m.program,'workout_type',m.workout_type,'tier',m.tier,'status',m.status,'canceling',m.cancel_at_period_end,'period_end',m.current_period_end,
     'sessions_left', m.sessions_granted+m.rollover+m.closure_rollover-m.sessions_used,'rollover',m.rollover,'granted',m.sessions_granted,
     'reschedules_left', greatest(0, lim - case when mode='per_month' then m.reschedules_used else m.reschedules_lifetime end),
     'picks_needed', greatest(0, m.sessions_granted+m.rollover+m.closure_rollover-m.sessions_used),
@@ -103,8 +111,10 @@ select m.*, case
   (m.sessions_granted+m.rollover+m.closure_rollover-m.sessions_used) as sessions_left,
   (select count(*) from membership_sessions s where s.membership_id=m.id and s.status='confirmed' and s.starts_at>=coalesce(m.current_period_start,'-infinity')) as sessions_picked,
   case when m.tier='1on1_monthly_plus' then m.current_period_start + interval '14 days' end as picks_due,
-  (m.tier='1on1_monthly_plus' and m.status='active' and now() >= m.current_period_start + interval '10 days'
-     and (m.sessions_granted+m.rollover+m.closure_rollover-m.sessions_used) > 0) as picks_flag,
+  (m.tier='1on1_monthly_plus' and m.status='active' and m.current_period_start is not null
+     and now() >= m.current_period_start + interval '10 days'
+     and greatest(0, m.sessions_granted - m.sessions_used) > 0) as picks_flag,
+  greatest(0, m.sessions_granted - m.sessions_used) as plan_sessions_remaining,
   (select value from membership_config where key='reschedule_limit_mode') as reschedule_mode
 from public.memberships m;
 revoke all on public.membership_admin from anon, authenticated;
@@ -126,7 +136,7 @@ declare n int;
 begin
   insert into membership_email_log(membership_id,kind,to_email,subject,body)
   select a.id,'pick_reminder',a.parent_email,'Pick your remaining sessions by '||to_char(a.picks_due at time zone 'America/Denver','Mon DD'),
-    'Hi! '||a.athlete||' has '||a.sessions_left||' sessions left to pick this month. Monthly Plus sessions need to be picked before '||to_char(a.picks_due at time zone 'America/Denver','Mon DD')||' (the start of week 3). Use your reschedule link to pick them.'
+    'Hi! '||a.athlete||' has '||a.plan_sessions_remaining||' sessions left to pick this month. Monthly Plus sessions need to be picked before '||to_char(a.picks_due at time zone 'America/Denver','Mon DD')||' (the start of week 3). Use your reschedule link to pick them.'
   from membership_admin a where a.picks_flag and not exists (select 1 from membership_email_log l where l.membership_id=a.id and l.kind='pick_reminder' and l.created_at>=a.current_period_start);
   get diagnostics n = row_count; return n;
 end $$;
