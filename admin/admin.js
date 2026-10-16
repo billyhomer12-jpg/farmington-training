@@ -140,3 +140,13 @@ $('og-new').onclick=()=>{$('ogform').reset();$('og-id').value='';$('ogfh').textC
 $('ogform').onsubmit=async e=>{e.preventDefault();const days=[...document.querySelectorAll('.ogdays input:checked')].map(c=>+c.value);if(!days.length)return msg('Pick at least one day.');
 const n=v=>v===''?null:+v,j=await rpc('coach_save_group',{...auth(),p_id:n($('og-id').value),p_label:$('og-label').value,p_weekdays:days,p_start_hour:+$('og-hour').value,p_first_date:$('og-date').value,p_capacity:n($('og-cap').value),p_age_min:n($('og-amin').value),p_age_max:n($('og-amax').value),p_status:null,p_note:$('og-note').value});
 if(j.error)return msg(j.error);msg(j.warning||'Group saved.');if(j.warning)alert(j.warning);$('og-new').click();loadOg();load()};
+
+// Members tab (memberships)
+(()=>{const NM={'1on1_monthly':'1-on-1 Monthly','1on1_monthly_plus':'1-on-1 Monthly Plus','open_group_monthly':'Open Group Monthly'};
+const D=t=>t?new Date(t).toLocaleDateString('en-US',{timeZone:'America/Denver',month:'short',day:'numeric',year:'numeric'}):'';
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+async function loadMembers(){const r=await rpc('coach_memberships',auth());const j=r&&r.json?await r.json():r;if(!j||j.error){document.querySelector('#memsum').textContent=(j&&j.error)||'Could not load members.';return}
+ const L=j.members||[];const f=L.filter(m=>m.payment_failed).length,p=L.filter(m=>m.picks_flag).length,c=L.filter(m=>m.cancel_at_period_end&&m.status!=='canceled').length;
+ document.querySelector('#memsum').textContent=L.length+' members · '+c+' canceling · '+f+' failed payments · '+p+' need date picks';
+ document.querySelector('#memt tbody').innerHTML=L.map(m=>'<tr><td>'+esc(m.athlete)+'<br><span class="mut">'+esc(m.parent_email)+'</span></td><td>'+esc(NM[m.tier]||m.tier)+'</td><td>'+esc(m.status_label)+'</td><td>'+m.sessions_left+'</td><td>'+m.rollover+(m.closure_rollover?' + '+m.closure_rollover+' closure':'')+'</td><td>'+m.reschedules_used+' of 1'+(m.reschedules_used>=1?' (limit reached)':'')+'</td><td>'+(m.tier==='1on1_monthly_plus'?(m.picks_flag?'<b>Flag: '+m.sessions_left+' unpicked, due '+D(m.picks_due)+'</b>':(m.sessions_left>0?m.sessions_left+' to pick by '+D(m.picks_due):'All picked')):(m.sessions_left>0?m.sessions_left+' to pick':'All picked'))+'</td><td>'+D(m.current_period_end)+'</td></tr>').join('')||'<tr><td colspan="8">No members yet.</td></tr>'}
+document.querySelector('.tabs').addEventListener('click',e=>{if((e.target.closest('[data-tab]')||{dataset:{}}).dataset.tab==='t-mem')loadMembers()});})();

@@ -372,3 +372,6 @@ body.qb-on .scrollhint.dn.gone~.scrollhint.up{bottom:calc(81px + env(safe-area-i
 .ptab-sec .cta2{margin-top:28px}
 @media(min-width:761px){.ptab-sec .pstage{max-width:980px;margin:0 auto}.ptab-sec .prices4{grid-template-columns:repeat(3,1fr);gap:16px}.ptab-sec .pdet{max-width:980px;margin:12px auto 0}}
 @media(min-width:761px){.ptab-sec .solo-hint{max-width:980px;margin:12px auto 0}.ptab-sec #memberships>.wrap>p.fine{max-width:980px;margin:12px auto 0}}
+/* membership preview */
+.mslots{display:grid;gap:.75rem}.mday .mdl{font-weight:600;margin:.25rem 0}.chip{min-height:44px;min-width:64px;margin:.2rem;border:1px solid #1E7B34;background:#fff;color:#1E7B34;border-radius:999px;cursor:pointer}.chip.on{background:#34C759;color:#000;border-color:#34C759}
+#msign label{display:block;margin:.5rem 0}#msign input,#msign select{width:100%;min-height:44px}.err{color:#b00020}.ok{color:#1E7B34;font-weight:600}.warn{background:#eaf9ee;border-left:4px solid #1E7B34;padding:.5rem}.mlist li{margin:.4rem 0}

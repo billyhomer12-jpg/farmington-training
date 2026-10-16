@@ -34,3 +34,6 @@ returns boolean language sql stable security definer set search_path=public as $
     and (not m.cancel_at_period_end or p_slot <= m.current_period_end)
     and (m.sessions_granted+m.rollover+m.closure_rollover-m.sessions_used) > 0);
 $$;
+-- Test-mode email log (rendered emails stored, never sent)
+create table if not exists public.membership_email_log (id bigserial primary key, membership_id uuid, kind text, to_email text, subject text, body text, created_at timestamptz default now());
+alter table public.membership_email_log enable row level security;
