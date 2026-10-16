@@ -2,7 +2,7 @@
 // READ-ONLY: live Stripe payment links + Supabase deal + served config.js vs config.js on origin/main. Never prints secrets.
 import fs from 'fs'; import {execSync} from 'child_process'; import vm from 'vm';
 const NOTE='Founding Family bonus: free 5th session, use within 90 days';
-const EXP_START=process.env.EXP_START||'2026-10-16T14:30:00-06:00', EXP_END=process.env.EXP_END||'2026-10-19T18:15:00-06:00';
+const EXP_START=process.env.EXP_START||'2026-10-16T18:15:00-06:00', EXP_END=process.env.EXP_END||'2026-10-19T18:15:00-06:00';
 const K=fs.readFileSync('/workspace/.secrets/stripe_live_key','utf8').trim(), T=fs.readFileSync('/workspace/.sbtoken','utf8').trim();
 const mainSrc=execSync('git show origin/main:config.js',{cwd:new URL('..',import.meta.url).pathname}).toString();
 const load=s=>{const c={window:{},Date,Math,console};vm.runInNewContext(s,c);return c.window.SITE;};
@@ -14,15 +14,17 @@ for(const [pk,url] of Object.entries(S.paymentLinks)){
   const li=(await st(`payment_links/${L.id}/line_items`)).data?.[0]; const amt=li?(li.amount_total/100):'?';
   row(pk+' price $',S.packages[pk].price,amt);
   const note=L.custom_text?.submit?.message||L.custom_text?.after_submit?.message||'';
-  row(pk+' checkout note',(S.deals.find(d=>d.id==='grand-opening-2026').eligible_packages.includes(pk)?NOTE:''),note);
+  row(pk+' regular link checkout note (Founding removed)','',note);
 }
 // Monthly plans (config.js single source) vs live + test Stripe recurring prices
-const MP=S.membershipPlans||S.memberships||S.monthlyPlans; const KT=fs.readFileSync('/workspace/.secrets/stripe_test_secret_key','utf8').trim();
+const MP=S.MEMBERSHIP_PRICES||S.membershipPlans||S.memberships||S.monthlyPlans; const KT=fs.readFileSync('/workspace/.secrets/stripe_test_secret_key','utf8').trim();
 const stT=async p=>(await fetch('https://api.stripe.com/v1/'+p,{headers:{Authorization:'Bearer '+KT}})).json();
 const info=[];
 for(const t of ['1on1_monthly','1on1_monthly_plus','open_group_monthly']){
   const want=MP?.[t]?.price; if(want==null){row(t+' in config.js','price set','MISSING');continue;}
-  for(const [mode,f] of [['live',st],['test',stT]]){
+  const KM=fs.existsSync('/workspace/.secrets/stripe_live_memberships_key')?fs.readFileSync('/workspace/.secrets/stripe_live_memberships_key','utf8').trim():K;
+  const stM=async p=>(await fetch('https://api.stripe.com/v1/'+p,{headers:{Authorization:'Bearer '+KM}})).json();
+  for(const [mode,f] of [['live',stM],['test',stT]]){
     const pr=(await f(`prices/search?query=${encodeURIComponent(`active:'true' AND metadata['tier']:'${t}'`)}`)).data||[];
     if(!pr.length){ if(mode==='live') info.push(`${t} live price: not created yet (created by live switch)`); else row(`${t} test price $/mo`,want,'NOT FOUND'); continue;}
     row(`${t} ${mode} price $/mo`,want,pr.map(x=>x.unit_amount/100).join(','));
