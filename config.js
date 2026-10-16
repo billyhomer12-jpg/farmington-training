@@ -32,7 +32,10 @@ window.SITE = {
   paymentLinks: { "single": "https://buy.stripe.com/8x200l3xBc866AX8Gh8Zq04", "1on1": "https://buy.stripe.com/5kQ3cx3xBegebVhg8J8Zq00", "group2": "https://buy.stripe.com/cNi3cxfgj6NMcZl7Cd8Zq01", "group3": "https://buy.stripe.com/14A6oJ8RV9ZYaRd09L8Zq02", "group4": "https://buy.stripe.com/dRm8wR5FJ9ZYaRd4q18Zq03", "open_group": "https://buy.stripe.com/8x214pd8b5JIcZlcWx8Zq05" }
 };
 
-window.progLabel=k=>((window.SITE.programs||[]).find(p=>p.key===k||p.label===k)||{label:k}).label;
+// Removed programs: display-only labels for old/DEMO rows. Not bookable (not in SITE.programs).
+window.SITE.legacyPrograms={'Youth Strength Training':{label:'Weightlifting (legacy)',abbr:'WL'}};
+window.progInfo=k=>(window.SITE.programs||[]).find(p=>p.key===k||p.label===k)||window.SITE.legacyPrograms[k]||{label:k,abbr:k};
+window.progLabel=k=>window.progInfo(k).label;
 window.progOptions=()=>(window.SITE.programs||[]).map(p=>`<option value="${p.key}">${p.label}</option>`).join("");
 window.pkgSessions=k=>(((window.SITE.packages||{})[k]||{}).sessions)||window.SITE.sessionsPerPackage||4;
 // Only real https Stripe links count; placeholders like TODO_SINGLE_LINK are treated as not set up.
