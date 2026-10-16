@@ -228,3 +228,5 @@ a[href^="mailto:"]{overflow-wrap:anywhere;word-break:break-word}
 
 .achip.grp.bk{background:#f2f2f4;color:#86868b}.achip.grp.bk small{color:#86868b}
 .mover{min-width:0;max-width:100%}.mover .days{flex-wrap:wrap;overflow:visible}
+/* WG-2: links inside body text are underlined, not color-only */
+main p a:not(.btn):not(.chev):not(.achip),main li a:not(.btn),main dd a,.faq a,.legal a,footer p a,.more{text-decoration:underline;text-underline-offset:2px;text-decoration-thickness:1px}
