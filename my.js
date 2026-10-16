@@ -33,17 +33,18 @@ return `<div class="srow${open===r.id?' open':''}" data-id="${r.id}"><div class=
 ${r.group?'':past?'':late?'<small class="mut">Within 24 hrs: call or text to change</small>':`<button class="btn sm ${open===r.id?'':'ghost'}" type="button" data-move="${r.id}">${open===r.id?'Close':'Reschedule'}</button>`}
 ${open===r.id?`<div class="mover" id="mover"><p class="note">Loading open ${esc(r.workout_type)} times…</p></div>`:''}</div>`}
 R.addEventListener('click',async e=>{const m=e.target.closest('[data-move]');if(m){const id=+m.dataset.move;open=open===id?null:id;selDay=selT=null;draw();if(open)loadSlots();return}
-const d=e.target.closest('[data-d]');if(d){selDay=d.dataset.d;selT=null;drawMover();return}
+if(e.target.closest('[data-mmore]')){mshow+=7;drawMover();return}const d=e.target.closest('[data-d]');if(d){selDay=d.dataset.d;selT=null;drawMover();return}
 const t=e.target.closest('[data-t]');if(t){selT=t.dataset.t;drawMover();return}
 if(e.target.id==='mv-ok')doMove()});
 // Open times come from the server (training_move_slots): same rules as booking and parent_move, ignoring the session being moved.
-async function loadSlots(){const r=V.sessions.find(x=>x.id===open);let a=null;try{a=await rpc('training_move_slots',{p_token:tok,p_session:r.id})}catch{}
+let mshow=7;
+async function loadSlots(){mshow=7;const r=V.sessions.find(x=>x.id===open);let a=null;try{a=await rpc('training_move_slots',{p_token:tok,p_session:r.id})}catch{}
 if(!a||!a.ok){const M=$('mover');if(M){M.innerHTML='<p class="note">We couldn\u2019t load open times. <button type="button" class="btn sm" id="mv-retry">Retry</button></p>';$('mv-retry').onclick=loadSlots}return}
 slots=(Array.isArray(a.j)?a.j:[]).map(x=>new Date(typeof x==='string'?x:x.training_move_slots).toISOString());
 selDay=slots[0]?kd(slots[0]):null;drawMover()}
 function drawMover(){const M=$('mover');if(!M)return;const r=V.sessions.find(x=>x.id===open);if(!slots.length){M.innerHTML='<p class="note">No open '+esc(r.workout_type)+' times in the next 30 days. Call or text us and we’ll find one.</p>';return}
 const days=[...new Set(slots.map(kd))];
-M.innerHTML=`<p class="note">Pick a new ${esc(r.workout_type)} time (2 hrs, Denver time).</p><div class="days">${days.map(k=>{const d=new Date(k+'T12:00:00Z');return `<button type="button" class="day${k===selDay?' on':''}" data-d="${k}"><small>${d.toLocaleDateString('en-US',{weekday:'short',timeZone:'UTC'})}</small><b>${d.getUTCDate()}</b><small>${d.toLocaleDateString('en-US',{month:'short',timeZone:'UTC'})}</small></button>`}).join('')}</div>
+if(selDay)mshow=Math.max(mshow,days.indexOf(selDay)+1);M.innerHTML=`<p class="note">Pick a new ${esc(r.workout_type)} time (2 hrs, Denver time).</p><div class="days">${days.slice(0,mshow).map(k=>{const d=new Date(k+'T12:00:00Z');return `<button type="button" class="day${k===selDay?' on':''}" data-d="${k}"><small>${d.toLocaleDateString('en-US',{weekday:'short',timeZone:'UTC'})}</small><b>${d.getUTCDate()}</b><small>${d.toLocaleDateString('en-US',{month:'short',timeZone:'UTC'})}</small></button>`}).join('')}${mshow<days.length?'<button type="button" class="day more" data-mmore><b>+7</b><small>Show more</small></button>':''}</div>
 <div class="hours">${slots.filter(t=>kd(t)===selDay).map(t=>`<button type="button" class="hr hb${t===selT?' on':''}" data-t="${t}"><span>${range(t)}</span></button>`).join('')}</div>
 <div class="cta2 left"><button class="btn" type="button" id="mv-ok"${selT?'':' disabled'}>${selT?'Move to '+fd(selT,{weekday:'short',month:'short',day:'numeric'})+', '+range(selT):'Pick a time'}</button></div><p class="note" id="mv-msg" role="status"></p>`}
 async function doMove(){if(!selT)return;const b=$('mv-ok');b.disabled=true;b.textContent='Moving…';
