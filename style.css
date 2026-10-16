@@ -372,3 +372,11 @@ body.qb-on .scrollhint.dn.gone~.scrollhint.up{bottom:calc(81px + env(safe-area-i
 .ptab-sec .cta2{margin-top:28px}
 @media(min-width:761px){.ptab-sec .pstage{max-width:980px;margin:0 auto}.ptab-sec .prices4{grid-template-columns:repeat(3,1fr);gap:16px}.ptab-sec .pdet{max-width:980px;margin:12px auto 0}}
 @media(min-width:761px){.ptab-sec .solo-hint{max-width:980px;margin:12px auto 0}.ptab-sec #memberships>.wrap>p.fine{max-width:980px;margin:12px auto 0}}
+/* PRICING-1 group size selector v2: 3 equal segments, fixed-width sliding indicator (transform only) */
+.gsize{position:relative;grid-template-columns:1fr 1fr 1fr;--g:0}
+.gsize:has(input[value="3"]:checked){--g:1}.gsize:has(input[value="4"]:checked){--g:2}
+.gsize .gind{position:absolute;z-index:0;top:3px;bottom:3px;left:3px;width:calc((100% - 6px)/3);border-radius:980px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.12);transform:translateX(calc(100% * var(--g)));transition:transform 240ms cubic-bezier(.2,.8,.2,1)}
+.gsize label,.gsize label:has(input:checked){z-index:1;background:none;box-shadow:none;flex-direction:column;gap:2px;min-width:0;min-height:52px;padding:6px 0;line-height:1;text-align:center;transition:none}
+.gsize label b{font-size:1.0625rem;font-weight:600}.gsize label span{font-size:.75rem;font-weight:500;color:#424245}
+@media(prefers-reduced-motion:reduce){.gsize .gind{transition:none}}
+.js-ptabs .mdet{margin-top:12px}.js-ptabs .mdet>p.fine{margin:0;max-width:none}

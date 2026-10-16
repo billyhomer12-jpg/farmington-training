@@ -10,5 +10,6 @@ const fromHash=()=>{const h=location.hash.slice(1);return h==='memberships'?2:Ma
 sel(fromHash(),false,false,false);addEventListener('hashchange',()=>sel(fromHash(),false));
 const g=document.querySelector('.gcard');if(g){const set=v=>g.querySelectorAll('[data-size]').forEach(x=>x.classList.toggle('on',x.dataset.size===v));
  g.querySelectorAll('.gsize input').forEach(r=>r.onchange=()=>set(r.value));set(g.querySelector('.gsize input:checked')?.value||'2')}
+const mf=document.querySelector('#memberships>.wrap>p.fine');if(mf&&!mf.closest('details')){const d=document.createElement('details');d.className='pdet mdet';d.innerHTML='<summary>Membership details</summary>';mf.before(d);d.append(mf)}
 setTimeout(()=>sel(tabs.findIndex(t=>t.getAttribute('aria-selected')==='true'),false,false,false),0)};// refresh offer dots after deals.js
 document.readyState==='loading'?document.addEventListener('DOMContentLoaded',run):run()})();
