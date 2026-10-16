@@ -3,7 +3,7 @@ $$('[data-brand]').forEach(e=>e.textContent=S.brand);document.title=S.brand;
 $$('[data-tagline]').forEach(e=>e.textContent=S.tagline);$$('[data-location]').forEach(e=>e.textContent=S.location);
 $$('[data-phone]').forEach(e=>{e.textContent=S.phone;e.href='tel:'+(S.phoneTel||S.phone)});
 $$('[data-email]').forEach(e=>{e.textContent=S.email;e.href='mailto:'+S.email});
-[['tt','tiktok']].forEach(([a,b])=>$$('[data-'+a+']').forEach(e=>e.href=S[b]));
+
 // Tab bar: keep current tab visible; scroll-spy for homepage anchors
 (()=>{const n=document.getElementById('links');if(!n)return;const c=n.querySelector('[aria-current]');if(c)c.scrollIntoView({inline:'center',block:'nearest'});
 const spy=[...n.querySelectorAll('a[href^="#"]')].map(a=>[a,document.querySelector(a.getAttribute('href'))]).filter(x=>x[1]);if(!spy.length||!('IntersectionObserver' in window))return;

@@ -226,6 +226,4 @@ a[href^="mailto:"]{overflow-wrap:anywhere;word-break:break-word}
   body:has(form,input,select,textarea,canvas,#booking-root,.oglist,#alist) .scrollhint{display:none}
 }
 
-/* TikTok footer link hidden until we have the handle: delete this rule to re-enable */
-[data-tt]{display:none!important}
 .achip.grp.bk{background:#f2f2f4;color:#86868b}.achip.grp.bk small{color:#86868b}
