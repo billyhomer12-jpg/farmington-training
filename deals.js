@@ -25,15 +25,14 @@ const pg=(location.pathname.split('/').pop()||'index.html').replace(/\.html$/,''
 function tag(){if(document.querySelector('.deal-pv'))return;const t=document.createElement('span');t.className='deal-pv';t.textContent='Preview';
  const b=document.querySelector('.deal-bar .t');if(b)b.prepend(t);else{t.style.cssText='position:fixed;left:8px;bottom:8px;z-index:40';document.body.appendChild(t)}}
 function run(){
- if(sf.includes('home_banner')&&['index','pricing','book'].includes(pg)&&(test||!localStorage.getItem('deal-dismissed:'+d.id))&&!document.querySelector('.deal-bar')){
+ if(sf.includes('home_banner')&&['index','pricing','book'].includes(pg)&&(pv||!localStorage.getItem('deal-dismissed:'+d.id))&&!document.querySelector('.deal-bar')){
   const bar=document.createElement('div');bar.className='deal-bar';bar.setAttribute('role','region');bar.setAttribute('aria-label','Current offer');
   bar.innerHTML=`<span class="t">${esc(d.headline)}<span class="long">: ${esc(d.banner_detail||d.offer_detail)}</span></span>${pg==='pricing'?'':`<a href="${esc(d.cta_url||'pricing.html')}">${esc(d.cta_label||'See packages')}</a>`}<button type="button" class="x" aria-label="Dismiss offer">×</button>`;
   bar.querySelector('.x').onclick=()=>{try{localStorage.setItem('deal-dismissed:'+d.id,'1')}catch{}bar.remove()};document.body.prepend(bar)}
- if(sf.includes('pricing_badge'))document.querySelectorAll('article.price').forEach(c=>{if(c.querySelector('.deal-badge'))return;
-  const a=c.querySelector('a[href*="package="]'),h=(c.querySelector('h3')||{}).textContent||'';
-  let k=a?new URLSearchParams(a.getAttribute('href').split('?')[1]).get('package'):null;
-  if(!k)k=/^Single/i.test(h)?'single':/solo/i.test(h)?'open_group':/^1-on-1/.test(h)?'1on1':/Group of (\d)/.test(h)?'group'+h.match(/Group of (\d)/)[1]:/own group/i.test(h)?'group2':null;
-  if(!window.DEALS.eligible(k))return;const s=document.createElement('span');s.className='deal-badge';s.textContent=d.offer_detail||'+1 bonus session';
+ if(sf.includes('pricing_badge'))document.querySelectorAll('article.price[data-package]:not([data-tier])').forEach(c=>{if(c.closest('#memberships')||c.querySelector('.deal-badge'))return;
+  // Explicit data-package only (never heading text). "group" = the homepage "Book my own group" card (groups of 2-4).
+  const k=c.dataset.package,el=d.eligible_packages||[];if(!(k==='group'?el.some(x=>/^group\d$/.test(x)):window.DEALS.eligible(k)))return;
+  const s=document.createElement('span');s.className='deal-badge';s.textContent=d.offer_detail||'+1 bonus session';
   const pop=c.querySelector('.poplabel');if(pop){const w=document.createElement('div');w.className='deal-pills';pop.before(w);w.append(pop,s)}else c.prepend(s)});
  if(d.faq_q&&pg==='index'){const f=document.querySelector('.faq');if(f&&!f.querySelector('[data-deal]')){const x=document.createElement('details');x.dataset.deal=d.id;x.innerHTML=`<summary>${esc(d.faq_q)}</summary><p>${esc(d.fine_print)}</p>`;f.prepend(x)}}
  if(test)tag()}
