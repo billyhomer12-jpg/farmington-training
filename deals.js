@@ -27,7 +27,8 @@ function tag(){if(document.querySelector('.deal-pv'))return;const t=document.cre
 function run(){
  if(sf.includes('home_banner')&&['index','pricing','book'].includes(pg)&&(pv||!localStorage.getItem('deal-dismissed:'+d.id))&&!document.querySelector('.deal-bar')){
   const bar=document.createElement('div');bar.className='deal-bar';bar.setAttribute('role','region');bar.setAttribute('aria-label','Current offer');
-  bar.innerHTML=`<span class="t">${esc(d.headline)}<span class="long">: ${esc(d.banner_detail||d.offer_detail)}</span></span>${pg==='pricing'?'':`<a href="${esc(d.cta_url||'pricing.html')}">${esc(d.cta_label||'See packages')}</a>`}<button type="button" class="x" aria-label="Dismiss offer">×</button>`;
+  const left=new Date(d.end_at)-now,cd=d.countdown_hours&&left>0&&left<=d.countdown_hours*3600e3?` · Ends in ${Math.ceil(left/3600e3)}h`:'';
+  bar.innerHTML=`<span class="t">${d.banner_text?esc(d.banner_text):`${esc(d.headline)}<span class="long">: ${esc(d.banner_detail||d.offer_detail)}</span>`}${esc(cd)}</span>${pg==='pricing'?'':`<a href="${esc(d.cta_url||'pricing.html')}">${esc(d.cta_label||'See packages')}</a>`}<button type="button" class="x" aria-label="Dismiss offer">×</button>`;
   bar.querySelector('.x').onclick=()=>{try{localStorage.setItem('deal-dismissed:'+d.id,'1')}catch{}bar.remove()};document.body.prepend(bar)}
  if(sf.includes('pricing_badge'))document.querySelectorAll('article.price[data-package]:not([data-tier])').forEach(c=>{if(c.closest('#memberships')||c.querySelector('.deal-badge'))return;
   // Explicit data-package only (never heading text). "group" = the homepage "Book my own group" card (groups of 2-4).

@@ -46,6 +46,8 @@ window.pkgText=k=>{const p=(window.SITE.packages||{})[k];return p?`${p.label} â€
 // Grand Opening start. null = the launch deal never renders. Set an ISO time with offset, e.g. "2026-12-05T09:00:00-07:00".
 // Keep training.deals (supabase/2026-10-16-deals.sql) in sync: it drives the +1 bonus in the back office, paid page and email.
 window.SITE.LAUNCH_AT = null;
+// LAUNCH-6: pre-launch Founding Family Bonus starts at deploy time. Hard cap = earlier of LAUNCH_AT+72h or PRELAUNCH_AT+10 days.
+window.SITE.PRELAUNCH_AT = "2026-10-16T14:30:00-06:00";
 // Shown only when status is approved/live AND start_at <= now < end_at (America/Denver offsets). At most one shows (first match).
 // Test only: ?deal_preview=<id> forces one deal; ?deal_now=2026-11-19 (or a full ISO time) fakes the clock. Both add noindex + a Preview tag.
 window.SITE.deals = [
@@ -64,12 +66,17 @@ window.SITE.deals = [
   { id: "grand-opening-2026", status: "approved", offer_type: "value_add",
     headline: "Grand Opening: Founding Family Bonus", offer_detail: "+1 bonus session",
     banner_detail: "free 5th session with any 4-session package in our first 72 hours",
-    start_at: window.SITE.LAUNCH_AT, end_at: window.SITE.LAUNCH_AT ? new Date(new Date(window.SITE.LAUNCH_AT).getTime() + 72 * 3600e3).toISOString() : null,
     eligible_packages: ["1on1", "open_group", "group2", "group3", "group4"],
     cta_label: "See packages", cta_url: "pricing.html",
     summary_line: "this package includes a free 5th session (use within 90 days).",
     confirm_line: "Includes 1 Founding Family bonus session, use within 90 days",
     fine_print: "Buy any 4-session package in our first 72 hours and get a 5th session free. Use it within 90 days. Not valid on single sessions. One per package; can't be combined.",
     surfaces: ["home_banner", "pricing_badge", "book_page", "confirmation_line"],
-    promo_code: null, price_display: null, countdown: false, spots_left: null }
+    promo_code: null, price_display: null, countdown: false, spots_left: null,
+    ...(()=>{const L=window.SITE.LAUNCH_AT,P=window.SITE.PRELAUNCH_AT,cap=new Date(P).getTime()+10*864e5;
+      // Pre-launch (LAUNCH_AT null): live from PRELAUNCH_AT to the 10-day cap; no countdown, no end date, no 72h wording.
+      if(!L)return {state:"prelaunch",start_at:P,end_at:new Date(cap).toISOString(),banner_text:"Grand Opening: Founding Family Bonus. Free 5th session with any 4-pack.",
+        fine_print:"Use it within 90 days. Not valid on single sessions. One per package; can't be combined.",countdown:false};
+      // Launched: 72h window, auto-ends at the earlier of LAUNCH_AT+72h or the cap; countdown only in the last 48h.
+      return {state:"launch",start_at:P,end_at:new Date(Math.min(new Date(L).getTime()+72*3600e3,cap)).toISOString(),countdown_hours:48}})()  }
 ];
