@@ -83,3 +83,5 @@ window.SITE.deals = [
         banner_text:"Grand Opening: Founding Family Bonus. Free 5th session with any 4-pack.",fine_print:"Use it within 90 days. Not valid on single sessions. One per package; can't be combined.",
         launch_copy:{banner_text:null,fine_print:"Buy any 4-session package in our first 72 hours and get a 5th session free. Use it within 90 days. Not valid on single sessions. One per package; can't be combined."}}})()  }
 ];
+// Single source for monthly membership prices (display only; Stripe is separate). Cards bind by data-tier.
+window.SITE.MEMBERSHIP_PRICES = {"1on1_monthly":{price:240,sessions:4},"1on1_monthly_plus":{price:460,sessions:8},"open_group_monthly":{price:120,per:"player",sessions:4}};
