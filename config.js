@@ -21,12 +21,12 @@ window.SITE = {
   // Packages: 2-hour sessions. "sessions" = how many sessions the package books (default 4). Price is the TOTAL (small group: total for the group).
   sessionsPerPackage: 4, sessionHours: 2,
   packages: {
-    "single": { label: "Single 1-on-1 session",  players: 1, price: 75, sessions: 1 },
-    "1on1":   { label: "1-on-1",                 players: 1, price: 250 },
-    "group2": { label: "Small group · 2 players", players: 2, price: 300 },
-    "group3": { label: "Small group · 3 players", players: 3, price: 350 },
-    "group4": { label: "Small group · 4 players", players: 4, price: 375 },
-    "open_group": { label: "Join a group solo", players: 1, price: 125, solo: true }
+    "single": { label: "Single 1-on-1 session",  players: 1, price: 75, sale: 60, sessions: 1 },
+    "1on1":   { label: "1-on-1",                 players: 1, price: 250, sale: 200 },
+    "group2": { label: "Small group · 2 players", players: 2, price: 300, sale: 240 },
+    "group3": { label: "Small group · 3 players", players: 3, price: 350, sale: 280 },
+    "group4": { label: "Small group · 4 players", players: 4, price: 375, sale: 300 },
+    "open_group": { label: "Join a group solo", players: 1, price: 125, sale: 100, solo: true }
   },
   // Stripe Payment Links per package (leave "" until created in Stripe). ?client_reference_id=<booking ref> is appended.
   paymentLinks: { "single": "https://buy.stripe.com/bJeaEZfDS0BdcBF0gabV601", "1on1": "https://buy.stripe.com/eVq5kF63i2Jl9pt7ICbV605", "group2": "https://buy.stripe.com/8x2eVffDSdnZ8lp7ICbV602", "group3": "https://buy.stripe.com/cNi5kF4Zefw70SXaUObV603", "group4": "https://buy.stripe.com/4gM28t2R60BdbxB3smbV604", "open_group": "https://buy.stripe.com/00w8wR63iabNbxB7ICbV600" }
@@ -39,14 +39,14 @@ window.progLabel=k=>window.progInfo(k).label;
 window.progOptions=()=>(window.SITE.programs||[]).map(p=>`<option value="${p.key}">${p.label}</option>`).join("");
 window.pkgSessions=k=>(((window.SITE.packages||{})[k]||{}).sessions)||window.SITE.sessionsPerPackage||4;
 // Only real https Stripe links count; placeholders like TODO_SINGLE_LINK are treated as not set up.
-window.payLink=k=>{const l=((window.SITE.paymentLinks||{})[k])||"";return /^https:\/\//.test(l)?l:""};
+window.payLink=k=>{const sl=window.DEALS&&window.DEALS.sale?((window.SITE.saleLinks||{})[k]||""):"",l=/^https:\/\//.test(sl)?sl:(((window.SITE.paymentLinks||{})[k])||"");return /^https:\/\//.test(l)?l:""};
 window.pkgText=k=>{const p=(window.SITE.packages||{})[k];return p?`${p.label} — $${p.price} · ${window.pkgSessions(k)} session${window.pkgSessions(k)>1?"s":""} · 2 hrs ${window.pkgSessions(k)>1?"each":""}`.trim():""};
 
 // ===== DEALS (DEALS-SLOT) =====
 // Grand Opening start. null = the launch deal never renders. Set an ISO time with offset, e.g. "2026-12-05T09:00:00-07:00".
 // Keep training.deals (supabase/2026-10-16-deals.sql) in sync: it drives the +1 bonus in the back office, paid page and email.
 window.SITE.LAUNCH_AT = "2026-10-16T18:15:00-06:00";
-// LAUNCH-6: pre-launch Founding Family Bonus starts at deploy time. Hard cap = earlier of LAUNCH_AT+72h or PRELAUNCH_AT+10 days.
+// DEAL-20: Grand Opening sale window is LAUNCH_AT to LAUNCH_AT+72h.
 window.SITE.PRELAUNCH_AT = "2026-10-16T14:30:00-06:00";
 // Shown only when status is approved/live AND start_at <= now < end_at (America/Denver offsets). At most one shows (first match).
 // Test only: ?deal_preview=<id> forces one deal; ?deal_now=2026-11-19 (or a full ISO time) fakes the clock. Both add noindex + a Preview tag.
@@ -63,23 +63,23 @@ window.SITE.deals = [
     faq_q: "How does the holiday bonus session work?",
     surfaces: ["home_banner", "pricing_badge", "book_page", "confirmation_line"],
     promo_code: null, price_display: null, countdown: false, spots_left: null },
-  { id: "grand-opening-2026", status: "approved", offer_type: "value_add",
-    headline: "Grand Opening: Founding Family Bonus", offer_detail: "+1 bonus session",
-    banner_detail: "free 5th session with any 4-session package in our first 72 hours",
-    eligible_packages: ["1on1", "open_group", "group2", "group3", "group4"],
-    cta_label: "See packages", cta_url: "pricing.html",
-    summary_line: "this package includes a free 5th session (use within 90 days).",
-    confirm_line: "Includes 1 Founding Family bonus session, use within 90 days",
-    fine_print: "Buy any 4-session package in our first 72 hours and get a 5th session free. Use it within 90 days. Not valid on single sessions. One per package; can't be combined.",
-    surfaces: ["home_banner", "pricing_badge", "book_page", "confirmation_line"],
-    promo_code: null, price_display: null, countdown: false, spots_left: null,
-    ...(()=>{const L=window.SITE.LAUNCH_AT,P=window.SITE.PRELAUNCH_AT,cap=new Date(P).getTime()+10*864e5;
-      // Pre-launch (LAUNCH_AT null): live from PRELAUNCH_AT to the 10-day cap; no countdown, no end date, no 72h wording.
-      if(!L)return {state:"prelaunch",start_at:P,end_at:new Date(cap).toISOString(),banner_text:"Grand Opening: Founding Family Bonus. Free 5th session with any 4-pack.",
-        fine_print:"Use it within 90 days. Not valid on single sessions. One per package; can't be combined.",countdown:false};
-      // Launched: 72h window, auto-ends at the earlier of LAUNCH_AT+72h or the cap; countdown only in the last 48h.
-      // Before LAUNCH_AT the prelaunch copy stays; deals.js swaps in launch_copy once now >= LAUNCH_AT.
-      return {state:"launch",start_at:P,launch_at:L,end_at:new Date(Math.min(new Date(L).getTime()+72*3600e3,cap)).toISOString(),countdown_hours:48,
-        banner_text:"Grand Opening: Founding Family Bonus. Free 5th session with any 4-pack.",fine_print:"Use it within 90 days. Not valid on single sessions. One per package; can't be combined.",
-        launch_copy:{banner_text:null,fine_print:"Buy any 4-session package in our first 72 hours and get a 5th session free. Use it within 90 days. Not valid on single sessions. One per package; can't be combined."}}})()  }
+  // DEAL-20 (Billy 10/16): 20% off everything, LAUNCH_AT -> LAUNCH_AT+72h. Sale prices live next to regular ones in packages / MEMBERSHIP_PRICES ("sale").
+  // Sale Payment Links: fill SITE.saleLinks below; empty = regular link stays (and booking shows the regular price it charges). Auto-reverts by time.
+  { id: "grand-opening-2026", status: "approved", offer_type: "percent_off", percent: 20,
+    headline: "Grand Opening", offer_detail: "20% off",
+    banner_text: "Grand Opening: 20% off everything for 72 hours",
+    eligible_packages: ["single", "1on1", "open_group", "group2", "group3", "group4"],
+    cta_label: "See prices", cta_url: "pricing.html",
+    summary_line: "20% off for 72 hours.",
+    fine_print: "First month only on monthly plans. Ends Mon 10/19 at 6:15 PM MT.",
+    surfaces: ["home_banner", "pricing_badge", "book_page"],
+    promo_code: null, countdown: false, spots_left: null, countdown_hours: 72,
+    ...(()=>{const L=window.SITE.LAUNCH_AT;return L?{start_at:L,end_at:new Date(new Date(L).getTime()+72*3600e3).toISOString()}:{}})() }
 ];
+// Single source for monthly membership prices (display only; Stripe is separate). Cards bind by data-tier.
+window.SITE.MEMBERSHIP_PRICES = {"1on1_monthly":{price:240,sale:192,sessions:4},"1on1_monthly_plus":{price:460,sale:368,sessions:8},"open_group_monthly":{price:120,sale:96,per:"player",sessions:4}};
+// DEAL-20 sale Payment Links (used only while the sale is live; "" = keep the regular link).
+window.SITE.saleLinks = {"single":"https://buy.stripe.com/6oU3cx77m0Bd59d5AubV606","1on1":"https://buy.stripe.com/14A7sN63i83FbxBe70bV607","open_group":"https://buy.stripe.com/cNi9AV3Vafw77hl8MGbV608","group2":"https://buy.stripe.com/8x2fZj4Ze2JlfNRfb4bV609","group3":"https://buy.stripe.com/dRmbJ3gHWgAb1X19QKbV60a","group4":"https://buy.stripe.com/5kQ00l1N22Jl8lp7ICbV60b"};
+// Price display helpers: p.regular is set by deals.js only while the sale is live.
+window.priceTxt=p=>p.regular?`$${p.price} (was $${p.regular})`:`$${p.price}`;
+window.priceHTML=p=>p.regular?`<s aria-hidden="true">$${p.regular}</s> <b>$${p.price}</b><span class="vh"> (was $${p.regular}, now $${p.price})</span>`:`$${p.price}`;
