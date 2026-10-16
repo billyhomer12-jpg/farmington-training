@@ -330,7 +330,8 @@ a[href^="mailto:"]{overflow-wrap:normal!important;word-break:normal!important;hy
 /* SCROLL-BTNS (Billy 10/16): scroll-down + back-to-top restored at all widths, bottom-right corner.
    Phones: when the sticky Book bar is showing (body.qb-on), stack above it (bar ~69px + 12px gap) and follow its show/hide. */
 .scrollhint{transition:opacity .4s,transform .4s,bottom .25s cubic-bezier(.2,.8,.2,1)}
-.scrollhint.up{width:44px;height:44px}
+.scrollhint.up{width:44px;height:44px;bottom:calc(72px + env(safe-area-inset-bottom))}
+.scrollhint.dn.gone~.scrollhint.up{bottom:calc(20px + env(safe-area-inset-bottom))}
 @media(max-width:760px){
 body.qb-on .scrollhint.dn{bottom:calc(81px + env(safe-area-inset-bottom))}
 body.qb-on .scrollhint.up{bottom:calc(133px + env(safe-area-inset-bottom))}
