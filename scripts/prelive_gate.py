@@ -104,5 +104,7 @@ try:
 finally:
     try: call('DELETE','test_helpers/test_clocks/'+clk)
     except Exception as e: print('note: clock cleanup',e)
+cr=subprocess.run(['python3',os.path.join(os.path.dirname(os.path.abspath(__file__)),'coupon_check.py')],capture_output=True,text=True)
+print(cr.stdout.strip()); chk('coupon GRANDOPEN20: window-gated checkout, $192 first invoice, $240 renewal',cr.returncode==0)
 print('GATE RESULT:', 'PASS' if all(R) else 'FAIL', f'{sum(R)}/{len(R)}')
 sys.exit(0 if all(R) else 1)
