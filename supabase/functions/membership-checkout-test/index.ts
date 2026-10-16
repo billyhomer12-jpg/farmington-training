@@ -29,7 +29,10 @@ Deno.serve(async (req) => {
       p_phone: b.phone ?? "", p_program: program, p_type: wtype, p_starts: b.starts, p_token: token });
     if (error) return j({ error: error.message }, 400);
     const origin = ["http://localhost:8765", SITE].includes(b.origin) ? b.origin : SITE;
-    const s = await stripe.checkout.sessions.create({ mode: "subscription", line_items: [{ price, quantity: 1 }], customer_email: b.email,
+    // GRAND-OPENING-20: first-month coupon only inside the configured window (window mirrors config.js membershipPromo; coupon from env)
+    const PC = Deno.env.get("MEMBERSHIP_TEST_PROMO_COUPON"), PS = Date.parse(Deno.env.get("MEMBERSHIP_PROMO_START") || "2026-10-16T18:15:00-06:00"), PE = Date.parse(Deno.env.get("MEMBERSHIP_PROMO_END") || "2026-10-19T18:15:00-06:00");
+    const promo = PC && Date.now() >= PS && Date.now() < PE ? { discounts: [{ coupon: PC }] } : {};
+    const s = await stripe.checkout.sessions.create({ ...promo, mode: "subscription", line_items: [{ price, quantity: 1 }], customer_email: b.email,
       metadata: { ref, tier: b.tier, athlete: b.athlete }, subscription_data: { metadata: { ref, tier: b.tier, athlete: b.athlete }, description: POLICY },
       custom_text: { submit: { message: POLICY + " Terms: " + SITE + "/membership-terms.html" } },
       success_url: `${origin}/member.html?m=${token}&welcome=1`, cancel_url: `${origin}/pricing.html?membership_preview=1#memberships` });
