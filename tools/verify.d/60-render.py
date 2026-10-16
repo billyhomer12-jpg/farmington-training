@@ -96,7 +96,7 @@ async def run_one(br,page,w,sem):
         await ctx.close(); return not bad
 async def main():
     async with async_playwright() as p:
-        br=await p.chromium.launch(); sem=asyncio.Semaphore(int(os.environ.get('VERIFY_PAR','8')))
+        br=await p.chromium.launch(args=['--disable-dev-shm-usage','--disable-gpu']); sem=asyncio.Semaphore(int(os.environ.get('VERIFY_PAR','4')))
         res=await asyncio.gather(*[run_one(br,pg,w,sem) for pg in P for w in W])
         ok(f"{sum(res)}/{len(res)} page x width combos clean")
         # Sale timing via ?deal_now: no sale banner / % off / struck prices 1 min before start or 1 min after end.
@@ -125,4 +125,13 @@ async def main():
                 else: ok(f"{page} sale window: every visible price has a struck regular price")
                 await pg.close()
         await ctx.close(); await br.close()
-asyncio.run(main()); done('render')
+# Stability: the browser can die mid-run (seen: TargetClosedError on Browser.new_context after 84 parallel
+# full-page renders/screenshots at VERIFY_PAR=8 under memory pressure). Retry the whole step once in a fresh
+# browser; if it still crashes, report one clear FAIL line instead of a stack trace.
+for attempt in (1,2):
+    try: asyncio.run(main()); break
+    except Exception as e:
+        msg=f"{type(e).__name__}: {str(e).splitlines()[0][:160] if str(e) else ''}"
+        if attempt==1: print(f"WARN render step crashed ({msg}); retrying once in a fresh browser"); fails.clear()
+        else: fail(f"render step crashed twice (browser error, not a site finding): {msg}")
+done('render')
