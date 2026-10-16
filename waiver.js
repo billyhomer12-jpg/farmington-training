@@ -8,7 +8,7 @@ const esc=v=>String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&g
 const call=async b=>{const ac=new AbortController(),tm=setTimeout(()=>ac.abort(),20000);try{const r=await fetch(FN,{method:'POST',headers:{'Content-Type':'application/json',apikey:S.supabaseKey},body:JSON.stringify(b),signal:ac.signal});const j=await r.json().catch(()=>({}));return r.ok?j:{error:j.error||'Something went wrong saving the waiver. Please tap the button to try again.'}}catch(e){return{error:e&&e.name==='AbortError'?'This is taking too long (connection timed out). Check your signal and tap the button to try again. Your answers are still filled in.':'Network error. Check your connection and tap the button to try again. Your answers are still filled in.'}}finally{clearTimeout(tm)}};
 const body=t=>t.split(/\n\n+/).map(b=>b.startsWith('# ')?`<h3>${esc(b.slice(2))}</h3>`:b.startsWith('## ')?`<h4>${esc(b.slice(3))}</h4>`:`<p>${esc(b)}</p>`).join('');
 window.WaiverPanel=async(el,cred,onDone,opt={})=>{el.innerHTML='<div class="card"><p class="mut">Loading the waiver…</p></div>';
-const ctx=await call({action:'context',...cred});if(ctx.error){el.innerHTML=`<div class="card"><h3>Waiver</h3><p>${esc(ctx.error)}</p></div>`;return}
+const ctx=await call({action:'context',...cred});if(ctx.error){el.innerHTML=`<div class="card"><h3>Waiver</h3><p>${esc(ctx.error)}</p><button type="button" class="btn wretry">Retry</button></div>`;el.querySelector('.wretry').onclick=()=>window.WaiverPanel(el,cred,onDone,opt);return}
 const only=opt.only!=null?opt.only:ctx.only,todo=ctx.athletes.filter(a=>!ctx.signed.includes(a.index)&&(only==null||a.index===only));if(!todo.length){if(onDone)onDone();else if(ctx.only!=null)el.innerHTML='<div class="card"><h3>Already signed</h3><p>This athlete\'s waiver is signed and on file. Thanks!</p></div>';return}
 const a=todo[0],n=only!=null?(ctx.total||ctx.athletes.length):ctx.athletes.length,k=n-todo.length+1,solo=only!=null&&(ctx.only!=null||n>1);
 el.innerHTML=`<div class="card wsign"><h3>${solo?`Waiver for ${esc(a.athlete)}`:`Sign the waiver${n>1?` · player ${k} of ${n}`:''}`}</h3>
@@ -34,7 +34,9 @@ C.addEventListener('pointerdown',e=>{e.preventDefault();C.setPointerCapture(e.po
 C.addEventListener('pointermove',e=>{if(!down)return;e.preventDefault();const p=pt(e);x.beginPath();x.moveTo(...last);x.lineTo(...p);x.stroke();ink+=Math.hypot(p[0]-last[0],p[1]-last[1]);last=p});
 ['pointerup','pointercancel','pointerleave'].forEach(t=>C.addEventListener(t,()=>down=false));
 el.querySelector('.sigclear').onclick=()=>{x.clearRect(0,0,C.width,C.height);ink=0};
-const q=n=>F.querySelector(`[name=${n}]`);F.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.tagName!=='TEXTAREA'){e.preventDefault()}});
+const q=n=>F.querySelector(`[name=${n}]`),SK='fc_w_'+(cred.ref||cred.token||cred.wtoken||'')+'_'+a.index;
+try{const sv=JSON.parse(sessionStorage.getItem(SK)||'{}');Object.entries(sv).forEach(([k,v])=>{const i=q(k);if(i)i.type==='checkbox'?i.checked=!!v:i.value=v})}catch{}
+F.addEventListener('input',()=>{const o={};F.querySelectorAll('[name]').forEach(i=>o[i.name]=i.type==='checkbox'?i.checked:i.value);try{sessionStorage.setItem(SK,JSON.stringify(o))}catch{}});F.addEventListener('change',()=>F.dispatchEvent(new Event('input')));F.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.tagName!=='TEXTAREA'){e.preventDefault()}});
 F.querySelector('.wsubmit').onclick=async()=>{const b=F.querySelector('.wsubmit');if(b.disabled)return;
 F.querySelectorAll('.werr').forEach(e=>{e.classList.remove('werr');e.removeAttribute('aria-invalid')});
 const d={};F.querySelectorAll('input[name]:not([type=checkbox]),select[name],textarea[name]').forEach(i=>d[i.name]=i.value.trim());const miss=[];
@@ -49,8 +51,8 @@ if(miss.length){b.disabled=false;b.classList.remove('busy');W.textContent='Pleas
 let sig='';try{sig=C.toDataURL('image/png')}catch{W.textContent='We couldn\'t read your signature. Please clear it, sign again, and tap the button.';return}
 b.disabled=true;b.classList.add('busy');const lbl=b.textContent;b.textContent='Saving…';W.textContent='Saving your signed waiver…';let ok=false;
 try{const j=await call({action:'sign',...cred,athlete_index:a.index,...d,photo_opt_in:q('photo_opt_in').checked,consent:true,version:ctx.version.version,version_sha256:ctx.version.sha256,signature:sig,ink:Math.round(ink)});
-  if(j.error){W.textContent=j.error;return}ok=true;W.textContent='Signed. A copy is on its way to your email.';setTimeout(()=>window.WaiverPanel(el,cred,onDone,opt),600)}
-catch(e){W.textContent='Something went wrong. Please tap the button to try again.'}
+  if(j.error){W.innerHTML=esc(j.error)+' <button type="button" class="btn sm wretry">Retry</button>';W.querySelector('.wretry').onclick=()=>F.querySelector('.wsubmit').click();return}ok=true;try{sessionStorage.removeItem(SK)}catch{}W.textContent='Signed. A copy is on its way to your email.';setTimeout(()=>window.WaiverPanel(el,cred,onDone,opt),600)}
+catch(e){W.innerHTML='We couldn\'t save the waiver (connection problem). Your answers are kept. <button type="button" class="btn sm wretry">Retry</button>';W.querySelector('.wretry').onclick=()=>F.querySelector('.wsubmit').click()}
 finally{if(!ok){b.disabled=false;b.classList.remove('busy');b.textContent=lbl}}};};
 window.WaiverShare=async(el,cred)=>{const j=await call({action:'links',...cred});if(j.error||!j.links||!j.links.length){el.innerHTML=j.links&&!j.links.length?'':`<p class="mut small">${esc(j.error||'')}</p>`;return}
 const mob=navigator.share&&matchMedia('(pointer:coarse)').matches,msg=l=>`Hi${l.parent?' '+l.parent.split(' ')[0]:''}, please sign ${l.athlete}'s waiver for Four Corners Hoops & Performance (about 2 minutes): ${l.url}`;
