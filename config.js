@@ -45,7 +45,7 @@ window.pkgText=k=>{const p=(window.SITE.packages||{})[k];return p?`${p.label} â€
 // ===== DEALS (DEALS-SLOT) =====
 // Grand Opening start. null = the launch deal never renders. Set an ISO time with offset, e.g. "2026-12-05T09:00:00-07:00".
 // Keep training.deals (supabase/2026-10-16-deals.sql) in sync: it drives the +1 bonus in the back office, paid page and email.
-window.SITE.LAUNCH_AT = "2026-10-16T17:40:00-06:00";
+window.SITE.LAUNCH_AT = "2026-10-16T17:50:00-06:00";
 // DEAL-20: Grand Opening sale window is LAUNCH_AT to LAUNCH_AT+72h.
 window.SITE.PRELAUNCH_AT = "2026-10-16T14:30:00-06:00";
 // Shown only when status is approved/live AND start_at <= now < end_at (America/Denver offsets). At most one shows (first match).
@@ -71,11 +71,11 @@ window.SITE.deals = [
     eligible_packages: ["single", "1on1", "open_group", "group2", "group3", "group4"],
     cta_label: "See prices", cta_url: "pricing.html",
     summary_line: "20% off for 72 hours.",
-    fine_print: "First month only on monthly plans. Ends Mon 10/19 at 6:15 PM MT.",
-    membership_fine_print: "Grand Opening: 20% off your first month. Ends Mon 10/19 at 6:15 PM MT.",
+    fine_print: "First month only on monthly plans. Ends Mon 10/19 at 5:50 PM MT.",
+    membership_fine_print: "Grand Opening: 20% off your first month. Ends Mon 10/19 at 5:50 PM MT.",
     surfaces: ["home_banner", "pricing_badge", "book_page"],
     promo_code: null, countdown: false, spots_left: null, countdown_hours: 72,
-    ...(()=>{const L=window.SITE.LAUNCH_AT;return L?{start_at:L,end_at:"2026-10-19T18:15:00-06:00"}:{}})() }
+    ...(()=>{const L=window.SITE.LAUNCH_AT;return L?{start_at:L,end_at:"2026-10-19T17:50:00-06:00"}:{}})() }
 ];
 // Single source for monthly membership prices (display only; Stripe is separate). Cards bind by data-tier.
 window.SITE.MEMBERSHIP_PRICES = {"1on1_monthly":{price:240,sale:192,sessions:4},"1on1_monthly_plus":{price:460,sale:368,sessions:8},"open_group_monthly":{price:120,sale:96,per:"player",sessions:4}};
