@@ -146,3 +146,12 @@ if(document.readyState!=='loading')init();else document.addEventListener('DOMCon
 addEventListener('pageshow',e=>{const nav=(performance.getEntriesByType&&performance.getEntriesByType('navigation')[0]||{}).type,q=new URLSearchParams(location.search);if(!document.getElementById('booking-root')||q.has('paid')||q.has('canceled')||q.has('sign'))return;if(!e.persisted&&nav!=='back_forward')return;let p=null;try{p=JSON.parse(localStorage.getItem('fc_pending')||'null')}catch{}
 if(!p||!p.ref||Date.now()-(p.at||0)>6*36e5){if(e.persisted)location.reload();return}const S=window.SITE;fetch(S.supabaseUrl+'/rest/v1/rpc/training_payment_status',{method:'POST',headers:{apikey:S.supabaseKey,'Content-Type':'application/json'},body:JSON.stringify({p_ref:p.ref})}).then(r=>r.json()).catch(()=>null)
 .then(j=>{location.replace('book.html?'+(j==='paid'?'paid=1&ref=':'canceled=1&ref=')+encodeURIComponent(p.ref))})});
+/* MOBILE-1: sticky quick-book bar on phones (not on book, waiver, privacy, my sessions, reviews) */
+(function(){var pg=(location.pathname.split('/').pop()||'index.html');if(/^(book|waiver|privacy|my|reviews|reschedule)\.html$/.test(pg)||!('IntersectionObserver' in window))return;
+function init(){var n=document.createElement('nav');n.className='qbook';n.setAttribute('aria-label','Quick book');n.setAttribute('aria-hidden','true');n.innerHTML='<span>Times open this week</span><a href="book.html" tabindex="-1">Book a session</a>';document.body.appendChild(n);var a=n.querySelector('a');
+var heroOut=!document.querySelector('.hero .btn'),footIn=false,typing=false,mq=matchMedia('(max-width:760px)');
+function u(){var on=mq.matches&&heroOut&&!footIn&&!typing;n.classList.toggle('on',on);document.body.classList.toggle('qb-on',on);n.setAttribute('aria-hidden',on?'false':'true');a.tabIndex=on?0:-1}
+var h=document.querySelector('.hero .btn');if(h)new IntersectionObserver(function(e){heroOut=!e[0].isIntersecting;u()}).observe(h);
+var f=document.querySelector('footer');if(f)new IntersectionObserver(function(e){footIn=e[0].isIntersecting;u()},{rootMargin:'0px'}).observe(f);
+document.addEventListener('focusin',function(e){if(e.target.matches('input,select,textarea')){typing=true;u()}});document.addEventListener('focusout',function(){typing=false;u()});mq.addEventListener&&mq.addEventListener('change',u);u()}
+if(document.readyState!=='loading')init();else document.addEventListener('DOMContentLoaded',init)})();

@@ -1,5 +1,5 @@
 /* Apple-style theme: white / #f5f5f7 / one black band, Apple green accents */
-:root{--bg:#fff;--bg2:#f5f5f7;--fg:#1d1d1f;--mut:#6e6e73;--ac:#34C759;--ac2:#1E7B34;--ac-tint:#E1F5E6;--ac-tint2:#EEF9F1;--ac-ring:rgba(52,199,89,.35);--ac-deep:#14451F;--ac-soft:#A8E6B8;--ac-glass:rgba(52,199,89,.28);--ac-edge:rgba(52,199,89,.6);--ac-wash:rgba(52,199,89,.15);--line:#d2d2d7;
+:root{--bg:#fff;--bg2:#f5f5f7;--fg:#1d1d1f;--mut:#6e6e73;--ac:#34C759;--ac2:#1E7B34;--ac-tint:#E1F5E6;--ac-tint2:#EEF9F1;--ac-ring:rgba(52,199,89,.35);--ac-deep:#14451F;--ac-soft:#A8E6B8;--ac-glass:rgba(52,199,89,.28);--ac-edge:rgba(52,199,89,.6);--ac-wash:rgba(52,199,89,.15);--ac-press:#2DB84F;--line:#d2d2d7;
 --font:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue",Inter,Arial,sans-serif;--ease:cubic-bezier(0,0,.5,1)}
 *{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:60px}
 body{margin:0;background:var(--bg);color:var(--fg);font:400 17px/1.47 var(--font);letter-spacing:-.022em;-webkit-font-smoothing:antialiased}
@@ -271,3 +271,15 @@ h1,h2,h3,summary,.sub,.tsub{text-wrap:balance}p,li{text-wrap:pretty}
 /* waiver card: less side padding on small phones so the email fits; ≤360 fallback wrap */
 @media(max-width:430px){.wv{padding:28px 18px!important}}
 @media(max-width:360px){main a[href^="mailto:"]:not(.btn){white-space:normal;overflow-wrap:anywhere}}
+/* MOBILE-1: sticky quick-book bar (phones only) */
+.qbook{display:none}
+@media(max-width:760px){
+.qbook{display:flex;align-items:center;gap:12px;position:fixed;left:0;right:0;bottom:0;z-index:29;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:rgba(0,0,0,.92);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-top:1px solid rgba(255,255,255,.08);transform:translateY(100%);visibility:hidden;transition:transform .25s cubic-bezier(.2,.8,.2,1),visibility 0s .25s}
+.qbook.on{transform:none;visibility:visible;transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+.qbook span{display:none;color:#f5f5f7;font-size:.875rem;white-space:nowrap}
+.qbook a{display:flex;align-items:center;justify-content:center;height:48px;width:100%;flex:1;border-radius:14px;background:var(--ac);color:#000;font:600 17px/1 var(--font);letter-spacing:-.01em;text-decoration:none}
+.qbook a:active{background:var(--ac-press)}.qbook a:focus-visible{outline:2px solid #fff;outline-offset:2px}
+body.qb-on{padding-bottom:calc(68px + env(safe-area-inset-bottom))}
+body.qb-on .scrollhint.up{bottom:calc(80px + env(safe-area-inset-bottom))}}
+@media(min-width:390px) and (max-width:760px){.qbook span{display:inline}}
+@media(max-width:760px) and (prefers-reduced-motion:reduce){.qbook,.qbook.on{transform:none;opacity:0;transition:opacity .2s}.qbook.on{opacity:1}}
