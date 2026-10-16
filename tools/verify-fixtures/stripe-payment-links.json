@@ -59,7 +59,29 @@
    "description": "Open Group (per player)"
   }
  ],
- "recurring_prices": [],
+ "recurring_prices": [
+  {
+   "price": "price_1URKRnRpcc5zZV0DRkzbRhyg",
+   "unit_amount": 24000,
+   "interval": "month",
+   "nickname": "1-on-1 Monthly",
+   "lookup_key": null
+  },
+  {
+   "price": "price_1URKRnRpcc5zZV0DrRmWtdzg",
+   "unit_amount": 46000,
+   "interval": "month",
+   "nickname": "1-on-1 Monthly Plus",
+   "lookup_key": null
+  },
+  {
+   "price": "price_1URKRoRpcc5zZV0DONUPf6pI",
+   "unit_amount": 12000,
+   "interval": "month",
+   "nickname": "Open Group Monthly",
+   "lookup_key": null
+  }
+ ],
  "recurring_note": "GetPrices type=recurring active=true returned 0 live prices at snapshot (monthly checkout not live in Stripe yet).",
  "sale_links": [
   {
@@ -123,5 +145,6 @@
    "description": "Small Group (4 players)"
   }
  ],
- "sale_snapshot_at": "2026-10-16T17:14:00-06:00"
+ "sale_snapshot_at": "2026-10-16T17:14:00-06:00",
+ "recurring_snapshot_at": "2026-10-16T17:29:45-0600"
 }
