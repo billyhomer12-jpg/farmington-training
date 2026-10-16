@@ -22,13 +22,17 @@ Deno.serve(async (req) => {
     if (Deno.env.get("MEMBERSHIP_LIVE_CHECKOUT_OFF") === "1") return j({ error: "Online sign-up is paused. Text (505) 469-3851 to join." }, 503);
     const price = PRICE[b.tier]; if (!price) return j({ error: "Unknown plan" }, 400);
     if (!b.email || !b.athlete || !b.parent) return j({ error: "Parent, athlete and email are required." }, 400);
-    const program = b.tier === "open_group_monthly" ? "Basketball Training" : (b.program || "Basketball Training");
+    const program = b.tier === "open_group_monthly" ? "Basketball Skills" : (["Basketball Skills", "Athletic Performance"].includes(b.program) ? b.program : "Basketball Skills");
+    const wtype = b.tier === "open_group_monthly" ? "OpenGroup" : "Gym";
     const token = crypto.randomUUID().replace(/-/g, "") + crypto.randomUUID().replace(/-/g, "");
     const { data: ref, error } = await sb.rpc("membership_pending_create", { p_tier: b.tier, p_parent: b.parent, p_athlete: b.athlete, p_email: b.email,
-      p_phone: b.phone ?? "", p_program: program, p_type: b.workout_type ?? "Gym", p_starts: b.starts, p_token: token });
+      p_phone: b.phone ?? "", p_program: program, p_type: wtype, p_starts: b.starts, p_token: token });
     if (error) return j({ error: error.message }, 400);
     const origin = ["http://localhost:8765", SITE].includes(b.origin) ? b.origin : SITE;
-    const s = await stripe.checkout.sessions.create({ mode: "subscription", line_items: [{ price, quantity: 1 }], customer_email: b.email,
+    // GRAND-OPENING-20: first-month coupon only inside the configured window (window mirrors config.js membershipPromo; coupon from env)
+    const PC = Deno.env.get("MEMBERSHIP_PROMO_COUPON"), PS = Date.parse(Deno.env.get("MEMBERSHIP_PROMO_START") || "2026-10-16T18:15:00-06:00"), PE = Date.parse(Deno.env.get("MEMBERSHIP_PROMO_END") || "2026-10-19T18:15:00-06:00");
+    const promo = PC && Date.now() >= PS && Date.now() < PE ? { discounts: [{ coupon: PC }] } : {};
+    const s = await stripe.checkout.sessions.create({ ...promo, mode: "subscription", line_items: [{ price, quantity: 1 }], customer_email: b.email,
       metadata: { ref, tier: b.tier, athlete: b.athlete }, subscription_data: { metadata: { ref, tier: b.tier, athlete: b.athlete }, description: POLICY },
       custom_text: { submit: { message: POLICY + " Terms: " + SITE + "/membership-terms.html" } },
       success_url: `${origin}/member.html?m=${token}&welcome=1`, cancel_url: `${origin}/pricing.html#memberships` });

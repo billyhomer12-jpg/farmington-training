@@ -83,3 +83,5 @@ window.SITE.saleLinks = {"single":"https://buy.stripe.com/6oU3cx77m0Bd59d5AubV60
 // Price display helpers: p.regular is set by deals.js only while the sale is live.
 window.priceTxt=p=>p.regular?`$${p.price} (was $${p.regular})`:`$${p.price}`;
 window.priceHTML=p=>p.regular?`<s aria-hidden="true">$${p.regular}</s> <b>$${p.price}</b><span class="vh"> (was $${p.regular}, now $${p.price})</span>`:`$${p.price}`;
+
+window.SITE.membershipCheckoutFn = "membership-checkout";
