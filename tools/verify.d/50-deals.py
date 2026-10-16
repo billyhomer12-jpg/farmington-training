@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 # Deals config invariants (config.js on VERIFY_BASE), checked in BOTH states: LAUNCH_AT as deployed and
-# LAUNCH_AT=2026-10-16T18:15-06:00 (override with VERIFY_LAUNCH_AT_SIM). Rendered-copy rules live in 60-render.py.
+# LAUNCH_AT=2026-10-16T17:50-06:00 (override with VERIFY_LAUNCH_AT_SIM). Rendered-copy rules live in 60-render.py.
 # Optional: reads training.deals via the public anon/publishable key only (never service_role); SKIP if not exposed.
 import sys, os, re, json, urllib.request
 from datetime import datetime, timedelta
 sys.path.insert(0, os.path.dirname(__file__)); from _lib import *
-src=get('config.js'); SIM=os.environ.get('VERIFY_LAUNCH_AT_SIM','2026-10-16T18:15:00-06:00')
+src=get('config.js'); SIM=os.environ.get('VERIFY_LAUNCH_AT_SIM','2026-10-16T17:50:00-06:00')
 def iso(s): return datetime.fromisoformat(s.replace('Z','+00:00'))
 alt='null' if eval_config(src).get('LAUNCH_AT') else SIM
 for label,L in (('deployed',None),('LAUNCH_AT='+alt,alt)):
@@ -44,7 +44,8 @@ for label,L in (('deployed',None),('LAUNCH_AT='+alt,alt)):
         if i=='grand-opening-2026' and S.get('LAUNCH_AT'):
             exp=b if is_discount(d) else min(iso(S['LAUNCH_AT'])+timedelta(hours=72),iso(S['PRELAUNCH_AT'])+timedelta(days=10))
             if b!=exp: fail(f"{label} {i}: effective end {b} != min(LAUNCH_AT+72h,cap) {exp}")
-            if S['LAUNCH_AT'].startswith('2026-10-16T18:15') and b!=iso('2026-10-19T18:15:00-06:00'): fail(f"{label} {i}: end {b} != 2026-10-19T18:15-06:00")
+            XE=os.environ.get('VERIFY_EXPECT_END')  # end is read from config; pin it only when asked
+            if XE and b!=iso(XE): fail(f"{label} {i}: end {b} != VERIFY_EXPECT_END {XE}")
             else: ok(f"{label} {i}: effective end {b.astimezone(iso(S['PRELAUNCH_AT']).tzinfo).isoformat()}")
         win.append((a,b,i))
     win.sort()

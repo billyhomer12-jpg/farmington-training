@@ -33,7 +33,13 @@ PROBE=r"""() => {
  let g=null;const gs=document.querySelector('.gsize');
  if(gs&&vis(gs)){const ls=[...gs.querySelectorAll('label')].map(l=>l.getBoundingClientRect().width);const ind=gs.querySelector('.gind');g={ls,ind:ind&&vis(ind)?ind.getBoundingClientRect().width:null};}
  const S=window.SITE||{},D=window.DEALS||{},bn=document.querySelector('.deal-banner,[class*=deal-bar],#deal-banner,.dealbar');
- const months=[...document.querySelectorAll('#panel-monthly .amt, #memberships .amt')].map(a=>a.textContent);
+ const num=t=>{const m=(t||'').replace(/,/g,'').match(/\$\s?(\d+(?:\.\d+)?)/);return m?parseFloat(m[1]):null};
+ const months=[...new Set(document.querySelectorAll('#panel-monthly .amt, #memberships .amt'))].map(a=>{const c=a.cloneNode(true);
+   c.querySelectorAll('.sr-only,.visually-hidden,.per,.first,[aria-hidden=true]').forEach(x=>x.remove());
+   const w=c.querySelector('s,del,.was,.regular'),nw=c.querySelector('.now,.sale,ins');
+   const was=w?num(w.textContent):null; if(w)w.remove();
+   const now=nw?num(nw.textContent):num(c.textContent);
+   return was!=null?{reg:was,sale:now}:{reg:now,sale:null};});
  return {trunc,dots:dots.concat(inputs.map(x=>'placeholder: '+x)),wr,links,g,text:document.body.innerText,cls:window.__cls,
    launch:S.LAUNCH_AT||null,mp:S.MEMBERSHIP_PRICES||null,active:D.active?{id:D.active.id,start:D.active.start_at,end:D.active.end_at,vadd:D.active.offer_type==='value_add'}:null,
    banner:bn&&vis(bn)?bn.innerText:null,months};
@@ -68,8 +74,13 @@ async def run_one(br,page,w,sem):
                     if g['ind'] is not None and abs(g['ind']-g['ls'][0])>1: bad.append(f".gind {g['ind']:.1f}px != segment {g['ls'][0]:.1f}px")
                 if d['mp'] and w==390:
                     want=sorted(round(float(v.get('price',v.get('amount')) if isinstance(v,dict) else v)) for v in d['mp'].values())
-                    got=sorted(round(float(re.sub(r'[^\d.]','',m.split('/')[0]))) for m in d['months'] if re.search(r'\d',m))
-                    if want!=got: bad.append(f"Monthly cards {got} != MEMBERSHIP_PRICES {want}")
+                    # regular price from <s>/<del>/.was (or the plain amount), sale from .now; sr-only Was/now text ignored
+                    got=sorted(round(m['reg']) for m in d['months'] if m['reg'] is not None)
+                    if want!=got: bad.append(f"Monthly cards regular {got} != MEMBERSHIP_PRICES {want}")
+                    if d['active'] and not d['active'].get('vadd'):
+                        wsale=sorted(round(float(v['sale'])) for v in d['mp'].values() if isinstance(v,dict) and v.get('sale') is not None)
+                        gsale=sorted(round(m['sale']) for m in d['months'] if m['sale'] is not None)
+                        if wsale and wsale!=gsale: bad.append(f"Monthly cards sale {gsale} != MEMBERSHIP_PRICES sale {wsale}")
             for rx,why in BANNED:
                 m=re.search(rx,d['text'],re.I)
                 if m: bad.append(f"banned {why}: '{m.group(0)}'")
