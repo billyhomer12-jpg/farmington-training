@@ -73,10 +73,13 @@ window.SITE.deals = [
     summary_line: "20% off for 72 hours.",
     fine_print: "First month only on monthly plans. Ends Mon 10/19 at 6:15 PM MT.",
     surfaces: ["home_banner", "pricing_badge", "book_page"],
-    promo_code: null, countdown: false, spots_left: null, countdown_hours: 48,
+    promo_code: null, countdown: false, spots_left: null, countdown_hours: 72,
     ...(()=>{const L=window.SITE.LAUNCH_AT;return L?{start_at:L,end_at:new Date(new Date(L).getTime()+72*3600e3).toISOString()}:{}})() }
 ];
 // Single source for monthly membership prices (display only; Stripe is separate). Cards bind by data-tier.
 window.SITE.MEMBERSHIP_PRICES = {"1on1_monthly":{price:240,sale:192,sessions:4},"1on1_monthly_plus":{price:460,sale:368,sessions:8},"open_group_monthly":{price:120,sale:96,per:"player",sessions:4}};
 // DEAL-20 sale Payment Links (used only while the sale is live; "" = keep the regular link).
-window.SITE.saleLinks = {"single":"","1on1":"","group2":"","group3":"","group4":"","open_group":""};
+window.SITE.saleLinks = {"single":"https://buy.stripe.com/6oU3cx77m0Bd59d5AubV606","1on1":"https://buy.stripe.com/14A7sN63i83FbxBe70bV607","open_group":"https://buy.stripe.com/cNi9AV3Vafw77hl8MGbV608","group2":"https://buy.stripe.com/8x2fZj4Ze2JlfNRfb4bV609","group3":"https://buy.stripe.com/dRmbJ3gHWgAb1X19QKbV60a","group4":"https://buy.stripe.com/5kQ00l1N22Jl8lp7ICbV60b"};
+// Price display helpers: p.regular is set by deals.js only while the sale is live.
+window.priceTxt=p=>p.regular?`$${p.price} (was $${p.regular})`:`$${p.price}`;
+window.priceHTML=p=>p.regular?`<s aria-hidden="true">$${p.regular}</s> <b>$${p.price}</b><span class="vh"> (was $${p.regular}, now $${p.price})</span>`:`$${p.price}`;

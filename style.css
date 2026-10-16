@@ -411,3 +411,8 @@ body.qb-on .scrollhint.dn.gone~.scrollhint.up{bottom:calc(81px + env(safe-area-i
 @media(prefers-reduced-motion:reduce){.pdet summary::after{transition:none}}
 @media(max-width:760px){body:not(:has(#booking-root,form,textarea,canvas,.oglist,#alist)) .scrollhint{display:flex}}
 .seg{grid-auto-columns:minmax(0,1fr)}.seg [role=tab]{min-width:0;padding:0 10px}
+/* verify.sh fixes: brand wraps instead of ellipsis; CLS reserves */
+.gnav .brand{white-space:normal;overflow:visible;text-overflow:clip;line-height:1.15;overflow-wrap:break-word}
+@media(max-width:360px){.gnav .brand{font-size:.75rem}}
+#booking-root{min-height:100vh}
+#rvlist{min-height:251px}@media(max-width:400px){#rvlist{min-height:290px}}@media(max-width:340px){#rvlist{min-height:307px}}
