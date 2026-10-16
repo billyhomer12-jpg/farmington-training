@@ -61,8 +61,8 @@ if(o){if(o.ptype)f.ptype.value=o.ptype;if(o.players)f.players.value=o.players;Ob
 ['programs','workout_type'].forEach(n=>{const a=o['cb:'+n];if(a&&a.length)f.querySelectorAll('[name='+n+']').forEach(c=>c.checked=a.includes(c.value))});f.program.value=progsSel()[0]||f.program.value;pkgUI();
 ['parent','athlete','age','phone','email','message'].forEach(k=>{if(o[k]!=null&&f[k])f[k].value=o[k]});}
 let h=null,ps=null;try{h=sessionStorage.getItem('fc_hold');ps=sessionStorage.getItem('fc_paystarted')}catch{}
-if(h&&!ps&&!q.has('canceled')){try{sessionStorage.removeItem('fc_hold')}catch{}rpc('training_release_hold',{p_ref:h}).catch(()=>{});st.textContent='Your unfinished booking was released. Your details are filled back in, so just pick your times again.'}
-else if(o&&(o.parent||o.athlete))st.textContent='We filled back in what you entered.'})();
+if(h&&!ps&&!q.has('canceled')){try{sessionStorage.removeItem('fc_hold')}catch{}rpc('training_release_hold',{p_ref:h}).catch(()=>{});setTimeout(()=>{st.textContent='Your unfinished booking was released. Your details are filled back in, so just pick your times again.'},0)}
+else if(o&&(o.parent||o.athlete))setTimeout(()=>{st.textContent='We filled back in what you entered.'},0)})();
 window.bookPackage=k=>{if(!S.packages[k])return;f.ptype.value=S.packages[k].players>1?'group':k;if(S.packages[k].players>1)f.players.value=String(S.packages[k].players);pkgUI();if(cur===3){f.reset();picked.clear();loadedFor=null;f.program.value=progsSel()[0];setType(TYPE_OF[progsSel()[0]],true);f.ptype.value=S.packages[k].players>1?'group':k;if(S.packages[k].players>1)f.players.value=String(S.packages[k].players);pkgUI()}go(cur===3?0:cur);st.textContent=pkgText(k)+' selected.'};
 async function loadBusy(){const p=f.program.value,w=wt()||'Outdoor',key=p+'|'+w;if(loadedFor===key)return draw();loadedFor=key;busy={};kinds={};loading=true;draw();
 const from=new Date().toISOString(),to=new Date(Date.now()+31*864e5).toISOString();
