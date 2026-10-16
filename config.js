@@ -45,7 +45,7 @@ window.pkgText=k=>{const p=(window.SITE.packages||{})[k];return p?`${p.label} â€
 // ===== DEALS (DEALS-SLOT) =====
 // Grand Opening start. null = the launch deal never renders. Set an ISO time with offset, e.g. "2026-12-05T09:00:00-07:00".
 // Keep training.deals (supabase/2026-10-16-deals.sql) in sync: it drives the +1 bonus in the back office, paid page and email.
-window.SITE.LAUNCH_AT = null;
+window.SITE.LAUNCH_AT = "2026-10-16T18:15:00-06:00";
 // LAUNCH-6: pre-launch Founding Family Bonus starts at deploy time. Hard cap = earlier of LAUNCH_AT+72h or PRELAUNCH_AT+10 days.
 window.SITE.PRELAUNCH_AT = "2026-10-16T14:30:00-06:00";
 // Shown only when status is approved/live AND start_at <= now < end_at (America/Denver offsets). At most one shows (first match).

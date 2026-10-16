@@ -394,3 +394,5 @@ body.qb-on .scrollhint.dn.gone~.scrollhint.up{bottom:calc(81px + env(safe-area-i
 .js-ptabs .gpp span:not(.on){display:none}
 @media(min-width:761px) and (max-width:1023px){.ptab-sec .prices4{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .ptab-sec #memberships .price .mut{position:static;width:auto;height:auto;overflow:visible;clip:auto;white-space:normal;grid-column:1/-1;margin:6px 0 0;font-size:.875rem}
+
+.btn.soonbtn{background:#E5E5EA;color:#48484A;border-color:#D1D1D6;box-shadow:none;cursor:not-allowed;pointer-events:none}
