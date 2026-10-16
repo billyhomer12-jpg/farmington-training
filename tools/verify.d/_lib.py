@@ -38,14 +38,16 @@ def sale_prices(S,d):
     out=dict(d.get('sale_prices') or {})
     for src in (S.get('packages') or {}, S.get('MEMBERSHIP_PRICES') or {}):
         for k,v in src.items():
-            if isinstance(v,dict) and v.get('sale_price') is not None: out.setdefault(k,v['sale_price'])
+            if isinstance(v,dict):
+                sv=v.get('sale_price',v.get('sale'))
+                if sv is not None: out.setdefault(k,sv)
     return out
 def sale_links(S):
     u=set()
     for d in S.get('deals') or []:
         v=d.get('sale_links') or d.get('sale_link') or {}
         u|=set(v.values()) if isinstance(v,dict) else ({v} if isinstance(v,str) else set(v))
-    for src in (S.get('packages') or {}, S.get('MEMBERSHIP_PRICES') or {}, S.get('sale_links') or {}):
+    for src in (S.get('packages') or {}, S.get('MEMBERSHIP_PRICES') or {}, S.get('sale_links') or {}, S.get('saleLinks') or {}):
         for k,v in src.items():
             if isinstance(v,dict) and v.get('sale_link'): u.add(v['sale_link'])
             elif isinstance(v,str) and v.startswith('https://'): u.add(v)

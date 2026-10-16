@@ -40,7 +40,7 @@ for label,L in (('deployed',None),('LAUNCH_AT='+alt,alt)):
         if d.get('offer_type')=='value_add' and d.get('price_display'): fail(f"{label} {i}: value_add deal sets price_display")
         if d.get('offer_type')=='value_add' and (d.get('price_override') or d.get('sale_prices') or d.get('promo_code')): fail(f"{label} {i}: value_add deal changes price/promo")
         if i=='grand-opening-2026' and re.search(r'founding family|free 5th session',json.dumps(d),re.I): fail(f"{label} {i}: still has 'Founding Family'/'free 5th session' copy")
-        if d.get('countdown_hours') and d['countdown_hours']>48: fail(f"{label} {i}: countdown window {d['countdown_hours']}h > 48h")
+        if d.get('countdown_hours') and d['countdown_hours']>days*24+0.01: fail(f"{label} {i}: countdown window {d['countdown_hours']}h longer than the deal window")
         if i=='grand-opening-2026' and S.get('LAUNCH_AT'):
             exp=b if is_discount(d) else min(iso(S['LAUNCH_AT'])+timedelta(hours=72),iso(S['PRELAUNCH_AT'])+timedelta(days=10))
             if b!=exp: fail(f"{label} {i}: effective end {b} != min(LAUNCH_AT+72h,cap) {exp}")

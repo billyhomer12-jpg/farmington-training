@@ -19,10 +19,19 @@ if key:
     print('INFO live Stripe readback'); snap={'links':links,'recurring_prices':rec}
 else: print(f"INFO using snapshot {snap.get('snapshot_at')}")
 byurl={l['url']:l['unit_amount'] for l in snap['links']}
+saleurl={l['url']:l['unit_amount'] for l in snap.get('sale_links',[]) if l.get('url')}
 S=site_config(); pk=S.get('packages',{}); pl=S.get('paymentLinks',{}); SL=sale_links(S)
 for u in SL:
-    if u in byurl: print(f"INFO sale link {u} = Stripe ${byurl[u]/100:g}")
-    else: print(f"INFO sale link {u} allowed by config (not in snapshot; refresh snapshot to verify amount)")
+    if u not in saleurl: fail(f"config sale link {u} not in Stripe snapshot sale_links (refresh fixture read-only)")
+# each package's configured sale link must charge that package's configured sale price
+for dl in S.get('deals',[]):
+    if not is_discount(dl): continue
+    sp=sale_prices(S,dl); lk={k:v for k,v in {**(S.get('saleLinks') or {}),**(dl.get('sale_links') or {})}.items() if v}
+    for k,src in list((S.get('packages') or {}).items())+list((S.get('MEMBERSHIP_PRICES') or {}).items()):
+        if isinstance(src,dict) and src.get('sale_link') and k not in lk: lk[k]=src['sale_link']
+    for k,u in (lk.items() if isinstance(lk,dict) else []):
+        if u in saleurl and k in sp and round(float(sp[k])*100)!=saleurl[u]: fail(f"{dl['id']} {k}: sale ${sp[k]} != Stripe ${saleurl[u]/100:g} ({u})")
+        elif u in saleurl: ok(f"{dl['id']} {k}: sale link {u} = Stripe ${saleurl[u]/100:g}")
 for k,url in pl.items():
     want=pk.get(k,{}).get('price')
     if url not in byurl: fail(f"paymentLinks.{k} {url} not an active Stripe payment link")
@@ -32,7 +41,7 @@ for p in PAGES+['main.js','deals.js','pricing-tabs.js','my.js']:
     try: t=get(p)
     except Exception: continue
     for u in set(re.findall(r'https://buy\.stripe\.com/[A-Za-z0-9_]+',t)):
-        if u not in byurl and u not in SL: fail(f"{p}: unknown Stripe link {u}")
+        if u not in byurl and u not in saleurl: fail(f"{p}: unknown Stripe link {u}")
 mp=S.get('MEMBERSHIP_PRICES')
 if not mp: fail("window.SITE.MEMBERSHIP_PRICES missing in config.js (monthly source of truth)")
 else:
