@@ -12,7 +12,7 @@ starts=json.load(open(os.environ.get('STARTS','/tmp/starts.json')))
 r=requests.post('https://jrcozcrfbjcsuqkmoaki.supabase.co/functions/v1/membership-checkout-test',json={'tier':'1on1_monthly','email':'gate-coupon@example.com','athlete':'Gate Coupon','parent':'Gate Parent','starts':starts,'origin':'https://fourcornershoopsandperformance.com'}).json()
 url=r.get('url',''); sid=url.split('/pay/')[-1].split('#')[0] if '/pay/' in url else None
 s=call('GET','checkout/sessions/'+sid) if sid else {}
-inwin=time.time()>=time.mktime(time.strptime('2026-10-16 17:40','%Y-%m-%d %H:%M')) and time.time()<time.mktime(time.strptime('2026-10-19 18:15','%Y-%m-%d %H:%M'))
+inwin=time.time()>=time.mktime(time.strptime('2026-10-16 17:50','%Y-%m-%d %H:%M')) and time.time()<time.mktime(time.strptime('2026-10-19 17:50','%Y-%m-%d %H:%M'))
 want=(EXPECT=='yes') or (EXPECT=='auto' and inwin)
 chk(f'checkout session {"has" if want else "has no"} GRANDOPEN20 ($%s due)'%('192' if want else '240'), s.get('amount_total')==(19200 if want else 24000), f"amount_total={s.get('amount_total')} err={r.get('error')}")
 clk=call('POST','test_helpers/test_clocks',{'frozen_time':int(time.time()),'name':'GATE coupon'})['id']

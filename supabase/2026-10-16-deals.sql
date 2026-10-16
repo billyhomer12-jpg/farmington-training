@@ -11,8 +11,8 @@ revoke all on training.deals from anon, authenticated;
 insert into training.deals(id,status,headline,start_at,end_at,eligible,redeem_by,redeem_days,line) values
  ('holiday-4pack-2026','approved','Holiday 4-Pack Bonus','2026-11-26T00:00:00-07:00','2026-11-30T23:59:59-07:00',
   array['1on1','open_group','group2','group3','group4'],'2027-03-31',null,'Includes 1 bonus session, use by {date}'),
- ('grand-opening-2026','approved','Grand Opening: 20% off everything','2026-10-16T18:15:00-06:00','2026-10-19T18:15:00-06:00',
-  array[]::text[],null,null,'Grand Opening: 20% off through 10/19 6:15 PM MT')
+ ('grand-opening-2026','approved','Grand Opening: 20% off everything','2026-10-16T17:50:00-06:00','2026-10-19T17:50:00-06:00',
+  array[]::text[],null,null,'Grand Opening: 20% off through 10/19 5:50 PM MT')
 on conflict (id) do update set status=excluded.status, headline=excluded.headline, start_at=excluded.start_at, end_at=excluded.end_at, eligible=excluded.eligible,
   redeem_by=excluded.redeem_by, redeem_days=excluded.redeem_days, line=excluded.line;
 

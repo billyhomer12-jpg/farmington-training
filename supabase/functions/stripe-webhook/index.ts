@@ -8,7 +8,7 @@ import { remindUnsigned } from '../_shared/remind.ts';
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') ?? '', { apiVersion: '2024-06-20' });
 const crypto = Stripe.createSubtleCryptoProvider();
 
-// Grand Opening 20% sale Payment Links (10/16 18:15 - 10/19 18:15 MT); session metadata.deal is the primary signal.
+// Grand Opening 20% sale Payment Links (10/16 17:50 - 10/19 17:50 MT); session metadata.deal is the primary signal.
 const SALE_LINKS = new Set(['plink_1URKDRRpcc5zZV0DREiYbsLu', 'plink_1URKDSRpcc5zZV0DiYs0WUWV', 'plink_1URKDSRpcc5zZV0DW5BIYUxH',
   'plink_1URKDTRpcc5zZV0DXB9UVW2L', 'plink_1URKDTRpcc5zZV0DXeXEvN0m', 'plink_1URKDURpcc5zZV0Dy46yPRly']);
 
