@@ -29,7 +29,7 @@ def main():
         print("DRY RUN (nothing created). Would POST:"); [print(" ", p, json.dumps(d)) for p, d in PLAN]; return
     kf = os.environ.get("STRIPE_LIVE_KEY_FILE"); key = open(kf).read().strip()
     assert key.startswith(("sk_live_", "rk_live_")), "not a live key"
-    if input(f"Type {ACCT} to create LIVE objects: ").strip() != ACCT: sys.exit("aborted")
+    if (os.environ.get("CONFIRM_ACCT") or input(f"Type {ACCT} to create LIVE objects: ")).strip() != ACCT: sys.exit("aborted")
     call = lambda p, d: requests.post("https://api.stripe.com/v1/" + p, auth=(key, ""), data=d).json()
     out, prod = {}, None
     for p, d in PLAN:
