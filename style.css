@@ -321,3 +321,6 @@ a.achip:hover,a.achip:focus-visible{box-shadow:inset 0 0 0 1.5px var(--ac2)}
 /* Proposals: trust line + call/text row */
 .trustline{margin:18px 0 0;color:rgba(255,255,255,.78);font-size:.9375rem;text-wrap:balance}
 .callrow{margin-top:10px}.callrow .btn{min-width:110px;min-height:44px}
+/* Wrap/orphan sweep 320-430 */
+@media(max-width:430px){.wv a[href^="mailto:"]{font-size:clamp(.68rem,3.5vw,.9rem)!important}.stepper li{text-wrap:balance;line-height:1.25}}
+small,.tsub,.note{text-wrap:pretty}
