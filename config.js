@@ -4,12 +4,11 @@ window.SITE = {
   // Programs: "key" is the database value (don't change); "label" is what parents/coaches see. Order = dropdown order.
   programs: [
     { key: "Basketball Skills",       label: "Basketball Training", abbr: "BB" },
-    { key: "Youth Strength Training", label: "Weightlifting", abbr: "WL" },
     { key: "Athletic Performance",    label: "Conditioning",  abbr: "COND" }
   ],
   brand: "Four Corners Hoops & Performance", // PLACEHOLDER brand name
-  tagline: "Basketball skills, speed and safe strength training for Farmington-area athletes, ages 12-18.",
-  phone: "(505) 231-0725", phoneTel: "+15052310725",
+  tagline: "Basketball skills, speed and conditioning for Farmington-area athletes, ages 12-18.",
+  phone: "(505) 469-3851", phoneTel: "+15054693851",
   email: "fourcornershoopsandperformance@gmail.com",
   location: "San Juan College Health & Human Performance Center, 4601 College Blvd, Farmington, NM 87402, United States",
   locationName: "San Juan College Health & Human Performance Center",

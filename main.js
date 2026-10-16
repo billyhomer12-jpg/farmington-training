@@ -33,8 +33,8 @@ f.addEventListener('input',e=>{if(e.target.setCustomValidity)e.target.setCustomV
 f.addEventListener('click',e=>{if(e.target.matches('[data-next]')&&valid(cur))go(cur+1);if(e.target.matches('[data-back]'))go(cur-1)});
 const rpc=async(fn,body,tries=2)=>{for(let i=0;;i++){const ac=new AbortController(),tm=setTimeout(()=>ac.abort(),15000);try{return await fetch(S.supabaseUrl+'/rest/v1/rpc/'+fn,{method:'POST',headers:{apikey:S.supabaseKey,'Content-Type':'application/json'},body:JSON.stringify(body||{}),signal:ac.signal})}catch(e){if(i+1>=tries)throw e;await new Promise(r=>setTimeout(r,1200))}finally{clearTimeout(tm)}}};
 const wts=()=>[...f.querySelectorAll('[name=workout_type]:checked')].map(x=>x.value),wt=()=>ctype&&wts().includes(ctype)?ctype:(ctype=wts()[0]||null);
-const TYPE_OF={'Basketball Skills':'Gym','Youth Strength Training':'Outdoor','Athletic Performance':'Outdoor'},setType=(v,on)=>{const c=f.querySelector('[name=workout_type][value="'+v+'"]');if(c)c.checked=on};
-// Mirrors server rules (training.hour_allowed). Gym = HHPC hours; Outdoor = 6 AM-7 PM starts daily (Weight room is no longer offered; legacy rows only).
+const TYPE_OF={'Basketball Skills':'Gym','Athletic Performance':'Outdoor'},setType=(v,on)=>{const c=f.querySelector('[name=workout_type][value="'+v+'"]');if(c)c.checked=on};
+// Mirrors server rules (training.hour_allowed). Gym = HHPC hours; Outdoor = 6 AM-7 PM starts daily.
 // 2-hour sessions must end by close: Gym ends 15 min before HHPC close: Mon-Thu starts 5 AM-6 PM, Fri 5 AM-5 PM, Sat 7 AM-2 PM; Outdoor 6 AM-7 PM.
 function allowed(k,h,t){const dow=new Date(k+'T12:00:00Z').getUTCDay();if(t==='Gym'){const ok=dow>=1&&dow<=4?h>=5&&h<=18:dow===5?h>=5&&h<=17:dow===6?h>=7&&h<=14:false;return ok&&!closedAt(at(k,h))}return h>=6&&h<=19}
 const closedAt=t=>closures.some(c=>new Date(c.starts_at)<new Date(new Date(t).getTime()+TWO)&&new Date(c.ends_at)>new Date(t));

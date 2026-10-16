@@ -17,6 +17,7 @@ document.querySelector('.tabs').onclick=e=>{const t=(e.target.closest('[data-tab
 const who=id=>D.signups.find(s=>s.id===id)||{};
 // Calendar
 let mode='month',sel=new Date().toLocaleDateString('en-CA');
+// 'Weightlifting' kept only to label legacy rows (program removed).
 const TYPES={'Basketball Training':['BB','bb'],'Conditioning':['COND','ap'],'Weightlifting':['WL','st']};
 const ty=r=>TYPES[r.program]||[String(r.program||'?').slice(0,2).toUpperCase(),'xx'];
 const grp=r=>/group|clinic|team/i.test(r.format||'');
