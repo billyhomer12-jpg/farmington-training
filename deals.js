@@ -15,13 +15,13 @@ window.DEALS={active:d||null,eligible:k=>!!(d&&k&&k!=='single'&&(d.eligible_pack
  confirm:b=>b&&b.line?`<div class="deal-line"><b>${esc(b.headline||'Bonus')}:</b> ${esc(b.line)}.</div>`:''};
 if(!d){if(test)tag(null);return}
 const css=document.createElement('style');css.textContent=`.deal-res body{padding-top:40px}.deal-bar{position:absolute;top:0;left:0;right:0;z-index:31;height:40px;display:flex;align-items:center;justify-content:center;gap:12px;padding:0 48px 0 16px;background:#000;color:#fff;font:500 .875rem/1.2 var(--font)}
-.deal-bar .t{text-align:center;line-height:1.25;overflow-wrap:break-word;min-width:0}.deal-bar a{color:var(--ac);text-decoration:underline;text-underline-offset:2px;white-space:nowrap}
+.deal-bar .short{display:none}.deal-bar .t{text-align:center;line-height:1.25;overflow-wrap:break-word;min-width:0}.deal-bar a{color:var(--ac);text-decoration:underline;text-underline-offset:2px;white-space:nowrap}
 .deal-bar .x{position:absolute;right:0;top:0;width:44px;height:40px;border:0;background:none;color:#a1a1a6;font-size:20px;cursor:pointer}.deal-bar .x:focus-visible{outline:2px solid var(--ac);outline-offset:-4px}
 .deal-badge{display:inline-flex;align-items:center;align-self:center;height:24px;padding:0 10px;border-radius:980px;background:var(--ac-tint);color:var(--ac-deep);font:600 .75rem/1 var(--font);margin:0 0 10px}
 .deal-pills{display:flex;gap:6px;align-items:center;justify-content:center;flex-wrap:wrap}.deal-pills>*{margin-bottom:10px}
 .deal-line{margin:12px 0 0;padding:12px 14px;border-radius:12px;background:var(--ac-tint2);font-size:.9375rem;line-height:1.4}.deal-line b{color:var(--ac-deep)}.deal-line small{display:block;font-size:.8125rem;color:#6e6e73;margin-top:4px}
 .deal-pv{display:inline-block;background:var(--ac2);color:#fff;font:700 .625rem/1 var(--font);letter-spacing:.06em;padding:3px 6px;border-radius:4px;margin-right:8px;vertical-align:middle;text-transform:uppercase}
-@media(max-width:760px){.deal-res body{padding-top:56px}.deal-bar{height:56px;font-size:.8125rem;gap:8px}.deal-bar .long{display:none}}`;document.head.appendChild(css);
+@media(max-width:760px){.deal-res body{padding-top:64px}.deal-bar{height:64px;font-size:.75rem;gap:8px}.deal-bar .short{display:inline}.deal-bar .x{height:64px}.deal-bar .long{display:none}}`;document.head.appendChild(css);
 const pg=(location.pathname.split('/').pop()||'index.html').replace(/\.html$/,'')||'index',sf=d.surfaces||[];
 const showBar=sf.includes('home_banner')&&['index','pricing','book'].includes(pg)&&(pv||!(()=>{try{return localStorage.getItem('deal-dismissed:'+d.id)}catch{}})());if(showBar)document.documentElement.classList.add('deal-res');
 function tag(){if(document.querySelector('.deal-pv'))return;const t=document.createElement('span');t.className='deal-pv';t.textContent='Preview';
@@ -30,7 +30,7 @@ function run(){
  if(sf.includes('home_banner')&&['index','pricing','book'].includes(pg)&&(pv||!localStorage.getItem('deal-dismissed:'+d.id))&&!document.querySelector('.deal-bar')){
   const bar=document.createElement('div');bar.className='deal-bar';bar.setAttribute('role','region');bar.setAttribute('aria-label','Current offer');
   const left=new Date(d.end_at)-now,cd=d.countdown_hours&&(!d.launch_at||launched)&&left>0&&left<=d.countdown_hours*3600e3?` · Ends in ${Math.ceil(left/3600e3)}h`:'';
-  bar.innerHTML=`<span class="t">${d.banner_text?esc(d.banner_text):`${esc(d.headline)}<span class="long">: ${esc(d.banner_detail||d.offer_detail)}</span>`}${esc(cd)}</span>${pg==='pricing'?'':`<a href="${esc(d.cta_url||'pricing.html')}">${esc(d.cta_label||'See packages')}</a>`}<button type="button" class="x" aria-label="Dismiss offer">×</button>`;
+  bar.innerHTML=`<span class="t">${d.banner_text?esc(d.banner_text):`${esc(d.headline)}<span class="long">: ${esc(d.banner_detail||d.offer_detail)}</span>${d.banner_short?`<span class="short">: ${esc(d.banner_short)}</span>`:''}`}${esc(cd)}</span>${pg==='pricing'?'':`<a href="${esc(d.cta_url||'pricing.html')}">${esc(d.cta_label||'See packages')}</a>`}<button type="button" class="x" aria-label="Dismiss offer">×</button>`;
   bar.querySelector('.x').onclick=()=>{try{localStorage.setItem('deal-dismissed:'+d.id,'1')}catch{}bar.remove();document.documentElement.classList.remove('deal-res')};document.body.prepend(bar)}
  if(sf.includes('pricing_badge'))document.querySelectorAll('article.price[data-package]:not([data-tier])').forEach(c=>{if(c.closest('#memberships')||c.querySelector('.deal-badge'))return;
   // Explicit data-package only (never heading text). "group" = the homepage "Book my own group" card (groups of 2-4).

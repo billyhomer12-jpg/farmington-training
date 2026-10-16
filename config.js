@@ -81,7 +81,7 @@ window.SITE.deals = [
       // Before LAUNCH_AT the prelaunch copy stays; deals.js swaps in launch_copy once now >= LAUNCH_AT.
       return {state:"launch",start_at:P,launch_at:L,end_at:new Date(Math.min(new Date(L).getTime()+72*3600e3,cap)).toISOString(),countdown_hours:48,
         banner_text:"Grand Opening: Founding Family Bonus. Free 5th session with any 4-pack.",fine_print:"Use it within 90 days. Not valid on single sessions. One per package; can't be combined.",
-        launch_copy:{banner_text:null,fine_print:"Buy any 4-session package in our first 72 hours and get a 5th session free. Use it within 90 days. Not valid on single sessions. One per package; can't be combined."}}})()  }
+        launch_copy:{banner_text:null,banner_short:"Free 5th session with any 4-pack",fine_print:"Buy any 4-session package in our first 72 hours and get a 5th session free. Use it within 90 days. Not valid on single sessions. One per package; can't be combined."}}})()  }
 ];
 // Single source for monthly membership prices (display only; Stripe is separate). Cards bind by data-tier.
 window.SITE.MEMBERSHIP_PRICES = {"1on1_monthly":{price:240,sessions:4},"1on1_monthly_plus":{price:460,sessions:8},"open_group_monthly":{price:120,per:"player",sessions:4}};

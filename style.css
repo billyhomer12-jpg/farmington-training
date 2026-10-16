@@ -223,7 +223,7 @@ a[href^="mailto:"]{overflow-wrap:anywhere;word-break:break-word}
 @media(max-width:700px){
   /* phones: header scrolls away instead of covering ~29% of the screen; floating scroll buttons off on form pages so they never cover inputs/slots */
   .gnav{position:relative}
-  body:has(form,input,select,textarea,canvas,#booking-root,.oglist,#alist) .scrollhint{display:none}
+  body:has(form,textarea,canvas,#booking-root,.oglist,#alist) .scrollhint{display:none}
 }
 
 .achip.grp.bk{background:#f2f2f4;color:#86868b}.achip.grp.bk small{color:#86868b}
@@ -396,3 +396,18 @@ body.qb-on .scrollhint.dn.gone~.scrollhint.up{bottom:calc(81px + env(safe-area-i
 .ptab-sec #memberships .price .mut{position:static;width:auto;height:auto;overflow:visible;clip:auto;white-space:normal;grid-column:1/-1;margin:6px 0 0;font-size:.875rem}
 
 .btn.soonbtn{background:#E5E5EA;color:#48484A;border-color:#D1D1D6;box-shadow:none;cursor:not-allowed;pointer-events:none}
+
+/* PQA-5..9 */
+.seg{width:min(100%,336px);min-width:0}.seg .dot{position:absolute;top:50%;right:14px;margin:-3px 0 0}
+.pstage{min-height:var(--pmin,0)}
+.gsize{display:none}.js-ptabs .gsize{display:grid}
+.pstage [role=tabpanel]{scroll-margin-top:140px}
+.js-ptabs .ptabs{background:linear-gradient(var(--bg2) 85%,rgba(245,245,247,0));padding:10px 0 12px}
+.solo-hint span,.price h3{text-wrap:balance}.solo-hint{white-space:normal}
+/* PRICING-WI: open-by-default dropdown, subtle chevron */
+.pdet summary{min-height:44px;list-style:none;justify-content:space-between;gap:12px}.pdet summary::-webkit-details-marker{display:none}
+.pdet summary::after{content:"";width:8px;height:8px;border-right:1.5px solid #86868b;border-bottom:1.5px solid #86868b;transform:rotate(45deg) translateY(-2px);transition:transform .25s ease;flex:none}
+.pdet[open] summary::after{transform:rotate(-135deg) translateY(-2px)}
+@media(prefers-reduced-motion:reduce){.pdet summary::after{transition:none}}
+@media(max-width:760px){body:not(:has(#booking-root,form,textarea,canvas,.oglist,#alist)) .scrollhint{display:flex}}
+.seg{grid-auto-columns:minmax(0,1fr)}.seg [role=tab]{min-width:0;padding:0 10px}
