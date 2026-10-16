@@ -41,3 +41,35 @@ window.pkgSessions=k=>(((window.SITE.packages||{})[k]||{}).sessions)||window.SIT
 // Only real https Stripe links count; placeholders like TODO_SINGLE_LINK are treated as not set up.
 window.payLink=k=>{const l=((window.SITE.paymentLinks||{})[k])||"";return /^https:\/\//.test(l)?l:""};
 window.pkgText=k=>{const p=(window.SITE.packages||{})[k];return p?`${p.label} — $${p.price} · ${window.pkgSessions(k)} session${window.pkgSessions(k)>1?"s":""} · 2 hrs ${window.pkgSessions(k)>1?"each":""}`.trim():""};
+
+// ===== DEALS (DEALS-SLOT) =====
+// Grand Opening start. null = the launch deal never renders. Set an ISO time with offset, e.g. "2026-12-05T09:00:00-07:00".
+// Keep training.deals (supabase/2026-10-16-deals.sql) in sync: it drives the +1 bonus in the back office, paid page and email.
+window.SITE.LAUNCH_AT = null;
+// Shown only when status is approved/live AND start_at <= now < end_at (America/Denver offsets). At most one shows (first match).
+// Test only: ?deal_preview=<id> forces one deal; ?deal_now=2026-11-19 (or a full ISO time) fakes the clock. Both add noindex + a Preview tag.
+window.SITE.deals = [
+  { id: "holiday-4pack-2026", status: "approved", offer_type: "value_add",
+    headline: "Holiday 4-Pack Bonus", offer_detail: "+1 bonus session",
+    banner_detail: "free 5th session with any 4-session package · ends Nov 30",
+    start_at: "2026-11-26T00:00:00-07:00", end_at: "2026-11-30T23:59:59-07:00",
+    eligible_packages: ["1on1", "open_group", "group2", "group3", "group4"],
+    cta_label: "See packages", cta_url: "pricing.html",
+    summary_line: "this package includes a free 5th session (use by 3/31/27).",
+    confirm_line: "Includes 1 bonus session, use by 3/31/27",
+    fine_print: "Buy any 4-session package by Mon 11/30 and get a 5th session free. Use it Dec 1-Mar 31. Not valid on single sessions. One per package; can't be combined. Gym closed 11/25-29 and 12/21-1/2; outdoor sessions available.",
+    faq_q: "How does the holiday bonus session work?",
+    surfaces: ["home_banner", "pricing_badge", "book_page", "confirmation_line"],
+    promo_code: null, price_display: null, countdown: false, spots_left: null },
+  { id: "grand-opening-2026", status: "approved", offer_type: "value_add",
+    headline: "Grand Opening: Founding Family Bonus", offer_detail: "+1 bonus session",
+    banner_detail: "free 5th session with any 4-session package in our first 72 hours",
+    start_at: window.SITE.LAUNCH_AT, end_at: window.SITE.LAUNCH_AT ? new Date(new Date(window.SITE.LAUNCH_AT).getTime() + 72 * 3600e3).toISOString() : null,
+    eligible_packages: ["1on1", "open_group", "group2", "group3", "group4"],
+    cta_label: "See packages", cta_url: "pricing.html",
+    summary_line: "this package includes a free 5th session (use within 90 days).",
+    confirm_line: "Includes 1 Founding Family bonus session, use within 90 days",
+    fine_print: "Buy any 4-session package in our first 72 hours and get a 5th session free. Use it within 90 days. Not valid on single sessions. One per package; can't be combined.",
+    surfaces: ["home_banner", "pricing_badge", "book_page", "confirmation_line"],
+    promo_code: null, price_display: null, countdown: false, spots_left: null }
+];

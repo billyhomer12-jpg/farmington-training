@@ -26,7 +26,7 @@ export async function flushOutbox(signupId: number, token: string, opt: { wtoken
     try {
       if ((e.kind === 'confirmation' || e.kind === 'rescheduled') && !token) continue; // needs the dashboard token
       if (e.kind === 'waiver_reminder' && !opt.wtoken) continue; // needs the waiver token issued with it
-      const m = e.kind === 'confirmation' ? confirmationEmail({ signup, sessions, token, group })
+      const m = e.kind === 'confirmation' ? confirmationEmail({ signup, sessions, token, group, bonus: e.payload && e.payload.bonus })
         : e.kind === 'coach_notice' ? coachNoticeEmail({ signup, payload: e.payload })
         : e.kind === 'group_under_min' ? groupUnderMinEmail({ signup, payload: e.payload })
         : e.kind === 'group_moved' ? groupMovedEmail({ signup, sessions, group })
