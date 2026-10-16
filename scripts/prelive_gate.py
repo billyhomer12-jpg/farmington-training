@@ -42,6 +42,27 @@ if pr.returncode: chk('config.js monthly plans present',False,pr.stderr.strip())
 else:
     for t,v in json.loads(pr.stdout).items():
         p=call('GET','prices/'+IDS[t]['price']); chk(f'test price {t} == config ${v["price"]}/mo',p['unit_amount']==round(v['price']*100) and p['recurring']['interval']=='month',f"${p['unit_amount']/100}")
+# MEMBQA-B: open-group signup picks count against allowance (race-safe recount) + server refuses over-allowance
+cu=call('POST','customers',{'email':'gate-og@example.com','payment_method':'pm_card_visa','invoice_settings[default_payment_method]':'pm_card_visa'})
+sub=call('POST','subscriptions',{'customer':cu['id'],'items[0][price]':IDS['open_group_monthly']['price'],'metadata[tier]':'open_group_monthly','metadata[athlete]':'Gate OG'}); S=sub['id']
+mid=wait_row(S); time.sleep(8)
+sql(f"insert into membership_sessions(membership_id,starts_at,period_start) select '{mid}', now()+(g||' days')::interval, null from generate_series(2,5) g")
+sql(f"select membership_recount('{mid}')")
+a=sql(f"select sessions_used u, greatest(0,sessions_granted-sessions_used) pr from memberships where id='{mid}'")[0]
+chk('open-group signup picks counted: 4 used, 0 plan remaining',a['u']==4 and a['pr']==0,str(a))
+sql(f"update memberships set token_hash=training.token_hash('gate'||repeat('x',40)) where id='{mid}'")
+e=sql(f"select membership_pick('gate'||repeat('x',40), now()+interval '9 days') r")
+chk('server refuses 5th open-group pick',isinstance(e,list) and 'error' in str(e[0]['r']),str(e)[:120])
+call('DELETE','subscriptions/'+S)
+# MEMBQA-A: switch button swap works on current origin/main (span/any [data-tier])
+import tempfile,shutil
+d=tempfile.mkdtemp(); subprocess.run(['git','show','origin/main:pricing.html'],stdout=open(d+'/pricing.html','w'),check=True)
+for f in ['config.js','member-signup.html','member.html']: shutil.copy(f,d)
+r2=subprocess.run(['python3',os.path.abspath(os.path.join(os.path.dirname(__file__),'live_frontend_swap.py'))],cwd=d,capture_output=True,text=True)
+ph=open(d+'/pricing.html').read(); shutil.rmtree(d)
+chk('live swap turns all 3 monthly [data-tier] buttons into Start membership links',r2.returncode==0 and ph.count('>Start membership</a>')==3 and 'soonbtn' not in ph,(r2.stderr or '').strip()[-120:])
+pv=open('pricing.html').read()
+chk('preview binding targets any [data-tier]','querySelectorAll("[data-tier]")' in pv and 'e.replaceWith(a)' in pv)
 # 2 test-clock renewal, rollover cap 2, reschedule reset, cancel at period end
 clk=call('POST','test_helpers/test_clocks',{'frozen_time':int(time.time()),'name':'PRELIVE-GATE renewal'})['id']
 try:

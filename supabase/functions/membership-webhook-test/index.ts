@@ -53,9 +53,8 @@ Deno.serve(async (req) => {
         const { data: pd } = await sb.from("membership_pending").select("*").eq("ref", ref).eq("consumed", false).maybeSingle();
         if (pd) {
           await sb.from("membership_sessions").insert(pd.starts.map((t: string) => ({ membership_id: m.id, starts_at: t, period_start: m.current_period_start })));
-          const { data: cur } = await sb.from("memberships").select("sessions_used").eq("id", m.id).single();
-          await sb.from("memberships").update({ ref, token_hash: pd.token_hash, program: pd.program, workout_type: pd.workout_type, athlete: pd.athlete,
-            sessions_used: (cur?.sessions_used ?? 0) + pd.starts.length }).eq("id", m.id);
+          await sb.from("memberships").update({ ref, token_hash: pd.token_hash, program: pd.program, workout_type: pd.workout_type, athlete: pd.athlete }).eq("id", m.id);
+          await sb.rpc("membership_recount", { p_id: m.id });
           await sb.from("membership_pending").update({ consumed: true }).eq("ref", ref);
           const dates = pd.starts.map((t: string) => new Date(t).toLocaleString("en-US", { timeZone: "America/Denver", weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })).join("\n- ");
           const plus = pd.tier === "1on1_monthly_plus" ? "\n\nMonthly Plus: pick your other 4 sessions before the start of week 3 of your billing month." : "";
@@ -71,9 +70,11 @@ Deno.serve(async (req) => {
       const first = m.sessions_granted === 0 && !m.current_period_end;
       const left = Math.max(0, m.sessions_granted + m.rollover - m.sessions_used);
       const roll = first ? 0 : Math.min(2, left);
-      const upd = { sessions_granted: GRANT[m.tier], sessions_used: first ? m.sessions_used : 0, reschedules_used: first ? m.reschedules_used : 0, rollover: roll, payment_failed: false, status: "active",
+      const upd: any = { sessions_granted: GRANT[m.tier], rollover: roll, payment_failed: false, status: "active",
         current_period_start: ts(p?.start), current_period_end: ts(p?.end), updated_at: new Date().toISOString() };
+      if (!first) { upd.sessions_used = 0; upd.reschedules_used = 0; }
       await sb.from("memberships").update(upd).eq("id", m.id);
+      if (first) await sb.rpc("membership_recount", { p_id: m.id }); // signup picks counted atomically (race-safe)
       const total = GRANT[m.tier] + roll + m.closure_rollover;
       if (first) await mail(m, "welcome", `Welcome to ${NAME[m.tier]}`, `Hi! ${m.athlete}'s ${NAME[m.tier]} membership is active: ${GRANT[m.tier]} two-hour sessions this month, renewing ${d(upd.current_period_end)}. Book up to 4 weeks ahead from your dashboard.\n\n${POLICY}`);
       else await mail(m, "renewal", `Membership renewed: ${total} sessions ready`, `Your ${NAME[m.tier]} renewed ($${(o.amount_paid/100).toFixed(2)}). This month: ${GRANT[m.tier]} new sessions + ${roll} rolled over (max 2)${m.closure_rollover ? ` + ${m.closure_rollover} from gym closures` : ""}. Next renewal ${d(upd.current_period_end)}.\n\n${POLICY}`);
