@@ -29,7 +29,7 @@ window.SITE = {
     "open_group": { label: "Join a group solo", players: 1, price: 125, solo: true }
   },
   // Stripe Payment Links per package (leave "" until created in Stripe). ?client_reference_id=<booking ref> is appended.
-  paymentLinks: { "single": "https://buy.stripe.com/8x200l3xBc866AX8Gh8Zq04", "1on1": "https://buy.stripe.com/5kQ3cx3xBegebVhg8J8Zq00", "group2": "https://buy.stripe.com/cNi3cxfgj6NMcZl7Cd8Zq01", "group3": "https://buy.stripe.com/14A6oJ8RV9ZYaRd09L8Zq02", "group4": "https://buy.stripe.com/dRm8wR5FJ9ZYaRd4q18Zq03", "open_group": "https://buy.stripe.com/8x214pd8b5JIcZlcWx8Zq05" }
+  paymentLinks: { "single": "https://buy.stripe.com/bJeaEZfDS0BdcBF0gabV601", "1on1": "https://buy.stripe.com/eVq5kF63i2Jl9pt7ICbV605", "group2": "https://buy.stripe.com/8x2eVffDSdnZ8lp7ICbV602", "group3": "https://buy.stripe.com/cNi5kF4Zefw70SXaUObV603", "group4": "https://buy.stripe.com/4gM28t2R60BdbxB3smbV604", "open_group": "https://buy.stripe.com/00w8wR63iabNbxB7ICbV600" }
 };
 
 // Removed programs: display-only labels for old/DEMO rows. Not bookable (not in SITE.programs).

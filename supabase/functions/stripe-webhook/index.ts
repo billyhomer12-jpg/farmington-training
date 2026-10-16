@@ -11,9 +11,14 @@ const crypto = Stripe.createSubtleCryptoProvider();
 Deno.serve(async req => {
   if (req.method !== 'POST') return new Response('method not allowed', { status: 405 });
   const sig = req.headers.get('stripe-signature'), body = await req.text();
-  let event: Stripe.Event;
-  try { event = await stripe.webhooks.constructEventAsync(body, sig!, Deno.env.get('STRIPE_WEBHOOK_SECRET')!, undefined, crypto); }
-  catch (e) { return new Response('bad signature: ' + e, { status: 400 }); }
+  // Accept events from the old Stripe account (STRIPE_WEBHOOK_SECRET) and the new one (STRIPE_WEBHOOK_SECRET_NEW)
+  const secrets = [Deno.env.get('STRIPE_WEBHOOK_SECRET'), Deno.env.get('STRIPE_WEBHOOK_SECRET_NEW')].filter(Boolean) as string[];
+  let event: Stripe.Event | undefined, lastErr: unknown;
+  for (const sec of secrets) {
+    try { event = await stripe.webhooks.constructEventAsync(body, sig!, sec, undefined, crypto); break; }
+    catch (e) { lastErr = e; }
+  }
+  if (!event) return new Response('bad signature: ' + lastErr, { status: 400 });
   if (event.type !== 'checkout.session.completed') return new Response('ignored', { status: 200 });
   const s = event.data.object as Stripe.Checkout.Session;
   if (s.payment_status !== 'paid') return new Response('not paid yet', { status: 200 });
