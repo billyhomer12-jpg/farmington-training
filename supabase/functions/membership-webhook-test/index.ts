@@ -9,8 +9,14 @@ const NAME: Record<string, string> = { "1on1_monthly": "1-on-1 Monthly", "1on1_m
 const POLICY = "Month to month. Cancel anytime, keep access through the end of your month. 1 reschedule per billing month. No partial refunds; memberships can't be paused.";
 const ts = (s?: number | null) => (s ? new Date(s * 1000).toISOString() : null);
 const d = (iso: string | null) => iso ? new Date(iso).toLocaleDateString("en-US", { timeZone: "America/Denver", month: "short", day: "numeric", year: "numeric" }) : "";
+// Parent emails: OFF by default everywhere. Always rendered into membership_email_log (back office / evidence).
+// Real sending requires MEMBERSHIP_EMAILS_SEND=1 AND Billy's approval via Cisco; until then nothing is sent.
+const EMAILS_SEND = Deno.env.get("MEMBERSHIP_EMAILS_SEND") === "1";
 async function mail(m: any, kind: string, subject: string, body: string) {
   await sb.from("membership_email_log").insert({ membership_id: m.id, kind, to_email: m.parent_email, subject, body });
+  if (!EMAILS_SEND) return; // default: rendered only, never sent
+  const { sendEmail } = await import("../_shared/send.ts");
+  await sendEmail(m.parent_email, { subject, text: body, html: body.replace(/\n/g, "<br>") });
 }
 async function bySub(id: string) { return (await sb.from("memberships").select("*").eq("stripe_subscription_id", id).maybeSingle()).data; }
 async function ensure(subId: string, email?: string, athlete?: string) {
