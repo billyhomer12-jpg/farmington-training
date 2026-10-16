@@ -2,7 +2,7 @@
 // READ-ONLY: live Stripe payment links + Supabase deal + served config.js vs config.js on origin/main. Never prints secrets.
 import fs from 'fs'; import {execSync} from 'child_process'; import vm from 'vm';
 const NOTE='Founding Family bonus: free 5th session, use within 90 days';
-const EXP_START=process.env.EXP_START||'2026-10-16T18:15:00-06:00', EXP_END=process.env.EXP_END||'2026-10-19T18:15:00-06:00';
+const EXP_START=process.env.EXP_START||'2026-10-16T17:40:00-06:00', EXP_END=process.env.EXP_END||'2026-10-19T18:15:00-06:00';
 const K=fs.readFileSync('/workspace/.secrets/stripe_live_key','utf8').trim(), T=fs.readFileSync('/workspace/.sbtoken','utf8').trim();
 const mainSrc=execSync('git show origin/main:config.js',{cwd:new URL('..',import.meta.url).pathname}).toString();
 const load=s=>{const c={window:{},Date,Math,console};vm.runInNewContext(s,c);return c.window.SITE;};

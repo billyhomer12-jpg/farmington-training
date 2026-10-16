@@ -30,7 +30,7 @@ Deno.serve(async (req) => {
     if (error) return j({ error: error.message }, 400);
     const origin = ["http://localhost:8765", SITE].includes(b.origin) ? b.origin : SITE;
     // GRAND-OPENING-20: first-month coupon only inside the configured window (window mirrors config.js membershipPromo; coupon from env)
-    const PC = Deno.env.get("MEMBERSHIP_PROMO_COUPON"), PS = Date.parse(Deno.env.get("MEMBERSHIP_PROMO_START") || "2026-10-16T18:15:00-06:00"), PE = Date.parse(Deno.env.get("MEMBERSHIP_PROMO_END") || "2026-10-19T18:15:00-06:00");
+    const PC = Deno.env.get("MEMBERSHIP_PROMO_COUPON"), PS = Date.parse(Deno.env.get("MEMBERSHIP_PROMO_START") || "2026-10-16T17:40:00-06:00"), PE = Date.parse(Deno.env.get("MEMBERSHIP_PROMO_END") || "2026-10-19T18:15:00-06:00");
     const promo = PC && Date.now() >= PS && Date.now() < PE ? { discounts: [{ coupon: PC }] } : {};
     const s = await stripe.checkout.sessions.create({ ...promo, mode: "subscription", line_items: [{ price, quantity: 1 }], customer_email: b.email,
       metadata: { ref, tier: b.tier, athlete: b.athlete }, subscription_data: { metadata: { ref, tier: b.tier, athlete: b.athlete }, description: POLICY },
