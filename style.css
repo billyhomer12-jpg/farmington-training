@@ -399,7 +399,7 @@ body.qb-on .scrollhint.dn.gone~.scrollhint.up{bottom:calc(81px + env(safe-area-i
 
 /* PQA-5..9 */
 .seg{width:min(100%,336px);min-width:0}.seg .dot{position:absolute;top:50%;right:14px;margin:-3px 0 0}
-.pstage{min-height:var(--pmin,0)}
+/* PRICING-WI: PQA-6 tallest-panel reserve removed (it left a big gap above What's included) */
 .gsize{display:none}.js-ptabs .gsize{display:grid}
 .pstage [role=tabpanel]{scroll-margin-top:140px}
 .js-ptabs .ptabs{background:linear-gradient(var(--bg2) 85%,rgba(245,245,247,0));padding:10px 0 12px}
