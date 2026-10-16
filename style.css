@@ -375,3 +375,27 @@ body.qb-on .scrollhint.dn.gone~.scrollhint.up{bottom:calc(81px + env(safe-area-i
 /* membership preview */
 .mslots{display:grid;gap:.75rem}.mday .mdl{font-weight:600;margin:.25rem 0}.chip{min-height:44px;min-width:64px;margin:.2rem;border:1px solid #1E7B34;background:#fff;color:#1E7B34;border-radius:999px;cursor:pointer}.chip.on{background:#34C759;color:#000;border-color:#34C759}
 #msign label{display:block;margin:.5rem 0}#msign input,#msign select{width:100%;min-height:44px}.err{color:#b00020}.ok{color:#1E7B34;font-weight:600}.warn{background:#eaf9ee;border-left:4px solid #1E7B34;padding:.5rem}.mlist li{margin:.4rem 0}
+/* PRICING-1 group size selector v2: 3 equal segments, fixed-width sliding indicator (transform only) */
+.gsize{position:relative;grid-template-columns:1fr 1fr 1fr;--g:0}
+.gsize:has(input[value="3"]:checked){--g:1}.gsize:has(input[value="4"]:checked){--g:2}
+.gsize .gind{position:absolute;z-index:0;top:3px;bottom:3px;left:3px;width:calc((100% - 6px)/3);border-radius:980px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.12);transform:translateX(calc(100% * var(--g)));transition:transform 240ms cubic-bezier(.2,.8,.2,1)}
+.gsize label,.gsize label:has(input:checked){z-index:1;background:none;box-shadow:none;flex-direction:column;gap:2px;min-width:0;min-height:52px;padding:6px 0;line-height:1;text-align:center;transition:none}
+.gsize label b{font-size:1.0625rem;font-weight:600}.gsize label span{font-size:.75rem;font-weight:500;color:#424245}
+@media(prefers-reduced-motion:reduce){.gsize .gind{transition:none}}
+.js-ptabs .mdet{margin-top:12px}.js-ptabs .mdet>p.fine{margin:0;max-width:none}
+/* POLISH-8: hero CTA buttons (Design Lead spec) */
+.hero .ctas{display:flex;flex-wrap:wrap;justify-content:center;align-items:stretch;gap:12px}
+.hero .ctas .btn{min-height:44px;border-radius:14px;display:inline-flex;align-items:center;justify-content:center;margin:0}
+@media(max-width:400px){.hero .ctas{flex-direction:column;gap:12px;width:100%}.hero .ctas .btn{width:100%;height:48px;min-height:48px;padding:0 20px;font-size:17px;white-space:nowrap}}
+.js-ptabs:not(.ptabs-ready) .pstage>[role=tabpanel]:not(#panel-private){display:none}
+/* PQA-1..4 */
+.gsize{grid-template-columns:repeat(3,minmax(0,1fr));gap:0;padding:3px}
+.gsize label,.gsize label:has(input:checked){position:relative;min-width:0;align-items:center;justify-content:center;text-align:center;padding:4px 6px;line-height:1.1;border-radius:980px}
+.gsize input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;display:block;cursor:pointer}
+.gsize label b,.gsize label span{display:block;text-align:center;white-space:nowrap}
+.gpp{grid-column:1/-1;margin:8px 0 0;font-size:.875rem;color:#6e6e73}.gpp span{display:block}
+.js-ptabs .gpp span:not(.on){display:none}
+@media(min-width:761px) and (max-width:1023px){.ptab-sec .prices4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.ptab-sec #memberships .price .mut{position:static;width:auto;height:auto;overflow:visible;clip:auto;white-space:normal;grid-column:1/-1;margin:6px 0 0;font-size:.875rem}
+
+.btn.soonbtn{background:#E5E5EA;color:#48484A;border-color:#D1D1D6;box-shadow:none;cursor:not-allowed;pointer-events:none}
