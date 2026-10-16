@@ -1,0 +1,64 @@
+{
+ "account": "acct_1UR0vSRpcc5zZV0D",
+ "livemode": true,
+ "snapshot_at": "2026-10-16T16:58:00-06:00",
+ "source": "Stripe connector stripe_api_read GetPaymentLinks + GetPaymentLinksPaymentLinkLineItems (read-only)",
+ "links": [
+  {
+   "payment_link": "plink_1UR1myRpcc5zZV0D5c4O8r4g",
+   "url": "https://buy.stripe.com/eVq5kF63i2Jl9pt7ICbV605",
+   "price": "price_1UR1mwRpcc5zZV0DmXcqNOIM",
+   "product": "prod_VRveK5Lnsez3vX",
+   "unit_amount": 25000,
+   "currency": "usd",
+   "description": "1-on-1 Training"
+  },
+  {
+   "payment_link": "plink_1UR1mqRpcc5zZV0DN4YRl4o6",
+   "url": "https://buy.stripe.com/4gM28t2R60BdbxB3smbV604",
+   "price": "price_1UR1mnRpcc5zZV0DUPfvYOgI",
+   "product": "prod_VRveex08sbwJv1",
+   "unit_amount": 37500,
+   "currency": "usd",
+   "description": "Small Group (4 players)"
+  },
+  {
+   "payment_link": "plink_1UR1miRpcc5zZV0DoNjbN5eE",
+   "url": "https://buy.stripe.com/cNi5kF4Zefw70SXaUObV603",
+   "price": "price_1UR1mfRpcc5zZV0Dct0NTRAe",
+   "product": "prod_VRvdLa5bb4vXsd",
+   "unit_amount": 35000,
+   "currency": "usd",
+   "description": "Small Group (3 players)"
+  },
+  {
+   "payment_link": "plink_1UR1mVRpcc5zZV0DlgnY6I0n",
+   "url": "https://buy.stripe.com/8x2eVffDSdnZ8lp7ICbV602",
+   "price": "price_1UR1mSRpcc5zZV0DhyqMl0Y5",
+   "product": "prod_VRvdkc3O8PIEI5",
+   "unit_amount": 30000,
+   "currency": "usd",
+   "description": "Small Group (2 players)"
+  },
+  {
+   "payment_link": "plink_1UR1mNRpcc5zZV0DhtprYUXt",
+   "url": "https://buy.stripe.com/bJeaEZfDS0BdcBF0gabV601",
+   "price": "price_1UR1mKRpcc5zZV0DNuY6kcee",
+   "product": "prod_VRvdMNEUSZqxD3",
+   "unit_amount": 7500,
+   "currency": "usd",
+   "description": "Single 1-on-1 Session"
+  },
+  {
+   "payment_link": "plink_1UR1m4Rpcc5zZV0DsXlbvJmn",
+   "url": "https://buy.stripe.com/00w8wR63iabNbxB7ICbV600",
+   "price": "price_1UR1llRpcc5zZV0DqopWA5ay",
+   "product": "prod_VRvdnk7G2l1ytq",
+   "unit_amount": 12500,
+   "currency": "usd",
+   "description": "Open Group (per player)"
+  }
+ ],
+ "recurring_prices": [],
+ "recurring_note": "GetPrices type=recurring active=true returned 0 live prices at snapshot (monthly checkout not live in Stripe yet)."
+}
