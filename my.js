@@ -36,10 +36,10 @@ R.addEventListener('click',async e=>{const m=e.target.closest('[data-move]');if(
 const d=e.target.closest('[data-d]');if(d){selDay=d.dataset.d;selT=null;drawMover();return}
 const t=e.target.closest('[data-t]');if(t){selT=t.dataset.t;drawMover();return}
 if(e.target.id==='mv-ok')doMove()});
-async function loadSlots(){const r=V.sessions.find(x=>x.id===open),from=new Date(Date.now()+CUT).toISOString(),to=new Date(Date.now()+31*864e5).toISOString();
-const a=await rpc('training_availability',{p_program:r.program,p_from:from,p_to:to,p_workout_type:r.workout_type});
-const others=V.sessions.filter(x=>x.id!==r.id&&['requested','confirmed'].includes(x.status));
-slots=(a.ok&&Array.isArray(a.j)?a.j:[]).filter(x=>x.seats_left>0).map(x=>new Date(x.starts_at).toISOString()).filter(t=>new Date(t)-Date.now()>=CUT&&t!==new Date(r.starts_at).toISOString()&&!others.some(o=>Math.abs(new Date(o.starts_at)-new Date(t))<TWO));
+// Open times come from the server (training_move_slots): same rules as booking and parent_move, ignoring the session being moved.
+async function loadSlots(){const r=V.sessions.find(x=>x.id===open);let a=null;try{a=await rpc('training_move_slots',{p_token:tok,p_session:r.id})}catch{}
+if(!a||!a.ok){const M=$('mover');if(M){M.innerHTML='<p class="note">We couldn\u2019t load open times. <button type="button" class="btn sm" id="mv-retry">Retry</button></p>';$('mv-retry').onclick=loadSlots}return}
+slots=(Array.isArray(a.j)?a.j:[]).map(x=>new Date(typeof x==='string'?x:x.training_move_slots).toISOString());
 selDay=slots[0]?kd(slots[0]):null;drawMover()}
 function drawMover(){const M=$('mover');if(!M)return;const r=V.sessions.find(x=>x.id===open);if(!slots.length){M.innerHTML='<p class="note">No open '+esc(r.workout_type)+' times in the next 30 days. Call or text us and we’ll find one.</p>';return}
 const days=[...new Set(slots.map(kd))];

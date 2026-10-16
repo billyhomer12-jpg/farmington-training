@@ -34,7 +34,7 @@ function shell(title, pre, body) {
 function sessionRows(sessions, hi) {
   return sessions.map((r, i) => `<tr><td style="padding:12px 14px;border-top:${i ? '1px solid #e8e8ed' : '0'};${r.id === hi ? 'background:#EEF9F1;' : ''}">
 <div style="font-weight:600;font-size:15px">${esc(day(r.starts_at))}</div>
-<div style="font-size:14px;color:#424245;margin-top:2px">${esc(range(r.starts_at, r.duration_min || 120))} · ${esc(r.workout_type || '')} · <span style="color:${r.status === 'confirmed' ? '#1d7a3a' : '#248A3D'}">${r.status === 'confirmed' ? 'Confirmed' : 'Pending coach confirmation'}</span></div></td></tr>`).join('');
+<div style="font-size:14px;color:#424245;margin-top:2px">${esc(range(r.starts_at, r.duration_min || 120))} · ${esc(r.workout_type || '')} · <span style="color:${r.status === 'confirmed' ? '#1d7a3a' : '#248A3D'}">${r.status === 'confirmed' ? 'Confirmed' : 'Time requested · coach confirms'}</span></div></td></tr>`).join('');
 }
 const box = inner => `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f5f5f7;border-radius:16px;margin:0 0 20px">${inner}</table>`;
 const where = () => `<p style="margin:0 0 6px;font-size:13px;color:#6e6e73;text-transform:uppercase;letter-spacing:.04em;font-weight:600">Where</p>
@@ -48,7 +48,7 @@ const groupBox = g => box(`<tr><td style="padding:16px 14px;font-size:15px;line-
 export function confirmationEmail({ signup: s, sessions, token, group }) {
   const link = `${SITE}/my.html?token=${encodeURIComponent(token)}`;
   const progs = (s.programs || [s.program]).map(k => PROG[k] || k).join(' + ');
-  const body = `<p style="margin:0 0 16px;font-size:16px;line-height:1.5">Hi ${esc((s.parent || '').split(' ')[0])}, thanks! Your payment is complete and <b>${esc(names(s))}</b> ${(s.additional_players||[]).length?'are':'is'} booked.</p>
+  const body = `<p style="margin:0 0 16px;font-size:16px;line-height:1.5">Hi ${esc((s.parent || '').split(' ')[0])}, thanks! Your payment is complete and <b>${esc(names(s))}</b> ${(s.additional_players||[]).length?'are':'is'} booked.${!group && sessions.some(r => r.status !== 'confirmed') ? ' Your spot and package are secured; a coach confirms each requested time (usually within a day) and will email you if one needs to change.' : ''}</p>
 ${group ? groupBox(group) + `<p style="margin:0 0 16px;font-size:15px;line-height:1.5">We'll add other athletes to this group as families sign up. If it has fewer than ${group.min_players || 2} players 2 days before the first session, we'll email you to move to another group or get a full refund.</p>` : ''}
 ${box(`<tr><td style="padding:16px 14px;font-size:15px;line-height:1.6"><b>${esc(PKG[s.package] || s.package)}</b> · ${n(sessions)}<br>Paid: <b>${money(s.amount_paid_cents ?? s.price_cents)}</b><br>${esc(progs)}</td></tr>`)}
 <p style="margin:0 0 6px;font-size:13px;color:#6e6e73;text-transform:uppercase;letter-spacing:.04em;font-weight:600">Your ${sessions.length === 1 ? 'session' : sessions.length + ' sessions'} (Denver time)</p>
@@ -59,9 +59,9 @@ ${where()}
 <p style="margin:22px 0 8px;font-size:15px;line-height:1.5"><b>Waiver:</b> signed online. Your signed copy was emailed when you signed. If a waiver is still missing, we'll email you a link to sign it.</p>
 <p style="margin:14px 0 0;font-size:12px;color:#86868b;line-height:1.5">This link is private to your booking. Don't share it.</p>`;
   return { subject: `You're booked: ${sessions.length === 1 ? '1 session' : sessions.length + ' sessions'} with ${BRAND}`, html: shell("You're booked.", 'Payment confirmed', body),
-    text: `Payment confirmed. ${names(s)} ${(s.additional_players||[]).length?'are':'is'} booked: ${PKG[s.package] || s.package}, ${money(s.amount_paid_cents ?? s.price_cents)}.\n` +
+    text: `Payment confirmed. ${names(s)} ${(s.additional_players||[]).length?'are':'is'} booked: ${PKG[s.package] || s.package}, ${money(s.amount_paid_cents ?? s.price_cents)}.${!group && sessions.some(r => r.status !== 'confirmed') ? ' A coach confirms each requested time and will email you if one needs to change.' : ''}\n` +
       (group ? `Group: ${groupName(group)} (${groupWhen(group)}), ${group.taken} of ${group.capacity} spots filled. Runs with ${group.min_players || 2}+ players; if not, we'll email you to move groups or get a refund.\n` : '') +
-      sessions.map(r => `- ${day(r.starts_at)}, ${range(r.starts_at, r.duration_min || 120)}, ${r.workout_type} (${r.status})`).join('\n') +
+      sessions.map(r => `- ${day(r.starts_at)}, ${range(r.starts_at, r.duration_min || 120)}, ${r.workout_type} (${r.status === 'confirmed' ? 'confirmed' : 'time requested, coach confirms'})`).join('\n') +
       `\n\nWhere: ${LOCATION.name}, ${LOCATION.address}\nMaps: ${LOCATION.apple}\nMy sessions & reschedule: ${link}\nWaiver: signed online (your signed copy was emailed separately).\nQuestions? Reply, email ${REPLY_TO}, or call/text ${PHONE}.` };
 }
 
