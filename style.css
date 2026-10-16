@@ -247,7 +247,7 @@ main p a:not(.btn):not(.chev):not(.achip),main li a:not(.btn),main dd a,.faq a,.
 /* DESIGN-5: coaches on mobile */
 @media(max-width:600px){.coaches{grid-template-columns:1fr;gap:16px}.coaches:not(.stack) img.photo{aspect-ratio:4/5}}
 /* DESIGN-14: remove floating scroll-down chevron */
-.scrollhint.dn{display:none!important}
+/* SCROLL-BTNS (Billy 10/16): DESIGN-14 hid scroll-down here; restored */
 /* DESIGN-11 (Billy 10/16): highlight only the Join a group solo card */
 .prices4 .price.feat{box-shadow:inset 0 0 0 2px var(--ac2)}
 .poplabel{display:inline-block;margin:0 0 10px;padding:3px 10px;border-radius:980px;background:var(--ac);color:#1d1d1f;font-size:.75rem;font-weight:600;letter-spacing:0}
@@ -257,7 +257,6 @@ a[href^="mailto:"]{white-space:nowrap;overflow-wrap:normal;word-break:normal}
 @media(max-width:430px){main a[href^="mailto:"]:not(.btn){display:inline-block;max-width:100%;font-size:clamp(.74rem,3.9vw,.95rem)}footer a[href^="mailto:"]{font-size:clamp(.72rem,3.7vw,.8125rem)}a[href^="tel:"]{white-space:nowrap}}
 /* Back-to-top: 44x44, only shown where it sits in the empty side gutter so it never covers content */
 .scrollhint.up{width:44px;height:44px;bottom:calc(20px + env(safe-area-inset-bottom))}
-@media(max-width:1179px){.scrollhint.up{display:none!important}}
 /* POLISH-2: phone never wraps */
 a[href^="tel:"]{white-space:nowrap}
 /* POLISH-3: no one-word last lines */
@@ -280,7 +279,7 @@ h1,h2,h3,summary,.sub,.tsub{text-wrap:balance}p,li{text-wrap:pretty}
 .qbook a{display:flex;align-items:center;justify-content:center;height:48px;width:100%;flex:1;border-radius:14px;background:var(--ac);color:#000;font:600 17px/1 var(--font);letter-spacing:-.01em;text-decoration:none}
 .qbook a:active{background:var(--ac-press)}.qbook a:focus-visible{outline:2px solid #fff;outline-offset:2px}
 body.qb-on{padding-bottom:calc(68px + env(safe-area-inset-bottom))}
-body.qb-on .scrollhint.up{bottom:calc(80px + env(safe-area-inset-bottom))}}
+}
 @media(min-width:390px) and (max-width:760px){.qbook span{display:inline}}
 @media(max-width:760px) and (prefers-reduced-motion:reduce){.qbook,.qbook.on{transform:none;opacity:0;transition:opacity .2s}.qbook.on{opacity:1}}
 /* ===== Design batch 2 ===== */
@@ -327,3 +326,12 @@ small,.tsub,.note{text-wrap:pretty}
 /* POLISH-1: email may break only at the <wbr> after @ */
 a[href^="mailto:"]{overflow-wrap:normal!important;word-break:normal!important;hyphens:none}
 @media(max-width:360px){a[href^="mailto:"]{white-space:normal!important}}
+
+/* SCROLL-BTNS (Billy 10/16): scroll-down + back-to-top restored at all widths, bottom-right corner.
+   Phones: when the sticky Book bar is showing (body.qb-on), stack above it (bar ~69px + 12px gap) and follow its show/hide. */
+.scrollhint{transition:opacity .4s,transform .4s,bottom .25s cubic-bezier(.2,.8,.2,1)}
+.scrollhint.up{width:44px;height:44px}
+@media(max-width:760px){
+body.qb-on .scrollhint.dn{bottom:calc(81px + env(safe-area-inset-bottom))}
+body.qb-on .scrollhint.up{bottom:calc(133px + env(safe-area-inset-bottom))}
+body.qb-on .scrollhint.dn.gone~.scrollhint.up{bottom:calc(81px + env(safe-area-inset-bottom))}}
