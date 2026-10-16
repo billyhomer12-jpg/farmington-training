@@ -13,6 +13,7 @@ async function slots(program,el,max,onPick,taken=[],type='Gym'){const from=new D
 const q=new URLSearchParams(location.search);
 if($('#msign')){const tier=q.get('tier');const n=NAMES[tier];if(!n){$('#merr').textContent='Pick a plan on the Pricing page.';return}
  $('#mtitle').textContent=n[0];$('#mplan').textContent=n[1];const picks=new Set();const OG=tier==='open_group_monthly';if(OG){$('[name=program]').closest('label').hidden=true;$('#mhint').textContent='Open group times in the next 4 weeks. Pick 4 (one group, or mix groups). Each session is 2 hours.'}
+ const PL=tier==='1on1_monthly_plus';if(PL){const h=$('#mcount').parentNode;h.firstChild.textContent='Pick your first 4 of 8 sessions ';const n=document.createElement('p');n.className='mut';n.id='mplus';n.textContent='You\'ll pick your other 4 sessions before week 3 of each billing month.';h.after(n)}
  const upd=()=>{$('#mcount').textContent='('+picks.size+' of 4)';$('#mgo').disabled=picks.size!==4};
  const load=()=>{picks.clear();upd();slots(OG?'Basketball Skills':$('[name=program]').value,$('#mdays'),4,(t,b)=>{if(picks.has(t)){picks.delete(t);b.classList.remove('on')}else if(picks.size<4){picks.add(t);b.classList.add('on')}upd()},[],OG?'OpenGroup':'Gym')};
  $('[name=program]').onchange=load;load();
