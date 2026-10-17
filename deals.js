@@ -28,11 +28,11 @@ const css=document.createElement('style');css.textContent=`.deal-res body{paddin
 .deal-pv{display:inline-block;background:var(--ac2);color:#fff;font:700 .625rem/1 var(--font);letter-spacing:.06em;padding:3px 6px;border-radius:4px;margin-right:8px;vertical-align:middle;text-transform:uppercase}
 @media(max-width:760px){.deal-res body{padding-top:64px}.deal-bar{height:64px;font-size:.75rem;gap:8px}.deal-bar .short{display:inline}.deal-bar .x{height:64px}.deal-bar .long{display:none}}`;document.head.appendChild(css);
 const pg=(location.pathname.split('/').pop()||'index.html').replace(/\.html$/,'')||'index',sf=d.surfaces||[];
-const showBar=sf.includes('home_banner')&&true&&(pv||!(()=>{try{return localStorage.getItem('deal-dismissed:'+d.id)}catch{}})());if(showBar)document.documentElement.classList.add('deal-res');
+const showBar=false&&(pv||!(()=>{try{return localStorage.getItem('deal-dismissed:'+d.id)}catch{}})());if(showBar)document.documentElement.classList.add('deal-res');
 function tag(){if(document.querySelector('.deal-pv'))return;const t=document.createElement('span');t.className='deal-pv';t.textContent='Preview';
  const b=document.querySelector('.deal-bar .t');if(b)b.prepend(t);else{t.style.cssText='position:fixed;left:8px;bottom:8px;z-index:40';document.body.appendChild(t)}}
 function run(){
- if(sf.includes('home_banner')&&true&&(pv||!localStorage.getItem('deal-dismissed:'+d.id))&&!document.querySelector('.deal-bar')){
+ if(false&&(pv||!localStorage.getItem('deal-dismissed:'+d.id))&&!document.querySelector('.deal-bar')){
   const bar=document.createElement('div');bar.className='deal-bar';bar.setAttribute('role','region');bar.setAttribute('aria-label','Current offer');
   const left=new Date(d.end_at)-now,cdOn=d.countdown_hours&&left>0&&(left<=d.countdown_hours*3600e3||new Date(d.start_at)<=now),cd='';
   bar.innerHTML=`<span class="t">${d.banner_text?esc(d.banner_text):`${esc(d.headline)}<span class="long">: ${esc(d.banner_detail||d.offer_detail)}</span>${d.banner_short?`<span class="short">: ${esc(d.banner_short)}</span>`:''}`}${cdOn?'<span class="deal-cd"> · Ends in <span data-cd></span></span>':''}</span>${pg==='pricing'?'':`<a href="${esc(d.cta_url||'pricing.html')}">${esc(d.cta_label||'See packages')}</a>`}<button type="button" class="x" aria-label="Dismiss offer">×</button>`;
