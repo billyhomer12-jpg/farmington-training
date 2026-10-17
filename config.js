@@ -101,7 +101,7 @@ window.siteNow=()=>{try{const n=new URLSearchParams(location.search).get('deal_n
 window.freeFirstOn=()=>window.siteNow()<=Date.parse(window.SITE.FREE_FIRST_END);
 window.saleOn=()=>window.siteNow()<Date.parse(window.SITE.SALE_END);
 // Set before first paint (config.js is sync in <head>) so hidden notes never shift the layout.
-(function(){const h=document.documentElement;if(!window.freeFirstOn())h.classList.add('ff-off');if(!window.saleOn())h.classList.add('sale-off')})();
+(function(){try{const h=document.documentElement;if(!window.freeFirstOn())h.classList.add('ff-off');if(!window.saleOn())h.classList.add('sale-off')}catch(e){}})();
 // utm_source: kept for this visit (sessionStorage) across pages; saved with every booking.
 (function(){try{const u=new URLSearchParams(location.search).get('utm_source');if(u)sessionStorage.setItem('fc_utm',u.slice(0,100))}catch(e){}})();
 window.utmSource=()=>{try{return sessionStorage.getItem('fc_utm')||null}catch(e){return null}};
