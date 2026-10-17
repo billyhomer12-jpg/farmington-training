@@ -46,7 +46,7 @@ window.pkgText=k=>{const p=(window.SITE.packages||{})[k];return p?`${p.label} â€
 // Grand Opening start. null = the launch deal never renders. Set an ISO time with offset, e.g. "2026-12-05T09:00:00-07:00".
 // Keep training.deals (supabase/2026-10-16-deals.sql) in sync: it drives the +1 bonus in the back office, paid page and email.
 window.SITE.LAUNCH_AT = "2026-10-16T17:50:00-06:00";
-// DEAL-20: Grand Opening sale window is LAUNCH_AT to LAUNCH_AT+72h.
+// DEAL-20: Grand Opening sale window is LAUNCH_AT (10/16 17:50 MDT) to 2026-11-15 17:50 MST (30 days).
 window.SITE.PRELAUNCH_AT = "2026-10-16T14:30:00-06:00";
 // Shown only when status is approved/live AND start_at <= now < end_at (America/Denver offsets). At most one shows (first match).
 // Test only: ?deal_preview=<id> forces one deal; ?deal_now=2026-11-19 (or a full ISO time) fakes the clock. Both add noindex + a Preview tag.
@@ -63,19 +63,19 @@ window.SITE.deals = [
     faq_q: "How does the holiday bonus session work?",
     surfaces: ["home_banner", "pricing_badge", "book_page", "confirmation_line"],
     promo_code: null, price_display: null, countdown: false, spots_left: null },
-  // DEAL-20 (Billy 10/16): 20% off everything, LAUNCH_AT -> LAUNCH_AT+72h. Sale prices live next to regular ones in packages / MEMBERSHIP_PRICES ("sale").
+  // DEAL-20 (Billy 10/16): 20% off everything, LAUNCH_AT -> 11/15 17:50 MST. Sale prices live next to regular ones in packages / MEMBERSHIP_PRICES ("sale").
   // Sale Payment Links: fill SITE.saleLinks below; empty = regular link stays (and booking shows the regular price it charges). Auto-reverts by time.
   { id: "grand-opening-2026", status: "approved", offer_type: "percent_off", percent: 20,
     headline: "Grand Opening", offer_detail: "20% off",
-    banner_text: "Grand Opening: 20% off everything for 72 hours",
+    banner_text: "Grand Opening: 20% off everything for our Grand Opening",
     eligible_packages: ["single", "1on1", "open_group", "group2", "group3", "group4"],
     cta_label: "See prices", cta_url: "pricing.html",
-    summary_line: "20% off for 72 hours.",
-    fine_print: "First month only on monthly plans. Ends Mon 10/19 at 5:50 PM MT.",
-    membership_fine_print: "Grand Opening: 20% off your first month. Ends Mon 10/19 at 5:50 PM MT.",
+    summary_line: "20% off for our Grand Opening.",
+    fine_print: "First month only on monthly plans. Ends Sun 11/15 at 5:50 PM MT.",
+    membership_fine_print: "Grand Opening: 20% off your first month. Ends Sun 11/15 at 5:50 PM MT.",
     surfaces: ["home_banner", "pricing_badge", "book_page"],
-    promo_code: null, countdown: false, spots_left: null, countdown_hours: 72,
-    ...(()=>{const L=window.SITE.LAUNCH_AT;return L?{start_at:L,end_at:"2026-10-19T17:50:00-06:00"}:{}})() }
+    promo_code: null, countdown: false, spots_left: null, countdown_hours: 720,
+    ...(()=>{const L=window.SITE.LAUNCH_AT;return L?{start_at:L,end_at:"2026-11-15T17:50:00-07:00"}:{}})() }
 ];
 // Single source for monthly membership prices (display only; Stripe is separate). Cards bind by data-tier.
 window.SITE.MEMBERSHIP_PRICES = {"1on1_monthly":{price:240,sale:192,sessions:4},"1on1_monthly_plus":{price:460,sale:368,sessions:8},"open_group_monthly":{price:120,sale:96,per:"player",sessions:4}};
