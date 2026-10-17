@@ -108,3 +108,6 @@ window.utmSource=()=>{try{return sessionStorage.getItem('fc_utm')||null}catch(e)
 
 // SALE-REAL: membership display. Sale: '$192 first month (was $240), then $240/mo'; after the end: plain regular.
 window.mpHTML=k=>{const t=(window.SITE.MEMBERSHIP_PRICES||{})[k];if(!t)return'';const D=window.DEALS;return D&&D.sale&&t.sale?`<b class="now">$${t.sale}</b><span class="mpl"> first month (was <s class="was">$${t.price}</s>), then $${t.price}/mo</span>`:`$${t.price}<span class="per">/mo</span>`};
+
+/* QA-LEAK: hide test data on public pages */
+window.isTestRow=function(o){try{var t=typeof o==='string'?o:[o&&o.name,o&&o.first_name,o&&o.last_name,o&&o.athlete,o&&o.parent,o&&o.email].join(' ');return /(^|\s)qa(\b|[-_ ])/i.test(String(t).trim())||/@example\.(com|org|net)/i.test(t)}catch(e){return false}};
