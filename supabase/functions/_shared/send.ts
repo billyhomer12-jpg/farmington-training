@@ -17,7 +17,15 @@ export async function sendEmail(to: string, m: { subject: string; html: string; 
   return (await r.json().catch(() => ({}))).id as string | undefined;
 }
 // Coach notice to every owner/coach recipient (one config list). qa=true prefixes the subject with [QA].
-export async function sendCoach(m: { subject: string; html: string; text: string }, qa = false) {
+// OWNER-SUBJ: every owner notice subject is unique: record ID + MT date/time (e.g. "… · #172, Sat 10/17 8:53 AM MT") so Gmail never threads them together.
+export function stampMT(at?: string | Date) {
+  const d = at ? new Date(at) : new Date();
+  const p = Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone: 'America/Denver', weekday: 'short', month: 'numeric', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true }).formatToParts(d).map(x => [x.type, x.value]));
+  return `${p.weekday} ${p.month}/${p.day} ${p.hour}:${p.minute} ${p.dayPeriod} MT`;
+}
+export async function sendCoach(m: { subject: string; html: string; text: string }, qa = false, ref = '', at?: string | Date) {
+  const tag = (ref ? ' · ' + ref + ',' : ' ·') + ' ' + stampMT(at);
+  m = { ...m, subject: m.subject + tag };
   const mm = qa ? { ...m, subject: '[QA] ' + m.subject } : m; const ids: string[] = [];
   for (const to of ALL_RECIPIENTS) ids.push(String(await sendEmail(to, mm)));
   return ids;
@@ -47,7 +55,7 @@ export async function flushOutbox(signupId: number, token: string, opt: { wtoken
         : e.kind === 'waiver_copy' ? waiverCopyEmail({ signup, payload: e.payload })
         : e.kind === 'waiver_reminder' ? waiverReminderEmail({ signup, wtoken: opt.wtoken })
         : rescheduledEmail({ signup, sessions, token, from: e.payload.from, to: e.payload.to, session_id: e.payload.session_id });
-      if (e.kind === 'coach_notice') { const ids = await sendCoach(m, isQA(signup.email)); console.log('[coach_notice] outbox', e.id, 'sent to', ALL_RECIPIENTS.length, 'ids', ids.join(',')); await sb.rpc('training_outbox_done', { p_id: e.id, p_error: null }); sent++; continue; }
+      if (e.kind === 'coach_notice') { const ids = await sendCoach(m, isQA(signup.email), '#' + signup.id, e.created_at); console.log('[coach_notice] outbox', e.id, 'sent to', ALL_RECIPIENTS.length, 'ids', ids.join(',')); await sb.rpc('training_outbox_done', { p_id: e.id, p_error: null }); sent++; continue; }
       await sendEmail(signup.email, m);
       await sb.rpc('training_outbox_done', { p_id: e.id, p_error: null }); sent++;
     } catch (err) { await sb.rpc('training_outbox_done', { p_id: e.id, p_error: String(err).slice(0, 500) }); }
@@ -67,7 +75,7 @@ export async function flushOwner() {
       const { data: m } = mid ? await sb.from('memberships').select('*').eq('id', mid).maybeSingle() : { data: null };
       const em = String(m?.parent_email || '');
       if (/@example\.(com|org|net)$/i.test(em) && !isQA(em)) { await sb.from('owner_outbox').update({ sent_at: new Date().toISOString(), error: 'test-skip' }).eq('id', r.id); continue; }
-      const ids = await sendCoach(ownerMembershipEmail({ kind: r.kind, payload: r.payload, m: m || {} }), isQA(em));
+      const ids = await sendCoach(ownerMembershipEmail({ kind: r.kind, payload: r.payload, m: m || {} }), isQA(em), 'M-' + (mid ? String(mid).slice(0, 8) : 'n/a') + ' #' + r.id, r.created_at);
       console.log('[owner_outbox]', r.id, r.kind, 'ids', ids.join(','));
       await sb.from('owner_outbox').update({ sent_at: new Date().toISOString(), error: null }).eq('id', r.id); sent++;
     } catch (e) { await sb.from('owner_outbox').update({ error: String(e).slice(0, 500) }).eq('id', r.id); }
