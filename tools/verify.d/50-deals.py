@@ -5,6 +5,7 @@
 import sys, os, re, json, urllib.request
 from datetime import datetime, timedelta
 sys.path.insert(0, os.path.dirname(__file__)); from _lib import *
+MAXD=float(os.environ.get('VERIFY_MAX_DEAL_DAYS','31'))  # Grand Opening extended to 30 days (11/15); +DST hour
 src=get('config.js'); SIM=os.environ.get('VERIFY_LAUNCH_AT_SIM','2026-10-16T17:50:00-06:00')
 def iso(s): return datetime.fromisoformat(s.replace('Z','+00:00'))
 alt='null' if eval_config(src).get('LAUNCH_AT') else SIM
@@ -33,7 +34,7 @@ for label,L in (('deployed',None),('LAUNCH_AT='+alt,alt)):
             bad=[k for k in d.get('eligible_packages',[]) if k in tiers or pk.get(k,{}).get('sessions')==1 or k not in pk]
             if bad: fail(f"{label} {i}: value_add eligible_packages includes single/membership/unknown {bad}")
         a,b=iso(d['start_at']),iso(d['end_at']); days=(b-a)/timedelta(days=1)
-        if not 3<=days<=10.0001: fail(f"{label} {i}: duration {days:.2f} days outside 3-10")
+        if not 3<=days<=MAXD: fail(f"{label} {i}: duration {days:.2f} days outside 3-{MAXD:g}")
         else: ok(f"{label} {i}: {a.isoformat()} -> {b.isoformat()} ({days:.2f} d), eligible ok")
         if not S.get('LAUNCH_AT') and (d.get('countdown') or d.get('countdown_hours')): fail(f"{label} {i}: countdown enabled while LAUNCH_AT null")
         if not S.get('LAUNCH_AT') and i=='grand-opening-2026' and '72' in (d.get('banner_text','')+d.get('fine_print','')): fail(f"{label} {i}: 72h copy while LAUNCH_AT null")
@@ -58,6 +59,6 @@ try:
     for r in rows:
         if r.get('status') in ('approved','live') and r.get('start_at') and r.get('end_at'):
             days=(iso(r['end_at'])-iso(r['start_at']))/timedelta(days=1)
-            if not 3<=days<=10.0001: fail(f"training.deals {r['id']}: duration {days:.2f} d outside 3-10")
+            if not 3<=days<=MAXD: fail(f"training.deals {r['id']}: duration {days:.2f} d outside 3-{MAXD:g}")
 except Exception as e: print(f"SKIP training.deals: no public anon read path ({str(e)[:60]})")
 done('deals')
