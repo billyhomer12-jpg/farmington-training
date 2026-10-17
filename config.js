@@ -42,7 +42,7 @@ window.progOptions=()=>(window.SITE.programs||[]).map(p=>`<option value="${p.key
 window.pkgSessions=k=>(((window.SITE.packages||{})[k]||{}).sessions)||window.SITE.sessionsPerPackage||4;
 // Only real https Stripe links count; placeholders like TODO_SINGLE_LINK are treated as not set up.
 window.payLink=k=>{const sl=window.DEALS&&window.DEALS.sale?((window.SITE.saleLinks||{})[k]||""):"",l=/^https:\/\//.test(sl)?sl:(((window.SITE.paymentLinks||{})[k])||"");return /^https:\/\//.test(l)?l:""};
-window.pkgText=k=>{const p=(window.SITE.packages||{})[k];return p?`${p.label} — $${p.price} · ${window.pkgSessions(k)} session${window.pkgSessions(k)>1?"s":""} · 2 hrs ${window.pkgSessions(k)>1?"each":""}`.trim():""};
+window.pkgText=k=>{const p=(window.SITE.packages||{})[k];return p?`${p.label} — ${window.priceTxt(p)} · ${window.pkgSessions(k)} session${window.pkgSessions(k)>1?"s":""} · 2 hrs ${window.pkgSessions(k)>1?"each":""}`.trim():""};
 
 // ===== DEALS (DEALS-SLOT) =====
 // Grand Opening start. null = the launch deal never renders. Set an ISO time with offset, e.g. "2026-12-05T09:00:00-07:00".
