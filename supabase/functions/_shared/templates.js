@@ -141,6 +141,7 @@ ${box(sessionRows(sessions))}${where()}`;
 // To the business inbox: a solo parent paid to join an open group, or a group is under minimum 48 h out.
 export function coachNoticeEmail({ signup: s, payload: p }) {
   if (p.type === 'free_booking') return freeCoachNoticeEmail({ signup: s, payload: p });
+  if (p.type === 'paid_booking') return paidCoachNoticeEmail({ signup: s, payload: p });
   const g = p.group || {}, under = p.type === 'under_min';
   const title = under ? `Refund/move needed: ${groupName(g)}` : `New group player: ${s.athlete} joined ${groupName(g)}`;
   const body = `<p style="margin:0 0 16px;font-size:16px;line-height:1.5">${under
@@ -177,4 +178,19 @@ ${where()}
 <p style="margin:0 0 8px;font-size:15px;line-height:1.5"><b>Waiver:</b> signed online. Questions? Call or text ${PHONE}.</p>`;
   return { subject: `Your free first session is booked: ${s.athlete}`, html: shell('Your free session is booked.', 'Booking confirmed · FREE', body),
     text: `${s.athlete}'s first session is booked and FREE (no payment).\n${ss.map(r => day(r.starts_at) + ', ' + range(r.starts_at, r.duration_min) + ' MT').join('\n')}\nBook a package within 7 days of your free session to lock in Grand Opening pricing (sale ends Sun 11/15 at 5:50 PM MT).\nQuestions? ${PHONE}` };
+}
+
+// Paid 1-on-1 / own-group booking coach notice (queued by training_mark_paid on payment).
+export function paidCoachNoticeEmail({ signup: s, payload: p }) {
+  const amt = money(p.amount_cents ?? s.amount_paid_cents ?? s.price_cents ?? 0) + (DEALS[s.deal] ? ' (' + DEALS[s.deal] + ')' : '');
+  const ss = p.sessions || [], pk = PKG[s.package] || s.package;
+  const when = ss.map((r, i) => `Session ${i + 1}: ${day(r.starts_at)}, ${range(r.starts_at, r.duration_min || 120)} · ${r.workout_type || ''}`);
+  const others = (s.additional_players || []).map((x, i) => `Player ${i + 2}: ${x.athlete} · parent ${x.parent} · ${x.phone}`);
+  const title = `New paid booking: ${s.athlete} · ${pk} · ${amt}`;
+  const body = `<p style="margin:0 0 16px;font-size:16px;line-height:1.5"><b>${esc(s.athlete)}</b> (age ${esc(s.age)}) paid <b>${esc(amt)}</b> for <b>${esc(pk)}</b>. Parent: ${esc(s.parent)} · ${esc(s.phone)} · ${esc(s.email)}.</p>
+${box(`<tr><td style="padding:16px 14px;font-size:15px;line-height:1.6">${when.map(esc).join('<br>') || 'No sessions listed'}${others.length ? '<br>' + others.map(esc).join('<br>') : ''}<br>${esc(srcLine(s) || 'Heard about us: not given')}</td></tr>`)}
+<p style="margin:0 0 16px;font-size:15px;line-height:1.5">Confirm the requested times in the back office.</p>
+<p style="margin:0 0 8px">${btn(SITE + '/admin/', 'Open the back office')}</p>`;
+  return { subject: title, html: shell('New paid booking.', 'Coach notice', body),
+    text: `${title}\n${s.athlete} (age ${s.age}) · ${pk} · ${amt}\n${when.join('\n')}${others.length ? '\n' + others.join('\n') : ''}\nParent: ${s.parent} · ${s.phone} · ${s.email}\n${srcLine(s) || 'Heard about us: not given'}\nBack office: ${SITE}/admin/` };
 }
