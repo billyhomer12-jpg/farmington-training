@@ -461,3 +461,5 @@ html.ff-off .ffnote,html.ff-off [data-ff]{display:none!important}html.sale-off .
 #form .ffbox label{display:flex;gap:10px;align-items:flex-start;font-weight:600}#form .ffbox small{display:block;font-weight:400;color:#424245}
 #form .hfrom select{width:100%}#form .hfrom .hfo{margin-top:8px}
 .badge.free{background:#34C759;color:#000}.badge.rep{background:#B3261E;color:#fff}
+
+.amt .mpl{display:block;font-size:1rem;font-weight:500;line-height:1.35;margin-top:4px;letter-spacing:0}.amt .mpl s{opacity:.7}#mplan .mpl{display:inline;font-size:inherit}

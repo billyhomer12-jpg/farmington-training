@@ -105,3 +105,6 @@ window.saleOn=()=>window.siteNow()<Date.parse(window.SITE.SALE_END);
 // utm_source: kept for this visit (sessionStorage) across pages; saved with every booking.
 (function(){try{const u=new URLSearchParams(location.search).get('utm_source');if(u)sessionStorage.setItem('fc_utm',u.slice(0,100))}catch(e){}})();
 window.utmSource=()=>{try{return sessionStorage.getItem('fc_utm')||null}catch(e){return null}};
+
+// SALE-REAL: membership display. Sale: '$192 first month (was $240), then $240/mo'; after the end: plain regular.
+window.mpHTML=k=>{const t=(window.SITE.MEMBERSHIP_PRICES||{})[k];if(!t)return'';const D=window.DEALS;return D&&D.sale&&t.sale?`<b class="now">$${t.sale}</b><span class="mpl"> first month (was <s class="was">$${t.price}</s>), then $${t.price}/mo</span>`:`$${t.price}<span class="per">/mo</span>`};
