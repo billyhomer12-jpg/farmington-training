@@ -8,7 +8,7 @@ const list=(S.deals||[]).filter(d=>d&&d.id);
 const live=d=>['approved','live'].includes(d.status)&&d.start_at&&d.end_at&&new Date(d.start_at)<=now&&now<new Date(d.end_at);
 const d0=pv?list.find(x=>x.id===pv):list.find(live);
 const launched=!!(d0&&d0.launch_at&&now>=new Date(d0.launch_at));let d=d0&&launched&&d0.launch_copy?{...d0,...d0.launch_copy}:d0;if(d&&pv&&!d.end_at){const L=S.LAUNCH_AT||new Date().toISOString();d={...d,start_at:L,end_at:new Date(new Date(L).getTime()+72*3600e3).toISOString()}}
-const sale=!!(d&&d.offer_type==='percent_off');if(sale)document.documentElement.classList.add('deal-on');
+const sale=!!(d&&d.offer_type==='percent_off');if(sale)document.documentElement.classList.add('deal-on');else{document.documentElement.classList.add('deal-off');const rv=()=>document.querySelectorAll('.sp[data-r]').forEach(e=>{e.textContent='$'+e.dataset.r});document.readyState==='loading'?document.addEventListener('DOMContentLoaded',rv):rv()}
 const test=!!(pv||nw);
 if(test){const m=document.createElement('meta');m.name='robots';m.content='noindex';document.head.appendChild(m)}
 window.DEALS={active:d||null,sale,eligible:k=>!!(d&&k&&(sale||k!=='single')&&(d.eligible_packages||[]).includes(k)),
