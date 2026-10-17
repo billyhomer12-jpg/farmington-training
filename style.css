@@ -450,3 +450,5 @@ body.qb-on{padding-bottom:calc(68px + env(safe-area-inset-bottom))}
 @media(max-width:760px){body.qb-on{padding-bottom:calc(76px + env(safe-area-inset-bottom))}}
 @media(max-width:340px){.seg4 [role=tab]{padding:0 1px;font-size:.71875rem}}
 .seg4 .dot{top:7px;right:5px;margin:0;width:5px;height:5px}
+
+a[href^="mailto:"]{overflow-wrap:anywhere;word-break:normal}
