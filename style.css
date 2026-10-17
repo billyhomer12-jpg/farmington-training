@@ -465,3 +465,5 @@ html.ff-off .ffnote,html.ff-off [data-ff]{display:none!important}html.sale-off .
 .amt .mpl{display:block;font-size:1rem;font-weight:500;line-height:1.35;margin-top:4px;letter-spacing:0}.amt .mpl s{opacity:.7}#mplan .mpl{display:inline;font-size:inherit}
 /* coaches.html page title: h1 styled like section h2 */
 h1.pgtitle{font-size:clamp(2rem,5vw,3rem);line-height:1.08;letter-spacing:-.015em;margin-bottom:8px;text-align:center}
+/* coaches.html: keep scroll chevrons clear of bio text on phones */
+@media(max-width:760px){body.pg-coaches .scrollhint,body.pg-coaches .scrollhint.up{right:6px;width:36px;height:36px}body.pg-coaches .coach .bio,body.pg-coaches .coach .born,body.pg-coaches .coach h3{padding:0 14px}}
