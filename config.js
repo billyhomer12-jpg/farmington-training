@@ -83,6 +83,6 @@ window.SITE.MEMBERSHIP_PRICES = {"1on1_monthly":{price:240,sale:192,sessions:4},
 window.SITE.saleLinks = {"single":"https://buy.stripe.com/6oU3cx77m0Bd59d5AubV606","1on1":"https://buy.stripe.com/14A7sN63i83FbxBe70bV607","open_group":"https://buy.stripe.com/cNi9AV3Vafw77hl8MGbV608","group2":"https://buy.stripe.com/8x2fZj4Ze2JlfNRfb4bV609","group3":"https://buy.stripe.com/dRmbJ3gHWgAb1X19QKbV60a","group4":"https://buy.stripe.com/5kQ00l1N22Jl8lp7ICbV60b"};
 // Price display helpers: p.regular is set by deals.js only while the sale is live.
 window.priceTxt=p=>p.regular?`$${p.regular} → $${p.price} (20% off)`:`$${p.price}`;window.priceHTML=p=>p.regular?`<s class="was" aria-hidden="true">$${p.regular}</s> <b class="now" aria-hidden="true">$${p.price}</b><span class="vh">Was $${p.regular}, now $${p.price}</span>`:`$${p.price}`;
-window.priceHTML=p=>p.regular?`<s aria-hidden="true">$${p.regular}</s> <b>$${p.price}</b><span class="vh"> (was $${p.regular}, now $${p.price})</span>`:`$${p.price}`;
+
 
 window.SITE.membershipCheckoutFn = "membership-checkout";
