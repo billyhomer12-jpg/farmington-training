@@ -16,4 +16,4 @@ Refresh the Stripe snapshot (read-only) in the same commit whenever Stripe price
 Chromium launches with --disable-dev-shm-usage --disable-gpu and VERIFY_PAR defaults to 4 (was 8; 8 parallel full-page renders crashed the browser with TargetClosedError). If the browser still crashes, the step is retried once in a fresh browser (WARN line); a second crash prints one `FAIL render step crashed twice (browser error...)` line, no stack trace.
 
 ## 50-deals countdown window
-No fixed hour cap: countdown_hours must fit inside the deal's own start_at..end_at (read from config.js; no hardcoded grand-opening dates. Set VERIFY_EXPECT_END=2026-10-19T17:50:00-06:00 to pin the end).
+No fixed hour cap: countdown_hours must fit inside the deal's own start_at..end_at (read from config.js; no hardcoded grand-opening dates. Set VERIFY_EXPECT_END=2026-11-15T17:50:00-06:00 to pin the end).
