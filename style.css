@@ -463,3 +463,5 @@ html.ff-off .ffnote,html.ff-off [data-ff]{display:none!important}html.sale-off .
 .badge.free{background:#34C759;color:#000}.badge.rep{background:#B3261E;color:#fff}
 
 .amt .mpl{display:block;font-size:1rem;font-weight:500;line-height:1.35;margin-top:4px;letter-spacing:0}.amt .mpl s{opacity:.7}#mplan .mpl{display:inline;font-size:inherit}
+/* coaches.html page title: h1 styled like section h2 */
+h1.pgtitle{font-size:clamp(2.1rem,5vw,3.5rem);line-height:1.07;letter-spacing:-.015em;margin-bottom:8px;text-align:center}

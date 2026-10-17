@@ -92,7 +92,7 @@ window.SITE.membershipCheckoutFn = "membership-checkout";
 // ===== FREE-FIRST (Billy via Cisco 10/17) =====
 // First session free for new players 12-18. Booking option + home/pricing notes auto-hide after this time.
 // Server enforces the same cutoff: training.free_first_end() in supabase/2026-10-17-free-first.sql (keep in sync).
-window.SITE.FREE_FIRST_END = "2026-10-24T23:59:59-06:00";
+window.SITE.FREE_FIRST_END = "2026-11-09T23:59:59-07:00";
 // The "7 days -> Grand Opening pricing" sentence only shows while the sale runs (never promises discounts after the sale end).
 window.SITE.SALE_END = "2026-11-15T17:50:00-07:00";
 window.SITE.HEARD_FROM = ["Facebook","Instagram","TikTok","Google","Friend/family","Flyer","Other"];

@@ -1,4 +1,4 @@
--- FREE-FIRST (Billy via Cisco, 10/17): First Session Free for new players 12-18, until 2026-10-24 23:59:59 MDT.
+-- FREE-FIRST (Billy via Cisco, 10/17): First Session Free for new players 12-18, until 2026-11-09 23:59:59 MST (extended per FREE-EXT).
 -- Also: "How did you hear about us?" + utm_source on every booking. Additive; Grand Opening / Stripe untouched.
 alter table public.training_signups add column if not exists heard_from text, add column if not exists heard_from_other text,
   add column if not exists utm_source text, add column if not exists new_player boolean, add column if not exists repeat_free boolean not null default false,
@@ -15,7 +15,7 @@ alter table training.email_outbox drop constraint if exists email_outbox_kind_ch
 alter table training.email_outbox add constraint email_outbox_kind_check check (kind in ('confirmation','rescheduled','waiver_copy','waiver_reminder','group_under_min','group_moved','coach_notice','free_confirmation'));
 
 -- Keep in sync with window.SITE.FREE_FIRST_END in config.js. Server-side cutoff (front end hides too).
-create or replace function training.free_first_end() returns timestamptz language sql immutable as $$ select '2026-10-24T23:59:59-06:00'::timestamptz $$;
+create or replace function training.free_first_end() returns timestamptz language sql immutable as $$ select '2026-11-09T23:59:59-07:00'::timestamptz $$;
 
 create or replace function training.norm_phone(p text) returns text language sql immutable as $$ select right(regexp_replace(coalesce(p,''), '\D', '', 'g'), 10) $$;
 
@@ -37,7 +37,7 @@ create or replace function public.training_book_free(p_parent text, p_athlete te
 returns jsonb language plpgsql security definer set search_path to '' as $$
 declare v_id bigint; v_ref uuid; v_progs text[]; v_prior int; v_note text; v_email text := lower(btrim(coalesce(p_email,''))); v_ph text := training.norm_phone(p_phone);
 begin
-  if now() > training.free_first_end() then raise exception 'The free first session offer ended 10/24'; end if;
+  if now() > training.free_first_end() then raise exception 'The free first session offer ended 11/9'; end if;
   if p_new_player is not true then raise exception 'The free first session is for new players. Please check "This is a new player"'; end if;
   if p_age is null or p_age < 12 or p_age > 18 then raise exception 'The free first session is for ages 12-18'; end if;
   if p_heard_from is null or p_heard_from not in ('Facebook','Instagram','TikTok','Google','Friend/family','Flyer','Other') then raise exception 'Tell us how you heard about us'; end if;
