@@ -110,4 +110,5 @@ window.utmSource=()=>{try{return sessionStorage.getItem('fc_utm')||null}catch(e)
 window.mpHTML=k=>{const t=(window.SITE.MEMBERSHIP_PRICES||{})[k];if(!t)return'';const D=window.DEALS;return D&&D.sale&&t.sale?`<b class="now">$${t.sale}</b><span class="mpl"> first month (was <s class="was">$${t.price}</s>), then $${t.price}/mo</span>`:`$${t.price}<span class="per">/mo</span>`};
 
 /* QA-LEAK: hide test data on public pages */
-window.isTestRow=function(o){try{var t=typeof o==='string'?o:[o&&o.name,o&&o.first_name,o&&o.last_name,o&&o.athlete,o&&o.parent,o&&o.email].join(' ');return /(^|\s)qa(\b|[-_ ])/i.test(String(t).trim())||/@example\.(com|org|net)/i.test(t)}catch(e){return false}};
+window.isTestRow=function(o){try{var t=typeof o==='string'?o:[o&&o.name,o&&o.first_name,o&&o.last_name,o&&o.athlete,o&&o.parent,o&&o.email,o&&o.parent_email,o&&o.signer_name,o&&o.athlete_name,o&&o.to_email].join(' ');return /(^|\s)qa(\b|[-_ ])/i.test(' '+String(t).trim())||/@example\.(com|org|net)/i.test(t)}catch(e){return false}};
+window.stripTestRows=function(x){if(Array.isArray(x))return x.filter(function(i){return !(i&&typeof i==='object'&&!Array.isArray(i)&&window.isTestRow(i))}).map(window.stripTestRows);if(x&&typeof x==='object'){for(var k in x)x[k]=window.stripTestRows(x[k]);}return x};

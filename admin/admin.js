@@ -1,6 +1,6 @@
 const S=window.SITE,$=i=>document.getElementById(i),msg=t=>$('msg').textContent=t||'',TZ='America/Denver';
 const esc=v=>String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const rpc=async(fn,b)=>{const r=await fetch(S.supabaseUrl+'/rest/v1/rpc/'+fn,{method:'POST',headers:{apikey:S.supabaseKey,'Content-Type':'application/json'},body:JSON.stringify(b)});const j=await r.json().catch(()=>({}));if(!r.ok)return{error:j.message||'Request failed'};return j};
+const rpc=async(fn,b)=>{const r=await fetch(S.supabaseUrl+'/rest/v1/rpc/'+fn,{method:'POST',headers:{apikey:S.supabaseKey,'Content-Type':'application/json'},body:JSON.stringify(b)});const j=await r.json().catch(()=>({}));if(!r.ok)return{error:j.message||'Request failed'};if(/^coach_(data|memberships|open_groups|reviews|waivers)$/.test(fn)&&!/[?&]showtest=1/.test(location.search)&&window.stripTestRows)return window.stripTestRows(j);return j};
 const F=(d,o)=>new Date(d).toLocaleString('en-US',{timeZone:TZ,...o}),K=d=>new Date(d).toLocaleDateString('en-CA',{timeZone:TZ});
 const at=(ds,tm)=>{const g=new Date(ds+'T'+tm+':00Z');const off=new Date(g.toLocaleString('en-US',{timeZone:TZ}))-new Date(g.toLocaleString('en-US',{timeZone:'UTC'}));return new Date(g-off).toISOString()};
 let cred=JSON.parse(sessionStorage.getItem('coach')||'null'),D={signups:[],requests:[],blocks:[]},view=new Date(),week=false,sk='created_at',asc=false;
