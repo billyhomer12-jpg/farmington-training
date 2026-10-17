@@ -1,10 +1,11 @@
 // Shared: Supabase service client, Resend sender, outbox processor.
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import { COACH_RECIPIENTS, isQA } from './recipients.ts';
 import { FROM, REPLY_TO, confirmationEmail, rescheduledEmail, waiverCopyEmail, waiverReminderEmail, groupUnderMinEmail, groupMovedEmail, coachNoticeEmail, freeConfirmationEmail } from './templates.js';
 
 export const db = () => createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, { auth: { persistSession: false } });
 
-export async function sendEmail(to: string, m: { subject: string; html: string; text: string }) {
+export async function sendEmail(to: string, m: { subject: string; html: string; text: string }): Promise<string | undefined> {
   const key = Deno.env.get('RESEND_API_KEY');
   if (!key) throw new Error('RESEND_API_KEY not set');
   // Reserved test domain (TEST bookings): never hand these to Resend.
@@ -13,6 +14,13 @@ export async function sendEmail(to: string, m: { subject: string; html: string; 
   const r = await fetch('https://api.resend.com/emails', { method: 'POST', headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({ from: Deno.env.get('EMAIL_FROM') || FROM, to: [to], reply_to: REPLY_TO, subject: m.subject, html: m.html, text: m.text }) });
   if (!r.ok) throw new Error('Resend ' + r.status + ': ' + (await r.text()));
+  return (await r.json().catch(() => ({}))).id as string | undefined;
+}
+// Coach notice to every owner/coach recipient (one config list). qa=true prefixes the subject with [QA].
+export async function sendCoach(m: { subject: string; html: string; text: string }, qa = false) {
+  const mm = qa ? { ...m, subject: '[QA] ' + m.subject } : m; const ids: string[] = [];
+  for (const to of COACH_RECIPIENTS) ids.push(String(await sendEmail(to, mm)));
+  return ids;
 }
 
 // Send every queued email for one sign-up. The caller supplies the plaintext token (it is never stored).
@@ -30,7 +38,7 @@ export async function flushOutbox(signupId: number, token: string, opt: { wtoken
       // FREE-FIRST parent email stays queued until parent emails are turned on.
       if (e.kind === 'free_confirmation' && Deno.env.get('FREE_PARENT_EMAILS') !== '1') continue;
       // TEST bookings (@example.*): don't email the business inbox either; mark the notice done (logged).
-      if (e.kind === 'coach_notice' && /@example\.(com|org|net)$/i.test(String(signup.email || ''))) { console.log('[test-skip] coach notice for', signup.email); await sb.rpc('training_outbox_done', { p_id: e.id, p_error: 'test-skip (example.com)' }); continue; }
+      if (e.kind === 'coach_notice' && /@example\.(com|org|net)$/i.test(String(signup.email || '')) && !isQA(signup.email)) { console.log('[test-skip] coach notice for', signup.email); await sb.rpc('training_outbox_done', { p_id: e.id, p_error: null }); continue; }
       const m = e.kind === 'confirmation' ? confirmationEmail({ signup, sessions, token, group, bonus: e.payload && e.payload.bonus })
         : e.kind === 'coach_notice' ? coachNoticeEmail({ signup, payload: e.payload })
         : e.kind === 'group_under_min' ? groupUnderMinEmail({ signup, payload: e.payload })
@@ -39,7 +47,8 @@ export async function flushOutbox(signupId: number, token: string, opt: { wtoken
         : e.kind === 'waiver_copy' ? waiverCopyEmail({ signup, payload: e.payload })
         : e.kind === 'waiver_reminder' ? waiverReminderEmail({ signup, wtoken: opt.wtoken })
         : rescheduledEmail({ signup, sessions, token, from: e.payload.from, to: e.payload.to, session_id: e.payload.session_id });
-      await sendEmail(e.kind === 'coach_notice' ? REPLY_TO : signup.email, m);
+      if (e.kind === 'coach_notice') { const ids = await sendCoach(m, isQA(signup.email)); console.log('[coach_notice] outbox', e.id, 'sent to', COACH_RECIPIENTS.length, 'ids', ids.join(',')); await sb.rpc('training_outbox_done', { p_id: e.id, p_error: null }); sent++; continue; }
+      await sendEmail(signup.email, m);
       await sb.rpc('training_outbox_done', { p_id: e.id, p_error: null }); sent++;
     } catch (err) { await sb.rpc('training_outbox_done', { p_id: e.id, p_error: String(err).slice(0, 500) }); }
   }

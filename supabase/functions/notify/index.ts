@@ -30,6 +30,13 @@ Deno.serve(async req => {
     const sent = await flushOutbox(Number(id), '', { only: 'coach_notice' });
     return new Response(JSON.stringify({ ok: true, sent }), { headers: { ...cors, 'Content-Type': 'application/json' } });
   }
+  // NOTIFY-ALL QA: flush the queued coach notice for a qa-notify*@example.com booking only (parent emails never sent here).
+  if (b.action === 'qa-flush' && typeof b.ref === 'string' && /^[0-9a-f-]{36}$/i.test(b.ref)) {
+    const { data: s } = await db().from('training_signups').select('id,email').eq('ref', b.ref).maybeSingle();
+    if (!s || !/^qa-notify[^@]*@example\.com$/i.test(s.email)) return new Response(JSON.stringify({ error: 'not a QA booking' }), { status: 404, headers: cors });
+    const sent = await flushOutbox(Number(s.id), '', { only: 'coach_notice' });
+    return new Response(JSON.stringify({ ok: true, sent }), { headers: { ...cors, 'Content-Type': 'application/json' } });
+  }
   const { token } = b;
   if (typeof token !== 'string' || token.length < 32) return new Response(JSON.stringify({ error: 'invalid link' }), { status: 400, headers: cors });
   const { data: id } = await db().rpc('training_signup_by_token', { p_token: token });

@@ -150,7 +150,7 @@ export function coachNoticeEmail({ signup: s, payload: p }) {
 ${groupBox(g)}${srcLine(s) ? `<p style="margin:0 0 16px;font-size:14px;color:#6e6e73">${esc(srcLine(s))}</p>` : ''}${p.flag ? `<p style="margin:0 0 16px;font-size:15px;color:#B3261E"><b>${esc(p.flag)}</b></p>` : ''}
 <p style="margin:0 0 8px">${btn(SITE + '/admin/', 'Open the back office')}</p>`;
   return { subject: title, html: shell(under ? 'Group needs attention.' : 'New group player.', 'Coach notice', body),
-    text: `${title}\n${groupWhen(g)} · ${g.taken} of ${g.capacity} filled, ${g.paid} paid.${p.flag ? '\n' + p.flag : ''}\nBack office: ${SITE}/admin/` };
+    text: `${title}\n${under ? '' : 'Paid: ' + paid(s) + '\n' + (srcLine(s) || 'Heard about us: not given') + '\n'}${groupWhen(g)} · ${g.taken} of ${g.capacity} filled, ${g.paid} paid.${p.flag ? '\n' + p.flag : ''}\nBack office: ${SITE}/admin/` };
 }
 
 // FREE-FIRST: source line ("How did you hear about us?" + utm_source) for coach notices.
