@@ -1,12 +1,12 @@
-// PRICING-TABS: ARIA tabs (1-on-1 / Groups / Monthly) + group size selector. Panels stay in the DOM.
+// PRICING-TABS: ARIA tabs (One Session / 4 Sessions / Groups / Monthly) + group size selector. Panels stay in the DOM.
 (()=>{const run=()=>{const seg=document.querySelector('.ptab-sec .seg');if(!seg)return;document.documentElement.classList.add('js-ptabs','ptabs-ready');
-const tabs=[...seg.querySelectorAll('[role=tab]')],panels=tabs.map(t=>document.getElementById(t.getAttribute('aria-controls'))),ids=['private','groups','monthly'];
+const tabs=[...seg.querySelectorAll('[role=tab]')],panels=tabs.map(t=>document.getElementById(t.getAttribute('aria-controls'))),ids=['private','4-sessions','groups','monthly'];
 const sel=(i,focus,anim=true,hash=true)=>{tabs.forEach((t,j)=>{t.setAttribute('aria-selected',j===i);t.tabIndex=j===i?0:-1;panels[j].hidden=j!==i;panels[j].classList.toggle('in',j===i&&anim);
  t.querySelector('.dot')?.remove();t.removeAttribute('aria-label');if(j!==i&&panels[j].querySelector('.deal-badge')){const d=document.createElement('span');d.className='dot';d.setAttribute('aria-hidden','true');t.append(d);t.setAttribute('aria-label',t.textContent+', offer applies')}});
  seg.style.setProperty('--i',i);if(focus)tabs[i].focus();if(hash)try{history.replaceState(null,'',location.pathname+location.search+'#'+ids[i])}catch{}};
 tabs.forEach((t,i)=>{t.onclick=()=>sel(i);t.onkeydown=e=>{const n=tabs.length,k={ArrowRight:i+1,ArrowLeft:i-1,Home:0,End:n-1}[e.key];if(k!==undefined){e.preventDefault();sel((k+n)%n,true)}}});
-document.querySelector('.solo-hint')?.addEventListener('click',e=>{e.preventDefault();sel(1,true)});
-const fromHash=()=>{const h=location.hash.slice(1);return h==='memberships'?2:Math.max(0,ids.indexOf(h))};
+document.querySelector('.solo-hint')?.addEventListener('click',e=>{e.preventDefault();sel(2,true)});
+const fromHash=()=>{const h=location.hash.slice(1);return h==='memberships'?3:({'one-session':0,'1on1':0,'single':0,'4pack':1,'pack':1}[h]??Math.max(0,ids.indexOf(h)))};
 sel(fromHash(),false,false,false);addEventListener('hashchange',()=>sel(fromHash(),false));
 const g=document.querySelector('.gcard');if(g){const set=v=>{g.querySelectorAll('[data-size]').forEach(x=>x.classList.toggle('on',x.dataset.size===v));const gp=g.querySelector('.gpp');if(gp){gp._t=gp._t||Object.fromEntries([...gp.querySelectorAll('[data-size]')].map(s=>[s.dataset.size,s.textContent]));if(gp._t[v]&&gp.textContent!==gp._t[v])gp.textContent=gp._t[v]}};
  g.querySelectorAll('.gsize input').forEach(r=>r.onchange=()=>set(r.value));set(g.querySelector('.gsize input:checked')?.value||'2')}

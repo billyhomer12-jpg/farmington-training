@@ -444,3 +444,8 @@ body.qb-on .scrollhint.dn.gone~.scrollhint.up{bottom:calc(81px + env(safe-area-i
 @media (prefers-contrast:more){.qbook,.qbook.on{background:#000}}
 body.qb-on{padding-bottom:calc(68px + env(safe-area-inset-bottom))}
 @media(min-width:761px){.qbook,.qbook.on{max-width:720px;margin:0 auto;bottom:16px;border-radius:22px;border:1px solid rgba(255,255,255,.18);padding:10px 16px}.qbook span{display:inline}body.qb-on{padding-bottom:100px}body.qb-on .scrollhint.dn{bottom:100px}body.qb-on .scrollhint.up{bottom:152px}body.qb-on .scrollhint.dn.gone~.scrollhint.up{bottom:100px}}
+/* PRICING-TABS split: 4 equal segments, no wrap down to 320 */
+.seg4{width:min(100%,460px)}.seg4 [role=tab]{white-space:nowrap;overflow:hidden;padding:0 2px;font-size:clamp(.75rem,3.6vw,.9375rem);letter-spacing:-.01em}
+@media(max-width:400px){.seg4{width:calc(100vw - 8px);margin-left:calc(50% - 50vw + 4px)}}
+@media(max-width:760px){body.qb-on{padding-bottom:calc(76px + env(safe-area-inset-bottom))}}
+@media(max-width:340px){.seg4 [role=tab]{padding:0 1px;font-size:.71875rem}}
