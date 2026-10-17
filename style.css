@@ -452,3 +452,12 @@ body.qb-on{padding-bottom:calc(68px + env(safe-area-inset-bottom))}
 .seg4 .dot{top:7px;right:5px;margin:0;width:5px;height:5px}
 
 a[href^="mailto:"]{overflow-wrap:anywhere;word-break:normal}
+/* FREE-FIRST: free first session note (home + pricing) and booking bits. Hidden by html.ff-off (config.js, before paint). */
+.ffnote{display:flex;gap:12px;align-items:flex-start;max-width:720px;margin:0 auto 24px;padding:14px 16px;background:#fff;border:1px solid rgba(52,199,89,.45);border-left:4px solid #34C759;border-radius:14px;text-align:left;font:400 .9375rem/1.45 var(--font);color:#1d1d1f}
+.ffnote .fftag{flex:none;background:#34C759;color:#000;font:700 .75rem/1 var(--font);letter-spacing:.04em;padding:6px 8px;border-radius:8px;margin-top:1px}
+.ffnote p{margin:0}.ffnote b{font-weight:700}.ffnote .ffend{display:block;margin-top:4px;font-size:.8125rem;color:#424245}.ffnote a{color:#1E7B34;font-weight:600}
+html.ff-off .ffnote,html.ff-off [data-ff]{display:none!important}html.sale-off .ff7{display:none!important}
+#form .ffbox{margin:8px 0 12px;padding:12px 14px;border:1px solid rgba(52,199,89,.45);border-radius:12px;background:#f3fbf5}
+#form .ffbox label{display:flex;gap:10px;align-items:flex-start;font-weight:600}#form .ffbox small{display:block;font-weight:400;color:#424245}
+#form .hfrom select{width:100%}#form .hfrom .hfo{margin-top:8px}
+.badge.free{background:#34C759;color:#000}.badge.rep{background:#B3261E;color:#fff}

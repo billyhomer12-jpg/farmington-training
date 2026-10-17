@@ -10,7 +10,7 @@ export const LOCATION = { name: 'San Juan College Health & Human Performance Cen
 export const SITE = 'https://fourcornershoopsandperformance.com';
 // 'Youth Strength Training' is a removed program; label kept for legacy rows only.
 const PROG = { 'Basketball Skills': 'Basketball Training', 'Youth Strength Training': 'Weightlifting (legacy)', 'Athletic Performance': 'Conditioning' };
-const PKG = { single: 'Single 1-on-1 session', '1on1': '1-on-1', group2: 'Small group · 2 players', group3: 'Small group · 3 players', group4: 'Small group · 4 players', open_group: 'Open group (joined solo)' };
+const PKG = { single: 'Single 1-on-1 session', '1on1': '1-on-1', group2: 'Small group · 2 players', group3: 'Small group · 3 players', group4: 'Small group · 4 players', open_group: 'Open group (joined solo)', free_first: 'First Session Free (new players, ages 12–18)' };
 const TZ = 'America/Denver';
 const esc = v => String(v ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const fmt = (d, o) => new Date(d).toLocaleString('en-US', { timeZone: TZ, ...o });
@@ -140,13 +140,41 @@ ${box(sessionRows(sessions))}${where()}`;
 
 // To the business inbox: a solo parent paid to join an open group, or a group is under minimum 48 h out.
 export function coachNoticeEmail({ signup: s, payload: p }) {
+  if (p.type === 'free_booking') return freeCoachNoticeEmail({ signup: s, payload: p });
   const g = p.group || {}, under = p.type === 'under_min';
   const title = under ? `Refund/move needed: ${groupName(g)}` : `New group player: ${s.athlete} joined ${groupName(g)}`;
   const body = `<p style="margin:0 0 16px;font-size:16px;line-height:1.5">${under
     ? `<b>${esc(groupName(g))}</b> starts within 48 hours with ${g.paid} of the ${g.min_players || 2} paid players it needs. Each paid parent was emailed a link to move groups or ask for a refund. Refunds are done by hand in Stripe.`
     : `<b>${esc(s.athlete)}</b> (age ${esc(s.age)}) paid ${paid(s)} to join <b>${esc(groupName(g))}</b>. Parent: ${esc(s.parent)} · ${esc(s.phone)} · ${esc(s.email)}.`}</p>
-${groupBox(g)}${p.flag ? `<p style="margin:0 0 16px;font-size:15px;color:#B3261E"><b>${esc(p.flag)}</b></p>` : ''}
+${groupBox(g)}${srcLine(s) ? `<p style="margin:0 0 16px;font-size:14px;color:#6e6e73">${esc(srcLine(s))}</p>` : ''}${p.flag ? `<p style="margin:0 0 16px;font-size:15px;color:#B3261E"><b>${esc(p.flag)}</b></p>` : ''}
 <p style="margin:0 0 8px">${btn(SITE + '/admin/', 'Open the back office')}</p>`;
   return { subject: title, html: shell(under ? 'Group needs attention.' : 'New group player.', 'Coach notice', body),
     text: `${title}\n${groupWhen(g)} · ${g.taken} of ${g.capacity} filled, ${g.paid} paid.${p.flag ? '\n' + p.flag : ''}\nBack office: ${SITE}/admin/` };
+}
+
+// FREE-FIRST: source line ("How did you hear about us?" + utm_source) for coach notices.
+export const srcLine = s => s && s.heard_from ? 'Heard about us: ' + s.heard_from + (s.heard_from === 'Other' && s.heard_from_other ? ' (' + s.heard_from_other + ')' : '') + (s.utm_source ? ' · utm_source: ' + s.utm_source : '') : (s && s.utm_source ? 'utm_source: ' + s.utm_source : '');
+// FREE-FIRST coach notice: new free first session (no payment). Flags repeat email/phone.
+export function freeCoachNoticeEmail({ signup: s, payload: p }) {
+  const when = p.starts_at ? day(p.starts_at) + ', ' + range(p.starts_at) + ' · ' + (p.workout_type || '') : '';
+  const title = (p.flag ? 'REPEAT FREE: ' : 'Free first session: ') + s.athlete + (p.starts_at ? ' · ' + fmt(p.starts_at, { month: 'short', day: 'numeric' }) : '');
+  const body = `${p.flag ? `<p style="margin:0 0 16px;font-size:16px;color:#B3261E"><b>${esc(p.flag)}</b></p>` : ''}<p style="margin:0 0 16px;font-size:16px;line-height:1.5"><b>${esc(s.athlete)}</b> (age ${esc(s.age)}) booked a <b>FREE first session</b> (new player, no payment). Parent: ${esc(s.parent)} · ${esc(s.phone)} · ${esc(s.email)}.</p>
+${box(`<tr><td style="padding:16px 14px;font-size:15px;line-height:1.6">${esc(when)}<br>${esc(srcLine(s) || 'Heard about us: not given')}</td></tr>`)}
+<p style="margin:0 0 16px;font-size:15px;line-height:1.5">Confirm the time in the back office. If they book a package within 7 days, they get Grand Opening pricing (sale ends 11/15 at 5:50 PM MT).</p>
+<p style="margin:0 0 8px">${btn(SITE + '/admin/', 'Open the back office')}</p>`;
+  return { subject: title, html: shell(p.flag ? 'Repeat free booking.' : 'New free first session.', 'Coach notice', body),
+    text: `${title}\n${p.flag ? p.flag + '\n' : ''}${s.athlete} (age ${s.age}) · FREE first session, no payment\n${when}\nParent: ${s.parent} · ${s.phone} · ${s.email}\n${srcLine(s) || 'Heard about us: not given'}\nBack office: ${SITE}/admin/` };
+}
+// FREE-FIRST parent confirmation (queued as 'free_confirmation'; sent only when FREE_PARENT_EMAILS=1 — parent emails are OFF).
+export function freeConfirmationEmail({ signup: s, sessions }) {
+  const ss = (sessions || []).filter(r => r.status !== 'cancelled');
+  const body = `<p style="margin:0 0 16px;font-size:16px;line-height:1.5">Hi ${esc((s.parent || '').split(' ')[0])}, <b>${esc(s.athlete)}</b>'s first session is booked and it's <b>FREE</b>. No payment needed. A coach confirms the time (usually within a day) and will email you if it needs to change.</p>
+${box(`<tr><td style="padding:16px 14px;font-size:15px;line-height:1.6"><b>First Session Free</b> · 1 session · 2 hrs<br>Price: <b>FREE ($0)</b></td></tr>`)}
+<p style="margin:0 0 6px;font-size:13px;color:#6e6e73;text-transform:uppercase;letter-spacing:.04em;font-weight:600">Your session (Denver time)</p>
+${box(sessionRows(ss))}
+${where()}
+<p style="margin:0 0 16px;font-size:15px;line-height:1.5">Like it? Book a package within 7 days of your free session to lock in Grand Opening pricing (sale ends Sun 11/15 at 5:50 PM MT): <a href="${SITE}/pricing.html">see prices</a>.</p>
+<p style="margin:0 0 8px;font-size:15px;line-height:1.5"><b>Waiver:</b> signed online. Questions? Call or text ${PHONE}.</p>`;
+  return { subject: `Your free first session is booked: ${s.athlete}`, html: shell('Your free session is booked.', 'Booking confirmed · FREE', body),
+    text: `${s.athlete}'s first session is booked and FREE (no payment).\n${ss.map(r => day(r.starts_at) + ', ' + range(r.starts_at, r.duration_min) + ' MT').join('\n')}\nBook a package within 7 days of your free session to lock in Grand Opening pricing (sale ends Sun 11/15 at 5:50 PM MT).\nQuestions? ${PHONE}` };
 }

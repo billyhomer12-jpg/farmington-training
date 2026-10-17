@@ -23,6 +23,13 @@ Deno.serve(async req => {
     const sent = await flushOutbox(Number(id), '');
     return new Response(JSON.stringify({ ok: true, sent }), { headers: { ...cors, 'Content-Type': 'application/json' } });
   }
+  // FREE-FIRST: right after a free booking, send its coach notice (only that kind; parent email stays queued).
+  if (b.action === 'free-booked' && typeof b.ref === 'string' && /^[0-9a-f-]{36}$/i.test(b.ref)) {
+    const { data: id } = await db().rpc('training_free_notice_for', { p_ref: b.ref });
+    if (!id) return new Response(JSON.stringify({ error: 'unknown booking' }), { status: 404, headers: cors });
+    const sent = await flushOutbox(Number(id), '', { only: 'coach_notice' });
+    return new Response(JSON.stringify({ ok: true, sent }), { headers: { ...cors, 'Content-Type': 'application/json' } });
+  }
   const { token } = b;
   if (typeof token !== 'string' || token.length < 32) return new Response(JSON.stringify({ error: 'invalid link' }), { status: 400, headers: cors });
   const { data: id } = await db().rpc('training_signup_by_token', { p_token: token });

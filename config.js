@@ -26,7 +26,9 @@ window.SITE = {
     "group2": { label: "Small group · 2 players", players: 2, price: 300, sale: 240 },
     "group3": { label: "Small group · 3 players", players: 3, price: 350, sale: 280 },
     "group4": { label: "Small group · 4 players", players: 4, price: 375, sale: 300 },
-    "open_group": { label: "Join a group solo", players: 1, price: 125, sale: 100, solo: true }
+    "open_group": { label: "Join a group solo", players: 1, price: 125, sale: 100, solo: true },
+    // FREE-FIRST: no payment, never Stripe (no paymentLinks entry). Bookable only until FREE_FIRST_END.
+    "free_first": { label: "First Session Free (new players, ages 12–18)", players: 1, price: 0, sessions: 1, free: true }
   },
   // Stripe Payment Links per package (leave "" until created in Stripe). ?client_reference_id=<booking ref> is appended.
   paymentLinks: { "single": "https://buy.stripe.com/bJeaEZfDS0BdcBF0gabV601", "1on1": "https://buy.stripe.com/eVq5kF63i2Jl9pt7ICbV605", "group2": "https://buy.stripe.com/8x2eVffDSdnZ8lp7ICbV602", "group3": "https://buy.stripe.com/cNi5kF4Zefw70SXaUObV603", "group4": "https://buy.stripe.com/4gM28t2R60BdbxB3smbV604", "open_group": "https://buy.stripe.com/00w8wR63iabNbxB7ICbV600" }
@@ -86,3 +88,20 @@ window.priceTxt=p=>p.regular?`$${p.regular} → $${p.price} (20% off)`:`$${p.pri
 
 
 window.SITE.membershipCheckoutFn = "membership-checkout";
+
+// ===== FREE-FIRST (Billy via Cisco 10/17) =====
+// First session free for new players 12-18. Booking option + home/pricing notes auto-hide after this time.
+// Server enforces the same cutoff: training.free_first_end() in supabase/2026-10-17-free-first.sql (keep in sync).
+window.SITE.FREE_FIRST_END = "2026-10-24T23:59:59-06:00";
+// The "7 days -> Grand Opening pricing" sentence only shows while the sale runs (never promises discounts after the sale end).
+window.SITE.SALE_END = "2026-11-15T17:50:00-07:00";
+window.SITE.HEARD_FROM = ["Facebook","Instagram","TikTok","Google","Friend/family","Flyer","Other"];
+// Clock: real time, or ?deal_now=YYYY-MM-DD / full ISO for testing (same fake clock as deals/countdown).
+window.siteNow=()=>{try{const n=new URLSearchParams(location.search).get('deal_now');if(n){const t=Date.parse(/^\d{4}-\d{2}-\d{2}$/.test(n)?n+'T12:00:00-07:00':n);if(!isNaN(t))return t}}catch(e){}return Date.now()};
+window.freeFirstOn=()=>window.siteNow()<=Date.parse(window.SITE.FREE_FIRST_END);
+window.saleOn=()=>window.siteNow()<Date.parse(window.SITE.SALE_END);
+// Set before first paint (config.js is sync in <head>) so hidden notes never shift the layout.
+(function(){const h=document.documentElement;if(!window.freeFirstOn())h.classList.add('ff-off');if(!window.saleOn())h.classList.add('sale-off')})();
+// utm_source: kept for this visit (sessionStorage) across pages; saved with every booking.
+(function(){try{const u=new URLSearchParams(location.search).get('utm_source');if(u)sessionStorage.setItem('fc_utm',u.slice(0,100))}catch(e){}})();
+window.utmSource=()=>{try{return sessionStorage.getItem('fc_utm')||null}catch(e){return null}};

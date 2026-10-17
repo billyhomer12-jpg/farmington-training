@@ -1,6 +1,6 @@
 // Shared: Supabase service client, Resend sender, outbox processor.
 import { createClient } from 'npm:@supabase/supabase-js@2';
-import { FROM, REPLY_TO, confirmationEmail, rescheduledEmail, waiverCopyEmail, waiverReminderEmail, groupUnderMinEmail, groupMovedEmail, coachNoticeEmail } from './templates.js';
+import { FROM, REPLY_TO, confirmationEmail, rescheduledEmail, waiverCopyEmail, waiverReminderEmail, groupUnderMinEmail, groupMovedEmail, coachNoticeEmail, freeConfirmationEmail } from './templates.js';
 
 export const db = () => createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, { auth: { persistSession: false } });
 
@@ -16,7 +16,7 @@ export async function sendEmail(to: string, m: { subject: string; html: string; 
 }
 
 // Send every queued email for one sign-up. The caller supplies the plaintext token (it is never stored).
-export async function flushOutbox(signupId: number, token: string, opt: { wtoken?: string } = {}) {
+export async function flushOutbox(signupId: number, token: string, opt: { wtoken?: string; only?: string } = {}) {
   const sb = db();
   const { data, error } = await sb.rpc('training_outbox_for', { p_signup: signupId });
   if (error) throw error;
@@ -26,10 +26,16 @@ export async function flushOutbox(signupId: number, token: string, opt: { wtoken
     try {
       if ((e.kind === 'confirmation' || e.kind === 'rescheduled') && !token) continue; // needs the dashboard token
       if (e.kind === 'waiver_reminder' && !opt.wtoken) continue; // needs the waiver token issued with it
+      if (opt.only && e.kind !== opt.only) continue;
+      // FREE-FIRST parent email stays queued until parent emails are turned on.
+      if (e.kind === 'free_confirmation' && Deno.env.get('FREE_PARENT_EMAILS') !== '1') continue;
+      // TEST bookings (@example.*): don't email the business inbox either; mark the notice done (logged).
+      if (e.kind === 'coach_notice' && /@example\.(com|org|net)$/i.test(String(signup.email || ''))) { console.log('[test-skip] coach notice for', signup.email); await sb.rpc('training_outbox_done', { p_id: e.id, p_error: 'test-skip (example.com)' }); continue; }
       const m = e.kind === 'confirmation' ? confirmationEmail({ signup, sessions, token, group, bonus: e.payload && e.payload.bonus })
         : e.kind === 'coach_notice' ? coachNoticeEmail({ signup, payload: e.payload })
         : e.kind === 'group_under_min' ? groupUnderMinEmail({ signup, payload: e.payload })
         : e.kind === 'group_moved' ? groupMovedEmail({ signup, sessions, group })
+        : e.kind === 'free_confirmation' ? freeConfirmationEmail({ signup, sessions })
         : e.kind === 'waiver_copy' ? waiverCopyEmail({ signup, payload: e.payload })
         : e.kind === 'waiver_reminder' ? waiverReminderEmail({ signup, wtoken: opt.wtoken })
         : rescheduledEmail({ signup, sessions, token, from: e.payload.from, to: e.payload.to, session_id: e.payload.session_id });
