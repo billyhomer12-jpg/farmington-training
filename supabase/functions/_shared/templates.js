@@ -142,6 +142,7 @@ ${box(sessionRows(sessions))}${where()}`;
 export function coachNoticeEmail({ signup: s, payload: p }) {
   if (p.type === 'free_booking') return freeCoachNoticeEmail({ signup: s, payload: p });
   if (p.type === 'paid_booking') return paidCoachNoticeEmail({ signup: s, payload: p });
+  if (p.type === 'rescheduled' || p.type === 'group_moved_owner') return reschedOwnerEmail({ signup: s, payload: p });
   const g = p.group || {}, under = p.type === 'under_min';
   const title = under ? `Refund/move needed: ${groupName(g)}` : `New group player: ${s.athlete} joined ${groupName(g)}`;
   const body = `<p style="margin:0 0 16px;font-size:16px;line-height:1.5">${under
@@ -193,4 +194,16 @@ ${box(`<tr><td style="padding:16px 14px;font-size:15px;line-height:1.6">${when.m
 <p style="margin:0 0 8px">${btn(SITE + '/admin/', 'Open the back office')}</p>`;
   return { subject: title, html: shell('New paid booking.', 'Coach notice', body),
     text: `${title}\n${s.athlete} (age ${s.age}) · ${pk} · ${amt}\n${when.join('\n')}${others.length ? '\n' + others.join('\n') : ''}\nParent: ${s.parent} · ${s.phone} · ${s.email}\n${srcLine(s) || 'Heard about us: not given'}\nBack office: ${SITE}/admin/` };
+}
+
+// NOTIFY-ALL: owner notice for a parent reschedule (1-on-1/own group move) or open-group move.
+export function reschedOwnerEmail({ signup: s, payload: p }) {
+  const amt = money(s.amount_paid_cents ?? s.price_cents ?? 0) + (DEALS[s.deal] ? ' (' + DEALS[s.deal] + ')' : '');
+  const what = p.type === 'group_moved_owner' ? `Moved to group: ${groupName(p.group || {})} (${groupWhen(p.group || {})})`
+    : `From ${day(p.from)}, ${range(p.from)} → to ${day(p.to)}, ${range(p.to)} · ${p.workout_type || ''}`;
+  const title = `Rescheduled: ${s.athlete} · ${PKG[s.package] || s.package}`;
+  const body = `<p style="margin:0 0 16px;font-size:16px;line-height:1.5"><b>${esc(s.athlete)}</b> (parent ${esc(s.parent)} · ${esc(s.phone)} · ${esc(s.email)}) changed their booking.</p>
+${box(`<tr><td style="padding:16px 14px;font-size:15px;line-height:1.6">${esc(what)}<br>${esc(PKG[s.package] || s.package)} · ${esc(amt)}<br>${esc(srcLine(s) || 'Heard about us: not given')}</td></tr>`)}
+<p style="margin:0 0 8px">${btn(SITE + '/admin/', 'Open the back office')}</p>`;
+  return { subject: title, html: shell('Booking rescheduled.', 'Owner notice', body), text: `${title}\n${what}\n${PKG[s.package] || s.package} · ${amt}\nParent: ${s.parent} · ${s.phone} · ${s.email}\n${srcLine(s) || 'Heard about us: not given'}\nBack office: ${SITE}/admin/` };
 }
