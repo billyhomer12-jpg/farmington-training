@@ -19,6 +19,11 @@ async function mail(m: any, kind: string, subject: string, body: string) {
   const { sendEmail } = await import("../_shared/send.ts");
   await sendEmail(m.parent_email, { subject, text: body, html: body.replace(/\n/g, "<br>") });
 }
+// NOTIFY-ALL: owner notices (owner list only) via public.owner_outbox, sent right away by the shared sender.
+async function owner(kind: string, payload: Record<string, unknown>) {
+  await sb.from("owner_outbox").insert({ kind, payload });
+  try { const { flushOwner } = await import("../_shared/send.ts"); await flushOwner(); } catch (e) { console.error("owner notice", e); }
+}
 async function bySub(id: string) { return (await sb.from("memberships").select("*").eq("stripe_subscription_id", id).maybeSingle()).data; }
 async function ensure(subId: string, email?: string, athlete?: string) {
   let m = await bySub(subId);
@@ -27,7 +32,8 @@ async function ensure(subId: string, email?: string, athlete?: string) {
   const c: any = s.customer;
   const tier = s.metadata?.tier;
   const ins = await sb.from("memberships").upsert({ parent_email: email ?? c.email, athlete: athlete ?? s.metadata?.athlete ?? "", tier,
-    stripe_customer_id: c.id, stripe_subscription_id: s.id, status: s.status, is_test: !KEY_LIVE }, { onConflict: "stripe_subscription_id" }).select().single();
+    stripe_customer_id: c.id, stripe_subscription_id: s.id, status: s.status, is_test: !KEY_LIVE,
+    heard_from: s.metadata?.heard_from || null, utm_source: s.metadata?.utm_source || null }, { onConflict: "stripe_subscription_id" }).select().single();
   return ins.data;
 }
 Deno.serve(async (req) => {
@@ -53,7 +59,7 @@ Deno.serve(async (req) => {
         const { data: pd } = await sb.from("membership_pending").select("*").eq("ref", ref).eq("consumed", false).maybeSingle();
         if (pd) {
           await sb.from("membership_sessions").insert(pd.starts.map((t: string) => ({ membership_id: m.id, starts_at: t, period_start: m.current_period_start })));
-          await sb.from("memberships").update({ ref, token_hash: pd.token_hash, program: pd.program, workout_type: pd.workout_type, athlete: pd.athlete }).eq("id", m.id);
+          await sb.from("memberships").update({ ref, token_hash: pd.token_hash, program: pd.program, workout_type: pd.workout_type, athlete: pd.athlete, heard_from: pd.heard_from, heard_from_other: pd.heard_from_other, utm_source: pd.utm_source }).eq("id", m.id);
           await sb.rpc("membership_recount", { p_id: m.id });
           await sb.from("membership_pending").update({ consumed: true }).eq("ref", ref);
           const dates = pd.starts.map((t: string) => new Date(t).toLocaleString("en-US", { timeZone: "America/Denver", weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })).join("\n- ");
@@ -75,6 +81,8 @@ Deno.serve(async (req) => {
       if (!first) { upd.sessions_used = 0; upd.reschedules_used = 0; }
       await sb.from("memberships").update(upd).eq("id", m.id);
       if (first) await sb.rpc("membership_recount", { p_id: m.id }); // signup picks counted atomically (race-safe)
+      if (first) { await sb.from("memberships").update({ first_amount_cents: o.amount_paid }).eq("id", m.id);
+        await owner("membership_start", { membership_id: m.id, amount_cents: o.amount_paid, subtotal_cents: o.subtotal, discount: (o.discount?.coupon?.id ?? o.discounts?.[0]) ? "GRANDOPEN20B" : null, period_end: upd.current_period_end }); }
       const total = GRANT[m.tier] + roll + m.closure_rollover;
       if (first) await mail(m, "welcome", `Welcome to ${NAME[m.tier]}`, `Hi! ${m.athlete}'s ${NAME[m.tier]} membership is active: ${GRANT[m.tier]} two-hour sessions this month, renewing ${d(upd.current_period_end)}. Book up to 4 weeks ahead from your dashboard.\n\n${POLICY}`);
       else await mail(m, "renewal", `Membership renewed: ${total} sessions ready`, `Your ${NAME[m.tier]} renewed ($${(o.amount_paid/100).toFixed(2)}). This month: ${GRANT[m.tier]} new sessions + ${roll} rolled over (max 2)${m.closure_rollover ? ` + ${m.closure_rollover} from gym closures` : ""}. Next renewal ${d(upd.current_period_end)}.\n\n${POLICY}`);
@@ -89,12 +97,14 @@ Deno.serve(async (req) => {
       const end = ts(subEnd);
       const canceling = !!(o.cancel_at_period_end || o.cancel_at); // portal (basil API) sets cancel_at
       await sb.from("memberships").update({ status: o.status, cancel_at_period_end: canceling, current_period_end: end }).eq("id", m.id);
+      if (canceling && !m.cancel_at_period_end) await owner("membership_cancel", { membership_id: m.id, ends: end });
       if (canceling && !m.cancel_at_period_end)
         await mail(m, "cancel_confirmed", "Your membership will end " + d(end), `Your ${NAME[m.tier]} is canceled. You keep access and can use your sessions through ${d(end)}. You won't be billed again. No partial refunds are issued for the current month. Memberships are month to month and can't be paused.`);
       break; }
     case "customer.subscription.deleted": {
       const m = await bySub(o.id); if (!m) break;
       await sb.from("memberships").update({ status: "canceled", cancel_at_period_end: false, sessions_granted: 0, rollover: 0, closure_rollover: 0, sessions_used: 0 }).eq("id", m.id);
+      await owner("membership_ended", { membership_id: m.id });
       break; }
   }
   } catch (e) { await sb.from("stripe_events_processed").delete().eq("event_id", ev.id); console.error(e); return new Response("error", { status: 500 }); }

@@ -207,3 +207,20 @@ ${box(`<tr><td style="padding:16px 14px;font-size:15px;line-height:1.6">${esc(wh
 <p style="margin:0 0 8px">${btn(SITE + '/admin/', 'Open the back office')}</p>`;
   return { subject: title, html: shell('Booking rescheduled.', 'Owner notice', body), text: `${title}\n${what}\n${PKG[s.package] || s.package} · ${amt}\nParent: ${s.parent} · ${s.phone} · ${s.email}\n${srcLine(s) || 'Heard about us: not given'}\nBack office: ${SITE}/admin/` };
 }
+
+// NOTIFY-ALL: owner notices for memberships.
+const MNAME = { '1on1_monthly': '1-on-1 Monthly', '1on1_monthly_plus': '1-on-1 Monthly Plus', 'open_group_monthly': 'Open Group Monthly' };
+export function ownerMembershipEmail({ kind, payload: p, m }) {
+  const tier = MNAME[m.tier] || m.tier || 'Membership', who = `${m.athlete || ''} (${m.parent_email || ''})`;
+  const src = m.heard_from ? 'Heard about us: ' + m.heard_from + (m.heard_from === 'Other' && m.heard_from_other ? ' (' + m.heard_from_other + ')' : '') + (m.utm_source ? ' · utm_source: ' + m.utm_source : '') : (m.utm_source ? 'utm_source: ' + m.utm_source : 'Heard about us: not given');
+  const amtc = p.amount_cents ?? m.first_amount_cents;
+  const amt = amtc != null ? money(amtc) + (p.discount || (p.subtotal_cents && amtc < p.subtotal_cents) ? ' (20% Grand Opening, first month)' : '') : '';
+  const fmtT = t => t ? day(t) + ', ' + range(t) : '';
+  const [title, lines] = kind === 'membership_start' ? [`New membership: ${m.athlete} · ${tier} · ${amt}`, [`${who} started ${tier}.`, `Charged: ${amt}${p.period_end ? ' · renews ' + day(p.period_end) : ''}`]]
+    : kind === 'membership_cancel' ? [`Membership canceling: ${m.athlete} · ${tier}`, [`${who} canceled ${tier}. Access continues through ${p.ends ? day(p.ends) : 'the end of the paid month'}; no further billing.`, amt ? `First month paid: ${amt}` : '']]
+    : kind === 'membership_ended' ? [`Membership ended: ${m.athlete} · ${tier}`, [`${who}: ${tier} has ended (subscription deleted).`, amt ? `First month paid: ${amt}` : '']]
+    : [`Membership rescheduled: ${m.athlete} · ${tier}`, [`${who} moved a session.`, `From ${fmtT(p.from)} → to ${fmtT(p.to)}`, amt ? `First month paid: ${amt}` : '']];
+  const L = [...lines.filter(Boolean), src];
+  const body = `${box(`<tr><td style="padding:16px 14px;font-size:15px;line-height:1.6">${L.map(esc).join('<br>')}</td></tr>`)}<p style="margin:0 0 8px">${btn(SITE + '/admin/', 'Open the back office')}</p>`;
+  return { subject: title, html: shell(title.split(':')[0] + '.', 'Owner notice', body), text: `${title}\n${L.join('\n')}\nBack office: ${SITE}/admin/` };
+}

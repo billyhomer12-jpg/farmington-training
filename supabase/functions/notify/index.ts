@@ -1,7 +1,7 @@
 // Called by my.html after a successful move: sends queued emails (e.g. "Reschedule confirmed") for the booking
 // that owns this token. It only ever sends what the database queued, so it can't be used to send arbitrary mail.
 // Deploy with: supabase functions deploy notify --no-verify-jwt   Secrets: RESEND_API_KEY
-import { db, flushOutbox, cors } from '../_shared/send.ts';
+import { db, flushOutbox, flushOwner, cors } from '../_shared/send.ts';
 
 Deno.serve(async req => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
@@ -13,6 +13,7 @@ Deno.serve(async req => {
     if (error || data?.error) return new Response('forbidden', { status: 403, headers: cors });
     let sent = 0;
     for (const id of (data.ids || []) as number[]) { try { sent += await flushOutbox(Number(id), ''); } catch (e) { console.error('group notice', id, e); } }
+    try { sent += await flushOwner(); } catch (e) { console.error('owner backstop', e); }
     return new Response(JSON.stringify({ ok: true, sent }), { headers: { ...cors, 'Content-Type': 'application/json' } });
   }
   // Move link (my.html?move=...): send the queued "group changed" email.
@@ -35,6 +36,11 @@ Deno.serve(async req => {
     const { data: s } = await db().from('training_signups').select('id,email').eq('ref', b.ref).maybeSingle();
     if (!s || !/^qa-notify[^@]*@example\.com$/i.test(s.email)) return new Response(JSON.stringify({ error: 'not a QA booking' }), { status: 404, headers: cors });
     const sent = await flushOutbox(Number(s.id), '', { only: 'coach_notice' });
+    return new Response(JSON.stringify({ ok: true, sent }), { headers: { ...cors, 'Content-Type': 'application/json' } });
+  }
+  // NOTIFY-ALL: send queued owner notices (owner list only; only what the database queued).
+  if (b.action === 'owner-flush') {
+    const sent = await flushOwner();
     return new Response(JSON.stringify({ ok: true, sent }), { headers: { ...cors, 'Content-Type': 'application/json' } });
   }
   const { token } = b;

@@ -28,12 +28,17 @@ Deno.serve(async (req) => {
     const { data: ref, error } = await sb.rpc("membership_pending_create", { p_tier: b.tier, p_parent: b.parent, p_athlete: b.athlete, p_email: b.email,
       p_phone: b.phone ?? "", p_program: program, p_type: wtype, p_starts: b.starts, p_token: token });
     if (error) return j({ error: error.message }, 400);
+    // NOTIFY-ALL: how they heard about us + utm_source (copied to the membership by the webhook)
+    const HF = ['Facebook','Instagram','TikTok','Google','Friend/family','Flyer','Other'];
+    if (b.heard_from && !HF.includes(b.heard_from)) return j({ error: "Tell us how you heard about us." }, 400);
+    await sb.from("membership_pending").update({ heard_from: b.heard_from || null, heard_from_other: b.heard_from === "Other" ? String(b.heard_from_other || "").slice(0, 120) || null : null,
+      utm_source: b.utm_source ? String(b.utm_source).slice(0, 100) : null }).eq("ref", ref);
     const origin = ["http://localhost:8765", SITE].includes(b.origin) ? b.origin : SITE;
     // GRAND-OPENING-20: first-month coupon only inside the configured window (window mirrors config.js membershipPromo; coupon from env)
     const PC = Deno.env.get("MEMBERSHIP_PROMO_COUPON"), PS = Date.parse(Deno.env.get("MEMBERSHIP_PROMO_START") || "2026-10-16T17:50:00-06:00"), PE = Date.parse(Deno.env.get("MEMBERSHIP_PROMO_END") || "2026-11-15T17:50:00-07:00");
     const promo = PC && Date.now() >= PS && Date.now() < PE ? { discounts: [{ coupon: PC }] } : {};
     const s = await stripe.checkout.sessions.create({ ...promo, mode: "subscription", line_items: [{ price, quantity: 1 }], customer_email: b.email,
-      metadata: { ref, tier: b.tier, athlete: b.athlete }, subscription_data: { metadata: { ref, tier: b.tier, athlete: b.athlete }, description: POLICY },
+      metadata: { ref, tier: b.tier, athlete: b.athlete }, subscription_data: { metadata: { ref, tier: b.tier, athlete: b.athlete, heard_from: b.heard_from || "", utm_source: b.utm_source ? String(b.utm_source).slice(0, 100) : "" }, description: POLICY },
       custom_text: { submit: { message: POLICY + " Terms: " + SITE + "/membership-terms.html" } },
       success_url: `${origin}/member.html?m=${token}&welcome=1`, cancel_url: `${origin}/pricing.html?membership_preview=1#memberships` });
     await sb.from("membership_pending").update({ checkout_session: s.id }).eq("ref", ref);

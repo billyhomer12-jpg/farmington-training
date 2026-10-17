@@ -1,7 +1,7 @@
 // Shared: Supabase service client, Resend sender, outbox processor.
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { ALL_RECIPIENTS, isQA } from './recipients.ts';
-import { FROM, REPLY_TO, confirmationEmail, rescheduledEmail, waiverCopyEmail, waiverReminderEmail, groupUnderMinEmail, groupMovedEmail, coachNoticeEmail, freeConfirmationEmail } from './templates.js';
+import { FROM, REPLY_TO, confirmationEmail, rescheduledEmail, waiverCopyEmail, waiverReminderEmail, groupUnderMinEmail, groupMovedEmail, coachNoticeEmail, freeConfirmationEmail, ownerMembershipEmail } from './templates.js';
 
 export const db = () => createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, { auth: { persistSession: false } });
 
@@ -55,3 +55,22 @@ export async function flushOutbox(signupId: number, token: string, opt: { wtoken
   return sent;
 }
 export const cors = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'authorization, apikey, content-type', 'Access-Control-Allow-Methods': 'POST, OPTIONS' };
+
+// NOTIFY-ALL: send queued owner notices (memberships: start, cancel, ended, rescheduled) to the owner list only.
+// Members with an @example.* email are suppressed unless qa-notify*@example.com (subject "[QA]"). Never emails a member.
+export async function flushOwner() {
+  const sb = db(); let sent = 0;
+  const { data: rows } = await sb.from('owner_outbox').select('*').is('sent_at', null).order('id').limit(50);
+  for (const r of rows || []) {
+    try {
+      const mid = (r.payload || {}).membership_id;
+      const { data: m } = mid ? await sb.from('memberships').select('*').eq('id', mid).maybeSingle() : { data: null };
+      const em = String(m?.parent_email || '');
+      if (/@example\.(com|org|net)$/i.test(em) && !isQA(em)) { await sb.from('owner_outbox').update({ sent_at: new Date().toISOString(), error: 'test-skip' }).eq('id', r.id); continue; }
+      const ids = await sendCoach(ownerMembershipEmail({ kind: r.kind, payload: r.payload, m: m || {} }), isQA(em));
+      console.log('[owner_outbox]', r.id, r.kind, 'ids', ids.join(','));
+      await sb.from('owner_outbox').update({ sent_at: new Date().toISOString(), error: null }).eq('id', r.id); sent++;
+    } catch (e) { await sb.from('owner_outbox').update({ error: String(e).slice(0, 500) }).eq('id', r.id); }
+  }
+  return sent;
+}

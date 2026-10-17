@@ -18,7 +18,7 @@ if($('#msign')){const tier=q.get('tier');const n=NAMES[tier];if(!n){$('#merr').t
  const load=()=>{picks.clear();upd();slots(OG?'Basketball Skills':$('[name=program]').value,$('#mdays'),4,(t,b)=>{if(picks.has(t)){picks.delete(t);b.classList.remove('on')}else if(picks.size<4){picks.add(t);b.classList.add('on')}upd()},[],OG?'OpenGroup':'Gym')};
  $('[name=program]').onchange=load;load();
  $('#msign').onsubmit=async e=>{e.preventDefault();$('#merr').textContent='';$('#mgo').disabled=true;const f=new FormData(e.target);
-  const r=await fetch(S.supabaseUrl+'/functions/v1/'+(S.membershipCheckoutFn||'membership-checkout-test'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tier,parent:f.get('parent'),athlete:f.get('athlete'),email:f.get('email'),phone:f.get('phone'),program:f.get('program'),starts:[...picks],origin:location.origin})}).then(r=>r.json()).catch(()=>({error:'Network error. Please try again.'}));
+  const r=await fetch(S.supabaseUrl+'/functions/v1/'+(S.membershipCheckoutFn||'membership-checkout-test'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tier,parent:f.get('parent'),athlete:f.get('athlete'),email:f.get('email'),phone:f.get('phone'),program:f.get('program'),heard_from:f.get('heard_from'),heard_from_other:f.get('heard_from')==='Other'?f.get('heard_from_other'):null,utm_source:(window.utmSource&&utmSource())||null,starts:[...picks],origin:location.origin})}).then(r=>r.json()).catch(()=>({error:'Network error. Please try again.'}));
   if(r.url)location.href=r.url;else{$('#merr').textContent=r.error;$('#mgo').disabled=false;load()}}}
 if($('#mbox')){const tok=q.get('m');let V;
  const show=async()=>{V=await rpc('membership_view',{p_token:tok});if(V.error){$('#mbox').innerHTML='<p>'+V.error+'</p>';return}const n=NAMES[V.tier]||[V.tier];
@@ -32,5 +32,8 @@ if($('#mbox')){const tok=q.get('m');let V;
   $('#mportal').onclick=async()=>{const r=await fetch(S.supabaseUrl+'/functions/v1/'+(S.membershipCheckoutFn||'membership-checkout-test'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({portal_token:tok,origin:location.origin})}).then(r=>r.json());if(r.url)location.href=r.url;else $('#merr').textContent=r.error}};
  const pick=id=>{$('#mpick').hidden=false;$('#mpickh').textContent=id?'Pick a new time':'Pick a session';$('#merr').textContent='';
   slots(V.program||'Basketball Skills',$('#mdays'),1,async t=>{const r=id?await rpc('membership_reschedule',{p_token:tok,p_session:id,p_start:t}):await rpc('membership_pick',{p_token:tok,p_start:t});
-   if(r.error)$('#merr').textContent=r.error;else{$('#mpick').hidden=true;show()}},V.sessions.map(s=>+new Date(s.starts_at)),V.workout_type||'Gym')};
+   if(r.error)$('#merr').textContent=r.error;else{if(id)fetch(S.supabaseUrl+'/functions/v1/notify',{method:'POST',headers:{apikey:S.supabaseKey,'Content-Type':'application/json'},body:JSON.stringify({action:'owner-flush'})}).catch(()=>{});$('#mpick').hidden=true;show()}},V.sessions.map(s=>+new Date(s.starts_at)),V.workout_type||'Gym')};
  show()}})();
+
+// NOTIFY-ALL: 'Other' shows a short text box on the membership sign-up form.
+(()=>{const fm=document.getElementById('msign');if(!fm||!fm.heard_from)return;fm.heard_from.addEventListener('change',()=>{const o=fm.heard_from.value==='Other',b=document.getElementById('mhfo');if(b)b.hidden=!o;fm.heard_from_other.disabled=!o;fm.heard_from_other.required=o})})();
