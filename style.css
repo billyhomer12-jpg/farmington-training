@@ -467,3 +467,5 @@ html.ff-off .ffnote,html.ff-off [data-ff]{display:none!important}html.sale-off .
 h1.pgtitle{font-size:clamp(2rem,5vw,3rem);line-height:1.08;letter-spacing:-.015em;margin-bottom:8px;text-align:center}
 /* coaches.html: keep scroll chevrons clear of bio text on phones */
 @media(max-width:760px){body.pg-coaches .scrollhint,body.pg-coaches .scrollhint.up{right:6px;width:36px;height:36px}body.pg-coaches .coach .bio,body.pg-coaches .coach .born,body.pg-coaches .coach h3{padding:0 14px}}
+/* coaches.html phones: quick-book bar sits in flow at the page end (solid), never over bio text; header Book stays */
+body.pg-coaches .qbook,body.pg-coaches .qbook.on{position:static;border-radius:0;background:#141414;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;max-width:none;margin:0;border:0}body.pg-coaches.qb-on{padding-bottom:0}body.pg-coaches.qb-on .scrollhint.dn{bottom:calc(20px + env(safe-area-inset-bottom))}body.pg-coaches.qb-on .scrollhint.up,body.pg-coaches.qb-on .scrollhint.dn.gone~.scrollhint.up{bottom:calc(88px + env(safe-area-inset-bottom))}
