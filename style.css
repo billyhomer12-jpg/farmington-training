@@ -546,3 +546,6 @@ a.btn.btn-secondary.cta-inline{display:inline-flex;align-items:center;justify-co
 @media(min-width:761px) and (max-width:960px){.tabsnav{gap:0}.tabsnav a{padding-left:5px;padding-right:5px;letter-spacing:-.01em}.gnav .logo img{max-width:150px;height:auto}}
 /* POLISH-5c (mobile only): footer Privacy 44px tall, waiver email >=12px */
 @media(max-width:760px){.legal a{display:inline-block;min-height:44px;line-height:44px;margin:-13px 0;vertical-align:middle}.wv .lede a[href^="mailto:"]{font-size:max(12px,1em);overflow-wrap:anywhere}}
+/* POLISH-2b: hero image = green logo ball on black (no box) */
+.offer-tile .hero-img.hero-ball{display:block;width:220px;height:auto;aspect-ratio:1/1;margin:24px auto 0;padding-bottom:40px;box-sizing:content-box;background:#000;border-radius:0}
+@media(min-width:735px){.offer-tile .hero-img.hero-ball{width:320px;padding-bottom:64px;border-radius:0;overflow:visible}}
