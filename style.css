@@ -511,3 +511,13 @@ body.pg-coaches footer{padding-bottom:64px}
 @media(max-width:760px){html.js-menu .gnav{position:sticky;top:0}html.js-menu .gnav .gnav-in{grid-template-columns:1fr auto auto;grid-template-rows:52px;height:52px;padding:0;gap:0}html.js-menu .gnav .tabsnav{display:none}html.js-menu .gnav .book{margin-right:7px}}
 /* POLISH-5: mobile tap targets >=44px (APPLE-5), scoped to phones */
 @media(max-width:760px){.btn,.btn.sm,button.btn{min-height:44px;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box}.btn.sm{padding-left:18px;padding-right:18px}.gnav .logo{min-height:44px;display:flex;align-items:center}.fcols a{display:flex;align-items:center;min-height:44px;padding:0;margin:0}.gfoot a[href^="tel:"],.gfoot a[href^="mailto:"]{display:inline-flex;align-items:center;min-height:44px}h1,h2,h3{text-wrap:balance}}
+
+/* POLISH-1 (polish-spec A1): CTA pairs = outline secondary LEFT, filled green Book RIGHT */
+:root{--btn-h:44px;--btn-pad:0 20px;--cta-gap:14px;--type-btn:500 15px/1 -apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial,sans-serif}
+.cta-pair{display:flex;justify-content:center;gap:var(--cta-gap);flex-wrap:wrap}
+.cta-pair .btn{min-height:var(--btn-h);height:auto;padding:var(--btn-pad);border-radius:980px;font:var(--type-btn);white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;width:auto;margin:0}
+.cta-pair .btn.btn-primary{background:#34C759;color:#000;border:1px solid #34C759}
+.cta-pair .btn.btn-secondary{background:transparent;color:#1E7B34;border:1px solid #1E7B34}
+.dark .cta-pair .btn.btn-secondary,.hero.dark .cta-pair .btn.btn-secondary,[data-theme=dark] .cta-pair .btn.btn-secondary{color:#34C759;border-color:#34C759}
+@media(max-width:760px){.ctas.cta-pair{flex-direction:row;flex-wrap:wrap}}
+@media(max-width:340px){:root{--type-btn:500 14px/1 -apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial,sans-serif}}
