@@ -597,3 +597,7 @@ body.qb-on .scrollhint.dn{display:none!important}}
 a.btn.btn-primary.cta-book{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;min-height:44px;padding:var(--btn-pad);border-radius:980px;font:var(--type-btn);white-space:nowrap;background:#34C759;color:#000;border:1px solid #34C759;text-decoration:none;margin:6px 0;max-width:100%}
 /* QB-DELAY: hidden bar is fully off-screen and non-interactive (fixed -> no layout shift) */
 .qbook:not(.on){transform:translateY(calc(100% + 24px))!important;visibility:hidden!important;pointer-events:none}
+/* CTA-RIGHT: non-centered pairs right-aligned (hero + .center pairs stay centered) */
+.cta2.cta-pair:not(.center),.ctas.left.cta-pair{justify-content:flex-end}
+.solo>.cta2.cta-pair{margin-left:auto}
+@media (max-width:700px){.solo>.cta2.cta-pair{align-self:stretch;margin-left:0}}
