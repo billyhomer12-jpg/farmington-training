@@ -619,3 +619,6 @@ body.qb-on .scrollhint.dn,body.qb-on .scrollhint.up{display:flex!important}
 
 /* BAR-CLEAR: last content clears the fixed Book bar via bottom padding only */
 @media(max-width:760px){html body.qb-on{padding-bottom:calc(88px + env(safe-area-inset-bottom))!important}}
+
+/* NOBAR-CLEAR: pages without the Book bar: footer text clears the arrows (44px + 16px right) on phones */
+@media(max-width:760px){html body:not(.qb-on) footer>.wrap,html body:not(.qb-on) footer:not(:has(>.wrap)){padding-right:64px!important;box-sizing:border-box}html body:not(.qb-on) footer a,html body:not(.qb-on) footer p{overflow-wrap:anywhere!important;white-space:normal!important}}
