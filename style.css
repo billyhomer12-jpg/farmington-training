@@ -679,3 +679,6 @@ html body.bo section.ahero .stats{margin-bottom:0!important}
 /* BOFIX-FORMS-SB3: inputs never wider than their card */
 input,select,textarea{box-sizing:border-box;max-width:100%}
 .grid2>*,.row>*,label{min-width:0}
+
+/* BO-CALNAV: keep prev/next inside the calendar card on phones */
+@media(max-width:760px){body.bo .calbar{display:flex!important;flex-wrap:nowrap!important;align-items:center;gap:8px!important;width:100%;max-width:100%;box-sizing:border-box;min-width:0}body.bo .calbar>b,body.bo #cal-title{flex:1 1 auto;min-width:0;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}body.bo .calbar>.btn{flex:0 0 44px;width:44px;min-width:44px!important;padding:0!important;margin:0!important}}
