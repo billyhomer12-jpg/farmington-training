@@ -703,3 +703,12 @@ html body.bo #memf>.btn{flex:0 0 auto!important;flex-shrink:0!important}
 @media(min-width:761px){html body.bo .ogfill{padding-right:56px!important;box-sizing:border-box}}
 /* BO-REMOVE-430: phones: tables grow with the page (no 78vh inner scroll box), so the last Remove button scrolls clear of the arrows via the page bottom padding */
 @media(max-width:760px){html body.bo .tw{max-height:none!important;overflow-y:visible!important}}
+/* DATE-TIME-IOS: iOS Safari gives native date/time inputs an intrinsic min width (appearance:auto) that ignores width:100%,
+   so they ran past the card on iPhone. Every date/time input everywhere: no native appearance, block, shrinkable. */
+input[type=date],input[type=time],input[type=datetime-local],input[type=month]{-webkit-appearance:none!important;appearance:none!important;display:block;width:100%!important;min-width:0!important;max-width:100%!important;box-sizing:border-box!important}
+input[type=date]::-webkit-date-and-time-value,input[type=time]::-webkit-date-and-time-value,input[type=datetime-local]::-webkit-date-and-time-value{text-align:left;min-width:0}
+input[type=date]::-webkit-datetime-edit,input[type=time]::-webkit-datetime-edit{min-width:0;overflow:hidden}
+/* back-office field rows: 2 equal columns that may shrink; 1 column under 400px */
+@media(max-width:760px){html body.bo form.fgrid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px}html body.bo form.fgrid>.wide,html body.bo form.fgrid>button{grid-column:1/-1}}
+html body.bo form.fgrid>label{min-width:0}
+@media(max-width:399px){html body.bo form.fgrid{grid-template-columns:minmax(0,1fr)!important}}
