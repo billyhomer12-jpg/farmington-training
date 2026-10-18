@@ -688,3 +688,5 @@ input,select,textarea{box-sizing:border-box;max-width:100%}
 @media(min-width:761px){html body.bo #list th,html body.bo #list td{padding-left:6px!important;padding-right:6px!important}html body.bo #list th{white-space:normal!important}html body.bo #list{font-size:13px}}
 /* BO-ARROWS2 (Site Builder 2 bb56c33): desktop bottom clearance so arrows never cover text at page bottom (>=761px) */
 @media(min-width:761px){html body.bo{padding-bottom:120px!important}}
+/* BO-ARROWS3: right-aligned Groups fill text clears the arrow column (>=761px), cards untouched */
+@media(min-width:761px){html body.bo .ogfill{padding-right:56px!important;box-sizing:border-box}}
