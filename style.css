@@ -748,3 +748,5 @@ html body.bo #t-cal .legend,html body.bo .tab .legend{display:grid!important;fle
 html body.bo #t-cal .legend>*,html body.bo .tab .legend>*{width:auto!important;min-width:0!important;max-width:100%!important}
 html body.bo .tab .seg.segc:not(.tabs),html body.bo .tab .segc.seg2,html body.bo .tab .chips,html body.bo #memf,html body.bo #lf{display:flex!important;flex-wrap:wrap!important;max-width:100%!important;min-width:0!important;box-sizing:border-box!important;overflow:visible!important;white-space:normal!important}
 html body.bo .tab .seg.segc:not(.tabs)>.btn,html body.bo .tab .segc.seg2>.btn,html body.bo #memf>.btn,html body.bo #lf>*{flex:0 1 auto!important;min-width:0!important;max-width:100%!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}
+html body.bo #app .segc.seg2,html body.bo #app #memf{flex-wrap:wrap!important;overflow:visible!important;width:auto!important;max-width:100%!important}
+html body.bo #app .segc.seg2>.btn,html body.bo #app #memf>.btn{flex:0 1 auto!important;min-width:0!important;max-width:100%!important;overflow:hidden!important;text-overflow:ellipsis!important}
