@@ -521,3 +521,10 @@ body.pg-coaches footer{padding-bottom:64px}
 .dark .cta-pair .btn.btn-secondary,.hero.dark .cta-pair .btn.btn-secondary,[data-theme=dark] .cta-pair .btn.btn-secondary{color:#34C759;border-color:#34C759}
 @media(max-width:760px){.ctas.cta-pair{flex-direction:row;flex-wrap:wrap}}
 @media(max-width:340px){:root{--type-btn:500 14px/1 -apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial,sans-serif}}
+
+/* POLISH-1b: standalone inline CTA links -> outline secondary buttons (polish-spec A1), 44px tap target */
+a.btn.btn-secondary.cta-inline{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;min-height:44px;padding:var(--btn-pad);border-radius:980px;font:var(--type-btn);white-space:nowrap;background:transparent;color:#1E7B34;border:1px solid #1E7B34;text-decoration:none;vertical-align:middle;max-width:100%;margin:6px 0;width:auto;height:auto}
+.dark a.btn.btn-secondary.cta-inline,.hero a.btn.btn-secondary.cta-inline,.qbook a.btn.btn-secondary.cta-inline,.deal-bar a.btn.btn-secondary.cta-inline{color:#34C759;border-color:#34C759}
+/* countdown bar: compact visible pill, 44px tap area, no bar growth */
+.cdsub a.btn.btn-secondary.cta-inline.cd-btn{position:relative;border:0;min-height:44px;margin:-4px 0;padding:0 12px;font:600 .8125rem/1 var(--font);color:#1E7B34;background:transparent}
+.cdsub a.cd-btn::after{content:"";position:absolute;inset:9px 0;border:1px solid currentColor;border-radius:980px;pointer-events:none}
