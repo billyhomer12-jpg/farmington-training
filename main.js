@@ -152,7 +152,7 @@ const n=document.getElementById('picked');st.textContent=t?'Selected '+fd(t,{wee
 /* scroll-down hint */
 (function(){function mk(cls,lbl,d,fn){var b=document.createElement('button');b.className='scrollhint '+cls+' gone';b.setAttribute('aria-label',lbl);b.innerHTML='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="'+d+'"/></svg>';b.onclick=fn;document.body.appendChild(b);return b}
 function init(){var dn=mk('dn','Scroll down','M6 9l6 6 6-6',function(){scrollBy({top:innerHeight*0.8,behavior:'smooth'})});var up=mk('up','Back to top','M6 15l6-6 6 6',function(){scrollTo({top:0,behavior:'smooth'})});
-var u=function(){var y=scrollY,more=document.documentElement.scrollHeight-(y+innerHeight)>80;dn.classList.toggle('gone',!more);up.classList.toggle('gone',y<200)};addEventListener('scroll',u,{passive:true});addEventListener('resize',u);u();setTimeout(u,800)}
+var u=function(){var y=scrollY,more=document.documentElement.scrollHeight-(y+innerHeight)>80;dn.classList.toggle('gone',!more||y>40);up.classList.toggle('gone',y<200)};addEventListener('scroll',u,{passive:true});addEventListener('resize',u);u();setTimeout(u,800)}
 if(document.readyState!=='loading')init();else document.addEventListener('DOMContentLoaded',init)})();
 // Back from Stripe: Payment Links have no cancel_url, so detect Back ourselves. bfcache restore (event.persisted) or a
 // normal back/forward navigation with a recent pending booking -> never show the cached pay screen. Re-check the booking and show paid or "Payment not completed".

@@ -578,3 +578,16 @@ html body .cd-top .cdsub{width:100%;justify-content:center}
 html body .cd-top .cdsub a.btn.btn-secondary.cta-inline.cd-btn{width:100%;max-width:320px}}
 /* LOAD-SMOOTH: timer boxes are reserved by size; digits stay invisible until deals.js has written real values (no flash of placeholder 30:00:59:59) */
 html.deal-on:not(.cd-ready) .cd-top [data-u]{visibility:hidden}
+
+/* HERO-IPHONE: one spacing token, even rhythm deal bar -> h1 -> sub -> buttons -> bottom; no clipping */
+:root{--hero-gap:24px}
+html body .hero.offer-tile{overflow:visible;height:auto;min-height:0;display:block;padding:var(--hero-gap) 0 calc(var(--hero-gap) * 1.5)}
+html body .offer-tile h1{margin:0 auto}
+html body .offer-tile .osub{margin:var(--hero-gap) auto 0}
+html body .offer-tile .ctas{margin:var(--hero-gap) auto 0}
+html body .offer-tile .trustline{display:none}
+@media(min-width:735px){:root{--hero-gap:32px}}
+/* fixed Book bar: reserve its exact height + safe area; anchors/scrollIntoView clear it too */
+@media(max-width:760px){body.qb-on{padding-bottom:calc(68px + env(safe-area-inset-bottom))!important}html:has(body.qb-on){scroll-padding-bottom:calc(68px + env(safe-area-inset-bottom))}
+/* chevron never sits over content: with the Book bar showing, the down chevron is not used on phones (the bar is the CTA); it also hides once the user scrolls */
+body.qb-on .scrollhint.dn{display:none!important}}
