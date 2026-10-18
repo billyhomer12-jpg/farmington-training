@@ -719,3 +719,7 @@ html body.bo #login.card.lock{margin-left:auto!important;margin-right:auto!impor
 html body.bo #t-list,html body.bo #t-mem,html body.bo #lf{min-width:0!important;max-width:100%!important}
 html body.bo #t-list .segc.seg2,html body.bo #memf{display:flex!important;flex-wrap:nowrap!important;white-space:nowrap!important;overflow-x:auto!important;max-width:100%!important;min-width:0!important;width:100%!important;box-sizing:border-box!important;-webkit-overflow-scrolling:touch}
 html body.bo #t-list .segc.seg2>*,html body.bo #memf>*{flex:0 0 auto!important}
+/* BO-V234: phone tabs fit in 2 rows w/o clipping; legend even wrap at tablet; Groups form labels top-aligned */
+@media(max-width:760px){html body.bo .tabs.segc{display:flex!important;flex-wrap:wrap!important;grid-template-columns:none!important;overflow:visible!important}html body.bo .tabs.segc .btn{flex:1 1 auto!important;min-width:0!important;width:auto!important;padding:0 7px!important;font-size:13px!important;letter-spacing:-.01em;overflow:visible!important;text-overflow:clip!important;white-space:nowrap!important}}
+@media(min-width:761px) and (max-width:1100px){html body.bo .legend{display:grid!important;grid-template-columns:repeat(4,auto)!important;justify-content:center!important;gap:6px!important}html body.bo .legend>*{width:auto!important}}
+@media(min-width:761px){html body.bo #ogform.fgrid{align-items:start!important}}
