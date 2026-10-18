@@ -540,3 +540,9 @@ a.btn.btn-secondary.cta-inline{display:inline-flex;align-items:center;justify-co
 .offer-tile .hero-img{display:block;margin:28px auto 0;max-width:800px}.offer-tile .hero-img img{display:block;width:100%;height:auto;aspect-ratio:16/10;object-fit:cover}
 .ff-no,.offer-tile .ctas.ff-no,.offer-tile h1.ff-no{display:none}html.ff-off .ff-yes,html.ff-off .offer-tile .ctas.ff-yes,html.ff-off .offer-tile h1.ff-yes{display:none}html.ff-off .offer-tile h1.ff-no{display:block}html.ff-off .offer-tile .ctas.ff-no{display:flex}html.sale-off .sale-yes,.deal-off .sale-yes{display:none}
 @media(min-width:735px){.offer-tile{padding:64px 0 0}.offer-tile h1{font-size:48px}.offer-tile .osub{font-size:24px}.offer-tile .hero-img{border-radius:28px 28px 0 0;overflow:hidden}}@media(min-width:1069px){.offer-tile h1{font-size:56px}}
+/* DESKTOP-1: min type 12/14px, header no-wrap (>=761px) */
+@media(min-width:761px){s.was,.sp s.was,.pkgline s.was{font-size:max(12px,.86em)!important}.gnav .book,.gnav .btn.sm.book,.tabsnav a{font-size:14px}.tabsnav{flex-wrap:nowrap;white-space:nowrap;min-width:0}.tabsnav a{white-space:nowrap}}
+@media(min-width:761px) and (max-width:1100px){.tabsnav{overflow-x:auto;scrollbar-width:none}.tabsnav::-webkit-scrollbar{display:none}.tabsnav a{padding-left:8px;padding-right:8px}}
+@media(min-width:761px) and (max-width:960px){.tabsnav{gap:0}.tabsnav a{padding-left:5px;padding-right:5px;letter-spacing:-.01em}.gnav .logo img{max-width:150px;height:auto}}
+/* POLISH-5c (mobile only): footer Privacy 44px tall, waiver email >=12px */
+@media(max-width:760px){.legal a{display:inline-block;min-height:44px;line-height:44px;margin:-13px 0;vertical-align:middle}.wv .lede a[href^="mailto:"]{font-size:max(12px,1em);overflow-wrap:anywhere}}
