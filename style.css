@@ -699,3 +699,5 @@ html body.bo .legend .pl.w-gym,html body.bo .legend .pl.w-outdoor{background:#F2
 /* FIX-PILLS2-SB3: Members pills = one row scrolling inside its card (same as Sign-ups chips); never past the card; end pills not clipped */
 html body.bo #memf{flex-wrap:nowrap!important;overflow-x:auto!important;max-width:100%!important;min-width:0!important;box-sizing:border-box;padding-left:4px!important;padding-right:4px!important;scroll-padding-inline:8px;scrollbar-width:none}
 html body.bo #memf>.btn{flex:0 0 auto!important;flex-shrink:0!important}
+/* BO-ARROWS3 (Site Builder 2 032d886): right-aligned Groups fill text clears the arrow column (>=761px), cards untouched */
+@media(min-width:761px){html body.bo .ogfill{padding-right:56px!important;box-sizing:border-box}}
