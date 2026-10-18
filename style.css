@@ -506,3 +506,8 @@ body.pg-coaches footer{padding-bottom:64px}
 @media(max-width:340px){.cd-top .cdbox .u:last-child{display:none}}
 
 .gnav .logo .lockup{display:block;height:40px;width:auto;max-width:100%;flex:none}@media(max-width:400px){.gnav .logo .lockup{height:34px}}@media(max-width:340px){.gnav .logo .lockup{height:32px}}
+
+/* POLISH-5: reserve the final mobile header (52px, menu layout) before main.js adds .has-menu -> no CLS */
+@media(max-width:760px){html.js-menu .gnav{position:sticky;top:0}html.js-menu .gnav .gnav-in{grid-template-columns:1fr auto auto;grid-template-rows:52px;height:52px;padding:0;gap:0}html.js-menu .gnav .tabsnav{display:none}html.js-menu .gnav .book{margin-right:7px}}
+/* POLISH-5: mobile tap targets >=44px (APPLE-5), scoped to phones */
+@media(max-width:760px){.btn,.btn.sm,button.btn{min-height:44px;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box}.btn.sm{padding-left:18px;padding-right:18px}.gnav .logo{min-height:44px;display:flex;align-items:center}.fcols a{display:flex;align-items:center;min-height:44px;padding:0;margin:0}.gfoot a[href^="tel:"],.gfoot a[href^="mailto:"]{display:inline-flex;align-items:center;min-height:44px}h1,h2,h3{text-wrap:balance}}

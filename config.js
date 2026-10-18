@@ -1,3 +1,4 @@
+try{document.documentElement.classList.add('js-menu')}catch(e){}
 // ===== EDIT EVERYTHING HERE =====
 window.SITE = {
   siteUrl: "https://fourcornershoopsandperformance.com",
