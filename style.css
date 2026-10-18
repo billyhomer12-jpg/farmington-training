@@ -677,3 +677,6 @@ input,select,textarea{box-sizing:border-box;max-width:100%}
 html body.bo section.ahero{padding-top:0!important;padding-bottom:0!important}
 html body.bo section.ahero>.wrap{padding-top:32px!important;padding-bottom:32px!important}
 html body.bo section.ahero .stats{margin-bottom:0!important}
+
+/* BO-ARROWS: desktop right clearance so fixed scroll arrows never cover text (>=761px) */
+@media(min-width:761px){body.bo #main .asec>.wrap{padding-right:max(24px,calc(88px - (100vw - min(100vw,1200px))/2))!important;box-sizing:border-box}}
