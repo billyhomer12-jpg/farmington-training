@@ -732,3 +732,5 @@ html body.bo #cal.cal .c.today .dn::before{content:"";position:absolute;left:2px
 @media(max-width:760px){html body.bo .tabs.segc{display:flex!important;flex-wrap:wrap!important;grid-template-columns:none!important;overflow:visible!important}html body.bo .tabs.segc .btn{flex:1 1 auto!important;min-width:0!important;width:auto!important;padding:0 7px!important;font-size:13px!important;letter-spacing:-.01em;overflow:visible!important;text-overflow:clip!important;white-space:nowrap!important}}
 @media(min-width:761px) and (max-width:1100px){html body.bo .legend{display:grid!important;grid-template-columns:repeat(4,auto)!important;justify-content:center!important;gap:6px!important}html body.bo .legend>*{width:auto!important}}
 @media(min-width:761px){html body.bo #ogform.fgrid{align-items:start!important}}
+/* ARROWS-SMALL-SB3: phones: 36px arrows, 4px from the edge, 44px invisible hit area (Billy OK); same look/behaviour */
+@media(max-width:760px){:root{--arw-s:36px;--arw-r:4px}html body .scrollhint{overflow:visible}html body .scrollhint::before{content:"";position:absolute;inset:-4px}}
