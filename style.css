@@ -537,3 +537,9 @@ a.btn.btn-secondary.cta-inline{display:inline-flex;align-items:center;justify-co
 .cdsub a.btn.btn-secondary.cta-inline.cd-btn{border:1px solid #1E7B34!important;min-height:44px;height:44px;margin:-8px 0!important;padding:0 14px}
 .cdsub a.cd-btn::after{content:none!important}
 .gsplit{margin:6px 0 0;font:var(--type-meta,400 14px/1.4 var(--font))}
+/* POLISH-2: home offer hero (free first session + sale on first screen) */
+.offer-tile{padding:40px 0 0;min-height:auto;display:block}.offer-tile h1{font:600 32px/1.125 var(--font);letter-spacing:.002em;text-wrap:balance;margin:0 auto;max-width:14em}
+.offer-tile .osub{font:400 19px/1.21 var(--font);margin:14px auto 0;max-width:30em;color:#fff}.offer-tile .ctas{margin-top:20px}.offer-tile .trustline{margin-top:14px}
+.offer-tile .hero-img{display:block;margin:28px auto 0;max-width:800px}.offer-tile .hero-img img{display:block;width:100%;height:auto;aspect-ratio:16/10;object-fit:cover}
+.ff-no,.offer-tile .ctas.ff-no,.offer-tile h1.ff-no{display:none}html.ff-off .ff-yes,html.ff-off .offer-tile .ctas.ff-yes,html.ff-off .offer-tile h1.ff-yes{display:none}html.ff-off .offer-tile h1.ff-no{display:block}html.ff-off .offer-tile .ctas.ff-no{display:flex}html.sale-off .sale-yes,.deal-off .sale-yes{display:none}
+@media(min-width:735px){.offer-tile{padding:64px 0 0}.offer-tile h1{font-size:48px}.offer-tile .osub{font-size:24px}.offer-tile .hero-img{border-radius:28px 28px 0 0;overflow:hidden}}@media(min-width:1069px){.offer-tile h1{font-size:56px}}
