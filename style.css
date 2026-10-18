@@ -638,3 +638,12 @@ html body .gfoot p:has(.sep){display:flex;flex-wrap:wrap;gap:4px 14px;align-item
 /* BO-390: no empty band under stat boxes; footer clears the arrow stack at page bottom */
 html body.bo .ahero{padding-bottom:0!important}
 html body.bo{padding-bottom:calc(120px + env(safe-area-inset-bottom))!important}
+/* BOOKFIX-SB3: booking-flow defects (book.html form only) */
+#form .row .btn,#form [data-next]{min-height:44px}
+.cdbox .u i,.cd-ph .cdbox .u i{font-size:12px!important}
+#form .wt label{display:block}#form .wt label>input{display:inline-block!important;vertical-align:middle;margin:0 8px 0 0!important;width:auto!important}#form .wt label>b{display:inline!important;vertical-align:middle}
+#form{padding-right:56px;padding-bottom:132px}@media(min-width:761px){#form{padding-right:0;padding-bottom:72px}}
+#review,#review *{overflow-wrap:anywhere}
+#form .wt label{display:grid;grid-template-columns:auto 1fr;align-items:center;column-gap:10px;min-height:44px}#form .wt label>input{min-height:0;width:20px;height:20px;margin:0}#form .wt label>small{grid-column:1/-1}
+@media(max-width:760px){#booking-root #form{padding-right:60px;padding-bottom:132px}}
+#review,#review *{overflow-wrap:anywhere}#review a[href^="mailto:"]{white-space:normal!important;overflow-wrap:anywhere!important;max-width:100%}
