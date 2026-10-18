@@ -621,4 +621,20 @@ body.qb-on .scrollhint.dn,body.qb-on .scrollhint.up{display:flex!important}
 @media(max-width:760px){html body.qb-on{padding-bottom:calc(88px + env(safe-area-inset-bottom))!important}}
 
 /* NOBAR-CLEAR: pages without the Book bar: footer text clears the arrows (44px + 16px right) on phones */
-@media(max-width:760px){html body:not(.qb-on) footer>.wrap,html body:not(.qb-on) footer:not(:has(>.wrap)){padding-right:64px!important;box-sizing:border-box}html body:not(.qb-on) footer a,html body:not(.qb-on) footer p{overflow-wrap:anywhere!important;white-space:normal!important}}
+@media(max-width:760px){html body footer>.wrap,html body footer:not(:has(>.wrap)){padding-right:64px!important;box-sizing:border-box}html body footer p{white-space:normal!important}html body footer a[href^="mailto:"]{white-space:nowrap!important;overflow-wrap:normal!important;font-size:min(14px,3.5vw)!important}}
+
+/* BO-SUBTABS: Sign-ups (.seg2) + Members (#memf) filters: even, nowrap, no clipped labels; phones scroll inside the group */
+html body.bo .segc.seg2,html body.bo #memf{display:flex!important;flex-wrap:nowrap!important;gap:4px;max-width:100%;box-sizing:border-box;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;width:max-content}
+html body.bo .segc.seg2::-webkit-scrollbar,html body.bo #memf::-webkit-scrollbar{display:none}
+html body.bo .segc.seg2 .btn,html body.bo #memf .btn{flex:1 0 auto!important;min-width:max-content!important;white-space:nowrap!important;min-height:44px;padding:0 14px!important;display:inline-flex;align-items:center;justify-content:center}
+
+/* VIS-AUDIT fixes */
+@media(max-width:760px){
+/* 7: footer separators never sit alone; items wrap as a clean flex row */
+html body .gfoot p:has(.sep){display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center}html body .gfoot .sep{display:none}}
+/* VIS-AUDIT 2 */
+@media(max-width:760px){html body.bo .gnav .logo{padding-left:16px!important}
+}
+/* BO-390: no empty band under stat boxes; footer clears the arrow stack at page bottom */
+html body.bo .ahero{padding-bottom:0!important}
+html body.bo{padding-bottom:calc(120px + env(safe-area-inset-bottom))!important}
