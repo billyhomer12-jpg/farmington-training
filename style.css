@@ -712,3 +712,14 @@ input[type=date]::-webkit-datetime-edit,input[type=time]::-webkit-datetime-edit{
 @media(max-width:760px){html body.bo form.fgrid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px}html body.bo form.fgrid>.wide,html body.bo form.fgrid>button{grid-column:1/-1}}
 html body.bo form.fgrid>label{min-width:0}
 @media(max-width:399px){html body.bo form.fgrid{grid-template-columns:minmax(0,1fr)!important}}
+/* BO-ARROWS8-SB3: line-level clearance only (arrows float as on main; cards untouched): right-most Block time / Gym closures fields, the Members chip row and the month grid end before the arrow column where they would overlap */
+@media(max-width:1351px){html body.bo #t-block .fgrid>*{margin-right:36px!important;min-width:0}}
+@media(max-width:1351px){html body.bo #memf{margin-right:36px!important;max-width:calc(100% - 36px)!important;min-width:0}html body.bo #cal.cal{width:calc(100% - 36px)!important;max-width:calc(100% - 36px)!important;grid-template-columns:repeat(7,minmax(0,1fr))!important}}
+@media(max-width:760px){html body.bo #cal.cal{width:calc(100% - 44px)!important;max-width:calc(100% - 44px)!important}}
+/* Billy: bigger, taller Month day boxes, date number tight top-left inside the box; phones: Calendar card widened to 8px gutters (card margin) */
+@media(max-width:760px){html body.bo #t-cal{margin-left:-8px!important;margin-right:-8px!important;width:calc(100% + 16px)!important;max-width:none!important;box-sizing:border-box}}
+html body.bo #cal.cal .c{position:relative;min-height:64px!important;padding:0!important}
+@media(min-width:761px){html body.bo #cal.cal .c{min-height:96px!important}}
+html body.bo #cal.cal .dn{margin:0!important;min-width:44px;min-height:44px;display:flex!important;align-items:flex-start!important;justify-content:flex-start!important;padding:5px 6px!important;line-height:1.1;box-sizing:border-box}
+html body.bo #cal.cal .c.today .dn{background:transparent!important;isolation:isolate;position:relative}
+html body.bo #cal.cal .c.today .dn::before{content:"";position:absolute;left:3px;top:2px;width:22px;height:22px;border-radius:50%;background:#34C759;z-index:-1;pointer-events:none}
