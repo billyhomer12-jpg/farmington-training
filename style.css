@@ -555,3 +555,26 @@ html.ff-off .offer-tile .osub .ff-no{display:inline}
 @media(min-width:761px) and (max-width:820px){.gnav .gnav-in{gap:6px}.tabsnav{gap:0!important}.tabsnav a{padding-left:4px!important;padding-right:4px!important}.gnav .book{padding:0 10px}}
 @media(min-width:761px) and (max-width:820px){.tabsnav a{letter-spacing:-.025em}.gnav .gnav-in{gap:4px}}
 @media(max-width:760px){body footer.gfoot a[href^="mailto:"],body footer a[href^="mailto:"]{font-size:max(12px,3.75vw)!important;overflow-wrap:anywhere}}
+
+/* DEAL-BAR (Design Lead tokens, exact) — overrides earlier countdown strip + POLISH-1 outline for See prices */
+html body .cd-top{background:#000;color:#fff;border:0;padding:0;min-height:0}
+html body .cd-top .wrap{display:flex;flex-direction:row;flex-wrap:nowrap;align-items:center;justify-content:center;box-sizing:border-box;height:64px;min-height:64px;max-width:1120px;margin:0 auto;padding:0 24px;gap:24px;white-space:nowrap}
+html body .cd-top .cdlbl{margin:0;font:600 15px/1.2 var(--font);color:#fff;text-wrap:balance;white-space:normal;list-style:none}
+html body .cd-top .cdlbl::before,html body .cd-top .cdlbl::after,html body .cd-top .cdsub::before,html body .cd-top .cdsub::after,html body .cd-top .cdbox b::after,html body .cd-top .cdbox b::before{content:none!important}
+html body .cd-top .cdbox{display:flex;gap:8px;margin:0;max-width:none;align-items:center;list-style:none}
+html body .cd-top .cdbox .u{display:flex!important;flex-direction:column;align-items:center;justify-content:center;box-sizing:border-box;width:52px;height:52px;min-width:0;flex:none;padding:0;border-radius:10px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16)}
+html body .cd-top .cdbox .u b{font:700 24px/1 var(--font)!important;font-variant-numeric:tabular-nums;color:#fff}
+html body .cd-top .cdbox .u i{display:block!important;font:normal 600 10px/1 var(--font);text-transform:uppercase;letter-spacing:.06em;opacity:.7;margin-top:3px;color:#fff}
+html body .cd-top .cdsub{display:flex;margin:0;font-size:0;line-height:0;color:#fff;list-style:none}
+html body .cd-top .cdsub a.btn.btn-secondary.cta-inline.cd-btn{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;height:44px;min-height:44px;margin:0;padding:0 20px;border-radius:980px;background:#34C759;color:#000;border:0;font:600 15px/1 var(--font);white-space:nowrap;text-decoration:none;width:auto;max-width:none}
+html body .cd-top .cdsub a.cd-btn::after{content:none!important}
+@media(max-width:767px){
+html body .cd-top .wrap{flex-direction:column;height:auto;min-height:112px;padding:12px 16px;gap:12px}
+html body .cd-top .cdlbl{font-size:14px;text-align:center}
+html body .cd-top .cdbox .u{width:44px;height:44px}
+html body .cd-top .cdbox .u b{font-size:20px!important}
+html body .cd-top .cdbox .u i{margin-top:2px}
+html body .cd-top .cdsub{width:100%;justify-content:center}
+html body .cd-top .cdsub a.btn.btn-secondary.cta-inline.cd-btn{width:100%;max-width:320px}}
+/* LOAD-SMOOTH: timer boxes are reserved by size; digits stay invisible until deals.js has written real values (no flash of placeholder 30:00:59:59) */
+html.deal-on:not(.cd-ready) .cd-top [data-u]{visibility:hidden}
