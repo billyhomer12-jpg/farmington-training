@@ -690,3 +690,5 @@ input,select,textarea{box-sizing:border-box;max-width:100%}
 @media(min-width:761px){html body.bo{padding-bottom:120px!important}}
 /* BO-ARROWS3: right-aligned Groups fill text clears the arrow column (>=761px), cards untouched */
 @media(min-width:761px){html body.bo .ogfill{padding-right:56px!important;box-sizing:border-box}}
+/* BO-ARROWS4-SB3: phones, line-level clearance: right-reaching rows end before the arrow column (44px + 16px); cards stay centered, no card padding */
+@media(max-width:760px){html body.bo #main .fgrid,html body.bo #memf,html body.bo #t-cal table,html body.bo #t-cal .mgrid,html body.bo #t-cal [class*="grid"]{width:auto!important;max-width:calc(100% - 36px)!important;margin-right:36px!important;box-sizing:border-box}}
