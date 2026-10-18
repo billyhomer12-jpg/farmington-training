@@ -737,3 +737,15 @@ html body.bo #cal.cal .c.today .dn::before{content:"";position:absolute;left:2px
 /* ARROWS238: (a) 320px: grid2 min track never wider than its card (fixes 8px select/input overflow, Availability #ap/#aw + Reviews form); (b) 761-1100px: footer bottom padding clears the 44px arrow stack at page end */
 .grid2{grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr))}
 @media(min-width:761px) and (max-width:1100px){html body footer{padding-bottom:calc(var(--arw-b) + 2*var(--arw-s) + 20px)!important}}
+/* BO-V235 (re-applied in bo-v237; 460be2f was never merged): legend is a fixed grid at every width (no content-driven flex wrap): phones 2 cols, tablet 4 cols (4/3), desktop 7 cols (one row) */
+html body.bo .legend{display:grid!important;justify-content:stretch!important;align-items:stretch!important;gap:6px!important;flex-wrap:nowrap!important}
+html body.bo .legend>*{width:auto!important;min-width:0!important;box-sizing:border-box;margin:0!important;text-align:center;white-space:normal!important;display:flex!important;align-items:center;justify-content:center}
+@media(max-width:760px){html body.bo .legend{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(min-width:761px) and (max-width:1100px){html body.bo .legend{grid-template-columns:repeat(4,minmax(0,1fr))!important}}
+@media(min-width:1101px){html body.bo .legend{grid-template-columns:repeat(7,minmax(0,1fr))!important}}
+/* BO-V237: lock legend grid (highest specificity, last in file)  */
+html body.bo #t-cal .legend,html body.bo .tab .legend{display:grid!important;flex-wrap:nowrap!important;justify-content:stretch!important;gap:6px!important}
+@media(max-width:760px){html body.bo #t-cal .legend,html body.bo .tab .legend{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(min-width:761px) and (max-width:1100px){html body.bo #t-cal .legend,html body.bo .tab .legend{grid-template-columns:repeat(4,minmax(0,1fr))!important}}
+@media(min-width:1101px){html body.bo #t-cal .legend,html body.bo .tab .legend{grid-template-columns:repeat(7,minmax(0,1fr))!important}}
+html body.bo #t-cal .legend>*,html body.bo .tab .legend>*{width:auto!important;min-width:0!important;max-width:100%!important}
