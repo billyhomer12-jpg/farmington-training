@@ -688,3 +688,11 @@ input,select,textarea{box-sizing:border-box;max-width:100%}
 @media(min-width:761px){html body.bo #list th,html body.bo #list td{padding-left:6px!important;padding-right:6px!important}html body.bo #list th{white-space:normal!important}html body.bo #list{font-size:13px}}
 /* BO-ARROWS2 (Site Builder 2 bb56c33): desktop bottom clearance so arrows never cover text at page bottom (>=761px) */
 @media(min-width:761px){html body.bo{padding-bottom:120px!important}}
+/* BO-COLORS: calendar legend + events (AA text: black on every fill) */
+html body.bo .pl.t-bb,html body.bo .te.t-bb{background:#34C759!important;color:#000!important}
+html body.bo .pl.t-ap,html body.bo .te.t-ap{background:#30B0C7!important;color:#000!important}
+html body.bo .pl.grp,html body.bo .te.grp{background-color:#FFD8A8!important;background-image:repeating-linear-gradient(135deg,#FF9500 0 5px,#FFD8A8 5px 11px)!important;color:#000!important}
+html body.bo .pl.rq,html body.bo .te.rq{background:#C9B6F2!important;background-image:none!important;color:#000!important;opacity:1!important;outline:0!important;border:1.5px dashed #5E3FB0!important}
+html body.bo .pl.w-gym,html body.bo .te.w-gym{box-shadow:inset 5px 0 0 #8E8E93!important}
+html body.bo .pl.w-outdoor,html body.bo .te.w-outdoor{box-shadow:inset 5px 0 0 #5AC8FA!important}
+html body.bo .legend .pl.w-gym,html body.bo .legend .pl.w-outdoor{background:#F2F2F7!important;color:#000!important;padding-left:10px!important}
