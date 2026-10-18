@@ -694,3 +694,7 @@ input,select,textarea{box-sizing:border-box;max-width:100%}
 @media(max-width:760px){html body.bo #main .fgrid,html body.bo #memf,html body.bo #cal.cal{width:auto!important;max-width:calc(100% - 36px)!important;margin-right:36px!important;box-sizing:border-box}}
 /* BO-ARROWS5-SB3: phones, month grid inset evenly both sides (33px) with equal 1fr columns; 31 column ends >=4px left of the arrows; card unchanged */
 @media(max-width:760px){html body.bo #cal.cal{margin-left:33px!important;margin-right:33px!important;max-width:calc(100% - 66px)!important;width:auto!important;grid-template-columns:repeat(7,minmax(0,1fr))!important}}
+/* BO-ARROWS6-SB3: desktop month grid inset evenly (31 column clears the arrows; BO-ARROWS2 only adds body bottom padding); today circle stays inside its cell */
+@media(min-width:761px){html body.bo #cal.cal{margin-left:28px!important;margin-right:28px!important;width:auto!important;max-width:calc(100% - 56px)!important;grid-template-columns:repeat(7,minmax(0,1fr))!important}}
+html body.bo .cal .c.today .dn{box-sizing:border-box!important;width:min(36px,100%)!important;min-width:0!important;max-width:100%!important;height:auto!important;min-height:0!important;max-height:100%!important;aspect-ratio:1/1!important;padding:0!important;margin:0 auto!important;position:relative!important;top:auto!important;transform:none!important;display:grid!important;place-items:center}
+@media(min-width:761px){html body.bo .cal .c.today .dn{margin:0!important}}
