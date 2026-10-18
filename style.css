@@ -719,3 +719,16 @@ html body.bo #login.card.lock{margin-left:auto!important;margin-right:auto!impor
 html body.bo #t-list,html body.bo #t-mem,html body.bo #lf{min-width:0!important;max-width:100%!important}
 html body.bo #t-list .segc.seg2,html body.bo #memf{display:flex!important;flex-wrap:nowrap!important;white-space:nowrap!important;overflow-x:auto!important;max-width:100%!important;min-width:0!important;width:100%!important;box-sizing:border-box!important;-webkit-overflow-scrolling:touch}
 html body.bo #t-list .segc.seg2>*,html body.bo #memf>*{flex:0 0 auto!important}
+/* BO-ARROWS9-SB3: back office: bottom clearance only (arrows, cards and grids as on main) + Billy's Month calendar: taller day boxes, date top-left, today circle inside its cell (no width changes) */
+html body.bo #main{padding-bottom:calc(124px + env(safe-area-inset-bottom))!important}
+html body.bo input,html body.bo select,html body.bo textarea{scroll-margin-bottom:132px}
+@media(max-width:760px){html body.bo #cal.cal .c{min-height:64px!important}}
+@media(min-width:761px){html body.bo #cal.cal .c{min-height:96px!important}}
+html body.bo #cal.cal .c{position:relative;padding:0!important}
+html body.bo #cal.cal .dn{margin:0!important;display:flex!important;align-items:flex-start!important;justify-content:flex-start!important;padding:5px!important;line-height:1.1;box-sizing:border-box;max-width:100%}
+html body.bo #cal.cal .c.today .dn{background:transparent!important;isolation:isolate;position:relative}
+html body.bo #cal.cal .c.today .dn::before{content:"";position:absolute;left:2px;top:1px;width:22px;height:22px;border-radius:50%;background:#34C759;z-index:-1;pointer-events:none}
+/* BO-V234: phone tabs fit in 2 rows w/o clipping; legend even wrap at tablet; Groups form labels top-aligned */
+@media(max-width:760px){html body.bo .tabs.segc{display:flex!important;flex-wrap:wrap!important;grid-template-columns:none!important;overflow:visible!important}html body.bo .tabs.segc .btn{flex:1 1 auto!important;min-width:0!important;width:auto!important;padding:0 7px!important;font-size:13px!important;letter-spacing:-.01em;overflow:visible!important;text-overflow:clip!important;white-space:nowrap!important}}
+@media(min-width:761px) and (max-width:1100px){html body.bo .legend{display:grid!important;grid-template-columns:repeat(4,auto)!important;justify-content:center!important;gap:6px!important}html body.bo .legend>*{width:auto!important}}
+@media(min-width:761px){html body.bo #ogform.fgrid{align-items:start!important}}
