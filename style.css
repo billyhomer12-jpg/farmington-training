@@ -715,3 +715,7 @@ html body.bo form.fgrid>label{min-width:0}
 /* REGRESSION GUARD: lock card centered, no side clearance. Arrow clearance in the back office is BOTTOM padding only.
    Root cause of the 3rd break: BOFIX-SB3 forced margin-right:0 on .card.tile while margin-left stayed auto, so at 430 the lock card sat 38px/0. */
 html body.bo #login.card.lock{margin-left:auto!important;margin-right:auto!important}
+/* CHIPS234: Sign-ups (#t-list .segc.seg2) and Members (#memf) chip rows: one nowrap row that scrolls inside itself; row box never passes the card */
+html body.bo #t-list,html body.bo #t-mem,html body.bo #lf{min-width:0!important;max-width:100%!important}
+html body.bo #t-list .segc.seg2,html body.bo #memf{display:flex!important;flex-wrap:nowrap!important;white-space:nowrap!important;overflow-x:auto!important;max-width:100%!important;min-width:0!important;width:100%!important;box-sizing:border-box!important;-webkit-overflow-scrolling:touch}
+html body.bo #t-list .segc.seg2>*,html body.bo #memf>*{flex:0 0 auto!important}
