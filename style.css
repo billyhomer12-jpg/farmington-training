@@ -596,7 +596,15 @@ body.qb-on .scrollhint.dn{display:none!important}}
 .qbook a.qb-book,.qbook.on a.qb-book{background:#34C759!important;color:#000!important;border:0!important}
 a.btn.btn-primary.cta-book{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;min-height:44px;padding:var(--btn-pad);border-radius:980px;font:var(--type-btn);white-space:nowrap;background:#34C759;color:#000;border:1px solid #34C759;text-decoration:none;margin:6px 0;max-width:100%}
 /* QB-DELAY: hidden bar is fully off-screen and non-interactive (fixed -> no layout shift) */
-.qbook:not(.on){transform:translateY(calc(100% + 24px))!important;visibility:hidden!important;pointer-events:none}
+.qbook,.qbook.on{position:fixed!important;transform:none!important;visibility:visible!important;opacity:1!important;pointer-events:auto;transition:none!important}
+/* BAR-FIXED: arrows always visible, steady, stacked above the Book bar */
+.scrollhint,.scrollhint.gone,.scrollhint.dn,.scrollhint.up{display:flex!important;position:fixed!important;right:16px!important;left:auto!important;opacity:1!important;visibility:visible!important;pointer-events:auto!important;transition:none!important;transform:none!important;animation:none!important;z-index:30}
+.scrollhint.dn,body.qb-on .scrollhint.dn{bottom:calc(12px + env(safe-area-inset-bottom))!important}
+.scrollhint.up,body.qb-on .scrollhint.up,body.qb-on .scrollhint.dn.gone~.scrollhint.up{bottom:calc(64px + env(safe-area-inset-bottom))!important}
+body.qb-on .scrollhint.dn{bottom:calc(80px + env(safe-area-inset-bottom))!important}
+body.qb-on .scrollhint.up,body.qb-on .scrollhint.dn.gone~.scrollhint.up{bottom:calc(132px + env(safe-area-inset-bottom))!important}
+@media(min-width:761px){body.qb-on .scrollhint.dn{bottom:100px!important}body.qb-on .scrollhint.up,body.qb-on .scrollhint.dn.gone~.scrollhint.up{bottom:152px!important}}
+body.pg-coaches .qbook,body.pg-coaches .qbook.on{border-radius:16px 16px 0 0;background:rgba(18,18,20,.92)}body.pg-coaches.qb-on{padding-bottom:calc(76px + env(safe-area-inset-bottom))}@media(min-width:761px){body.pg-coaches .qbook,body.pg-coaches .qbook.on{max-width:720px;margin:0 auto;bottom:16px;border-radius:22px}body.pg-coaches.qb-on{padding-bottom:100px}}
 /* CTA-RIGHT: solo card + locations card pairs right-aligned (hero, .center, and centered .atile tiles stay centered) */
 .solo>.cta2.cta-pair,.ctas.left.cta-pair{justify-content:flex-end}
 .solo>.cta2.cta-pair{margin-left:auto}

@@ -149,10 +149,9 @@ const n=document.getElementById('picked');st.textContent=t?'Selected '+fd(t,{wee
 
 }
 
-/* scroll-down hint */
-(function(){function mk(cls,lbl,d,fn){var b=document.createElement('button');b.className='scrollhint '+cls+' gone';b.setAttribute('aria-label',lbl);b.innerHTML='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="'+d+'"/></svg>';b.onclick=fn;document.body.appendChild(b);return b}
-function init(){var dn=mk('dn','Scroll down','M6 9l6 6 6-6',function(){scrollBy({top:innerHeight*0.8,behavior:'smooth'})});var up=mk('up','Back to top','M6 15l6-6 6 6',function(){scrollTo({top:0,behavior:'smooth'})});
-var u=function(){var y=scrollY,more=document.documentElement.scrollHeight-(y+innerHeight)>80;dn.classList.toggle('gone',!more||y>40);up.classList.toggle('gone',y<200)};addEventListener('scroll',u,{passive:true});addEventListener('resize',u);u();setTimeout(u,800)}
+/* scroll arrows: always visible, steady (no scroll toggling) */
+(function(){function mk(cls,lbl,d,fn){var b=document.createElement('button');b.className='scrollhint '+cls;b.setAttribute('aria-label',lbl);b.innerHTML='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="'+d+'"/></svg>';b.onclick=fn;document.body.appendChild(b);return b}
+function init(){mk('up','Back to top','M6 15l6-6 6 6',function(){scrollTo({top:0,behavior:'smooth'})});mk('dn','Scroll down','M6 9l6 6 6-6',function(){scrollBy({top:innerHeight*0.8,behavior:'smooth'})})}
 if(document.readyState!=='loading')init();else document.addEventListener('DOMContentLoaded',init)})();
 // Back from Stripe: Payment Links have no cancel_url, so detect Back ourselves. bfcache restore (event.persisted) or a
 // normal back/forward navigation with a recent pending booking -> never show the cached pay screen. Re-check the booking and show paid or "Payment not completed".
@@ -161,13 +160,8 @@ if(!p||!p.ref||Date.now()-(p.at||0)>6*36e5){if(e.persisted)location.reload();ret
 .then(j=>{location.replace('book.html?'+(j==='paid'?'paid=1&ref=':'canceled=1&ref=')+encodeURIComponent(p.ref))})});
 /* MOBILE-1 / GLASS-BAR: quick-book bar, always visible (no hide on scroll/hero/footer/typing). Not on book, waiver, privacy, my, reschedule. */
 (function(){var pg=(location.pathname.split('/').pop()||'index.html');if(/^(book|waiver|privacy|my|reschedule)\.html$/.test(pg))return;
-function init(){var n=document.createElement('nav');n.className='qbook';n.setAttribute('aria-label','Quick book');n.innerHTML='<span>Times open this week</span><a class="qb-book" href="book.html">Book a session</a>';document.body.appendChild(n);document.body.classList.add('qb-on');
-/* QB-DELAY: on phones with a hero CTA row, show the bar only once that row has scrolled above the viewport */
-var cta=document.querySelector('.hero .ctas:not([hidden])');var hc=[...document.querySelectorAll('.hero .ctas')].find(function(e){return e.offsetParent});if(hc)cta=hc;
-var phone=matchMedia('(max-width:760px)');var set=function(on){n.classList.toggle('on',on)};
-if(!cta){set(true);return}
-var chk=function(){set(cta.getBoundingClientRect().bottom<0)};
-if('IntersectionObserver' in window){new IntersectionObserver(function(es){es.forEach(function(e){set(!e.isIntersecting&&e.boundingClientRect.bottom<0)})}).observe(cta)}else{addEventListener('scroll',chk,{passive:true})}chk()}
+function init(){var n=document.createElement('nav');n.className='qbook on';n.setAttribute('aria-label','Quick book');n.innerHTML='<span>Times open this week</span><a class="qb-book" href="book.html">Book a session</a>';document.body.appendChild(n);document.body.classList.add('qb-on');
+}
 if(document.readyState!=='loading')init();else document.addEventListener('DOMContentLoaded',init)})();
 
 /*APPLE-1 menu*/(function(){function m(){var h=document.querySelector('header.gnav'),n=h&&h.querySelector('.tabsnav'),bk=h&&h.querySelector('.book');if(!h||!n||h.querySelector('.mbtn'))return;var b=document.createElement('button');b.type='button';b.className='mbtn';b.setAttribute('aria-label','Menu');b.setAttribute('aria-expanded','false');b.setAttribute('aria-controls',n.id||'links');b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 8h16M4 16h16"/></svg>';h.querySelector('.gnav-in').insertBefore(b,bk||null);h.classList.add('has-menu');function set(o){h.classList.toggle('open',o);b.setAttribute('aria-expanded',o?'true':'false')}b.addEventListener('click',function(){set(!h.classList.contains('open'))});n.addEventListener('click',function(e){if(e.target.closest('a'))set(false)});document.addEventListener('keydown',function(e){if(e.key==='Escape'&&h.classList.contains('open')){set(false);b.focus()}});document.addEventListener('click',function(e){if(!h.contains(e.target))set(false)})}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',m);else m()})();
