@@ -24,4 +24,14 @@ for h in glob.glob(os.path.join(ROOT,'*.html'))+glob.glob(os.path.join(ROOT,'adm
     vs|=set(re.findall(r'\.(?:css|js)\?v=(\d+)',open(h,encoding='utf-8').read()))
 if len(vs)>1: fail(f'mixed asset versions in HTML: {sorted(vs)}')
 else: ok(f'asset version consistent: v={",".join(vs)}')
+# conflict markers anywhere in tracked html/js/css
+import subprocess
+files=subprocess.run(['git','-C',ROOT,'ls-files','*.html','*.js','*.css','*/*.html','*/*.js','*/*.css'],capture_output=True,text=True).stdout.split()
+cm=0
+for f in sorted(set(files)):
+    try: L=open(os.path.join(ROOT,f),encoding='utf-8',errors='replace').read().split('\n')
+    except FileNotFoundError: continue
+    for i,l in enumerate(L,1):
+        if l.startswith(('<<<<<<< ','>>>>>>> ')) or l=='=======' : fail(f'{f}:{i}: git conflict marker'); cm+=1
+if not cm: ok(f'no conflict markers in {len(set(files))} html/js/css files')
 done('15-css-integrity')
