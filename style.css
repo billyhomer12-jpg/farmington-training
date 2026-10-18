@@ -696,3 +696,6 @@ html body.bo .pl.rq,html body.bo .te.rq{background:#C9B6F2!important;background-
 html body.bo .pl.w-gym,html body.bo .te.w-gym{box-shadow:inset 5px 0 0 #8E8E93!important}
 html body.bo .pl.w-outdoor,html body.bo .te.w-outdoor{box-shadow:inset 5px 0 0 #5AC8FA!important}
 html body.bo .legend .pl.w-gym,html body.bo .legend .pl.w-outdoor{background:#F2F2F7!important;color:#000!important;padding-left:10px!important}
+/* FIX-PILLS2-SB3: Members pills = one row scrolling inside its card (same as Sign-ups chips); never past the card; end pills not clipped */
+html body.bo #memf{flex-wrap:nowrap!important;overflow-x:auto!important;max-width:100%!important;min-width:0!important;box-sizing:border-box;padding-left:4px!important;padding-right:4px!important;scroll-padding-inline:8px;scrollbar-width:none}
+html body.bo #memf>.btn{flex:0 0 auto!important;flex-shrink:0!important}
