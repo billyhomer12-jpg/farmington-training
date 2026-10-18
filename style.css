@@ -596,4 +596,4 @@ body.qb-on .scrollhint.dn{display:none!important}}
 .qbook a.qb-book,.qbook.on a.qb-book{background:#34C759!important;color:#000!important;border:0!important}
 a.btn.btn-primary.cta-book{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;min-height:44px;padding:var(--btn-pad);border-radius:980px;font:var(--type-btn);white-space:nowrap;background:#34C759;color:#000;border:1px solid #34C759;text-decoration:none;margin:6px 0;max-width:100%}
 /* QB-DELAY: hidden bar is fully off-screen and non-interactive (fixed -> no layout shift) */
-@media(max-width:760px){.qbook:not(.on){transform:translateY(110%)!important;visibility:hidden!important;pointer-events:none}}
+.qbook:not(.on){transform:translateY(calc(100% + 24px))!important;visibility:hidden!important;pointer-events:none}

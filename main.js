@@ -165,7 +165,7 @@ function init(){var n=document.createElement('nav');n.className='qbook';n.setAtt
 /* QB-DELAY: on phones with a hero CTA row, show the bar only once that row has scrolled above the viewport */
 var cta=document.querySelector('.hero .ctas:not([hidden])');var hc=[...document.querySelectorAll('.hero .ctas')].find(function(e){return e.offsetParent});if(hc)cta=hc;
 var phone=matchMedia('(max-width:760px)');var set=function(on){n.classList.toggle('on',on)};
-if(!cta||!phone.matches){set(true);return}
+if(!cta){set(true);return}
 var chk=function(){set(cta.getBoundingClientRect().bottom<0)};
 if('IntersectionObserver' in window){new IntersectionObserver(function(es){es.forEach(function(e){set(!e.isIntersecting&&e.boundingClientRect.bottom<0)})}).observe(cta)}else{addEventListener('scroll',chk,{passive:true})}chk()}
 if(document.readyState!=='loading')init();else document.addEventListener('DOMContentLoaded',init)})();
