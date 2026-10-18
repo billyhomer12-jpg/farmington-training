@@ -504,3 +504,5 @@ body.pg-coaches footer{padding-bottom:64px}
 .cd-top .cdsub::before{content:"·";font-size:.875rem;margin-right:4px}
 @media(max-width:400px){.cd-top .cdlbl{font-size:0}.cd-top .cdlbl::before{content:"Sale ends in";font-size:.8125rem}.cd-top .cdbox .u b,.cd-top .cdsub a,.cd-top .cdsub::before{font-size:.8125rem}}
 @media(max-width:340px){.cd-top .cdbox .u:last-child{display:none}}
+
+.gnav .logo .lockup{display:block;height:40px;width:auto;max-width:100%;flex:none}@media(max-width:400px){.gnav .logo .lockup{height:34px}}@media(max-width:340px){.gnav .logo .lockup{height:32px}}
