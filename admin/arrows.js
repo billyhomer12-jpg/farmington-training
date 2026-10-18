@@ -1,0 +1,5 @@
+/* scroll arrows: always visible, steady (no scroll toggling) */
+(function(){function mk(cls,lbl,d,fn){var b=document.createElement('button');b.className='scrollhint '+cls;b.setAttribute('aria-label',lbl);b.innerHTML='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="'+d+'"/></svg>';b.onclick=fn;document.body.appendChild(b);return b}
+function pos(){var q=document.querySelector('.qbook'),b=12;if(q&&getComputedStyle(q).position==='fixed'){b=innerHeight-q.getBoundingClientRect().top+12}document.documentElement.style.setProperty('--arw-b',b+'px')}
+function init(){setTimeout(function(){pos();requestAnimationFrame(pos)},0);addEventListener('resize',pos);addEventListener('load',pos);mk('up','Back to top','M6 15l6-6 6 6',function(){scrollTo({top:0,behavior:'smooth'})});mk('dn','Scroll down','M6 9l6 6 6-6',function(){scrollBy({top:innerHeight*0.8,behavior:'smooth'})})}
+if(document.readyState!=='loading')init();else document.addEventListener('DOMContentLoaded',init)})();
