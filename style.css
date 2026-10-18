@@ -530,3 +530,5 @@ a.btn.btn-secondary.cta-inline{display:inline-flex;align-items:center;justify-co
 .cdsub a.cd-btn::after{content:"";position:absolute;inset:9px 0;border:1px solid currentColor;border-radius:980px;pointer-events:none}
 /* POLISH-3 section separation (mobile only; hero untouched) */
 @media(max-width:760px){.sec{padding:40px 0;border:0}.sec+.sec{border-top:0}.sec>.wrap>h2{margin:0 0 var(--space-3,14px)}.sec>.wrap>.sub{margin:0 auto var(--space-5,40px);max-width:34ch}.sec>.wrap>*+.tiles,.sec>.wrap>*+.grid,.sec>.wrap>*+.cards{margin-top:0}.sec>.wrap>.tiles+*,.sec>.wrap>.grid+*,.sec>.wrap>.cards+*{margin-top:var(--space-5,40px)}}
+/* POLISH-5b Test Agent fixes (mobile only) */
+@media(max-width:760px){.scrollhint{width:44px!important;height:44px!important;min-width:44px;min-height:44px;animation:none!important;transform:none!important}.fcols a{min-width:44px}.hp input,.hp label{min-width:44px;min-height:44px;box-sizing:border-box}s.was,.sp s.was,.pkgline s.was{font-size:max(12px,.86em)!important}.seg button{font-size:14px!important;min-height:44px}.gnav .btn.sm.book{font-size:14px}}
