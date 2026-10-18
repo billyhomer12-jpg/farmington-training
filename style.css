@@ -732,3 +732,9 @@ html body.bo #cal.cal .c.today .dn::before{content:"";position:absolute;left:2px
 @media(max-width:760px){html body.bo .tabs.segc{display:flex!important;flex-wrap:wrap!important;grid-template-columns:none!important;overflow:visible!important}html body.bo .tabs.segc .btn{flex:1 1 auto!important;min-width:0!important;width:auto!important;padding:0 7px!important;font-size:13px!important;letter-spacing:-.01em;overflow:visible!important;text-overflow:clip!important;white-space:nowrap!important}}
 @media(min-width:761px) and (max-width:1100px){html body.bo .legend{display:grid!important;grid-template-columns:repeat(4,auto)!important;justify-content:center!important;gap:6px!important}html body.bo .legend>*{width:auto!important}}
 @media(min-width:761px){html body.bo #ogform.fgrid{align-items:start!important}}
+/* BO-V235: legend is a fixed grid at every width (no content-driven flex wrap): phones 2 cols, tablet 4 cols (4/3), desktop 7 cols (one row) */
+html body.bo .legend{display:grid!important;justify-content:stretch!important;align-items:stretch!important;gap:6px!important;flex-wrap:nowrap!important}
+html body.bo .legend>*{width:auto!important;min-width:0!important;box-sizing:border-box;margin:0!important;text-align:center;white-space:normal!important;display:flex!important;align-items:center;justify-content:center}
+@media(max-width:760px){html body.bo .legend{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(min-width:761px) and (max-width:1100px){html body.bo .legend{grid-template-columns:repeat(4,minmax(0,1fr))!important}}
+@media(min-width:1101px){html body.bo .legend{grid-template-columns:repeat(7,minmax(0,1fr))!important}}
