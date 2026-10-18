@@ -673,3 +673,7 @@ input,select,textarea{box-sizing:border-box;max-width:100%}
 .grid2>*,.row>*,label{min-width:0}
 @media(max-width:760px){body.bo #main .card.tile{margin-right:72px}body.bo #main{padding-bottom:124px}}
 @media(max-width:760px){body.bo #main .tab.card.tile{margin-right:72px}body.bo #main{padding-bottom:124px}}
+/* STAT-GAP: equal 32px above the greeting and below the stat boxes at every width (beats .bo .ahero>.wrap per-width rules) */
+html body.bo section.ahero{padding-top:0!important;padding-bottom:0!important}
+html body.bo section.ahero>.wrap{padding-top:32px!important;padding-bottom:32px!important}
+html body.bo section.ahero .stats{margin-bottom:0!important}
