@@ -734,3 +734,17 @@ html body.bo #cal.cal .c.today .dn::before{content:"";position:absolute;left:2px
 @media(min-width:761px){html body.bo #ogform.fgrid{align-items:start!important}}
 /* ARROWS-SMALL-SB3: phones: 36px arrows, 4px from the edge, 44px invisible hit area (Billy OK); same look/behaviour */
 @media(max-width:760px){:root{--arw-s:36px;--arw-r:4px}html body .scrollhint{overflow:visible}html body .scrollhint::before{content:"";position:absolute;inset:-4px}}
+/* BO-V235 (re-applied in bo-v237; 460be2f was never merged): legend is a fixed grid at every width (no content-driven flex wrap): phones 2 cols, tablet 4 cols (4/3), desktop 7 cols (one row) */
+html body.bo .legend{display:grid!important;justify-content:stretch!important;align-items:stretch!important;gap:6px!important;flex-wrap:nowrap!important}
+html body.bo .legend>*{width:auto!important;min-width:0!important;box-sizing:border-box;margin:0!important;text-align:center;white-space:normal!important;display:flex!important;align-items:center;justify-content:center}
+@media(max-width:760px){html body.bo .legend{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(min-width:761px) and (max-width:1100px){html body.bo .legend{grid-template-columns:repeat(4,minmax(0,1fr))!important}}
+@media(min-width:1101px){html body.bo .legend{grid-template-columns:repeat(7,minmax(0,1fr))!important}}
+/* BO-V237: lock legend grid (highest specificity, last in file) + chip rows wrap inside their card */
+html body.bo #t-cal .legend,html body.bo .tab .legend{display:grid!important;flex-wrap:nowrap!important;justify-content:stretch!important;gap:6px!important}
+@media(max-width:760px){html body.bo #t-cal .legend,html body.bo .tab .legend{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(min-width:761px) and (max-width:1100px){html body.bo #t-cal .legend,html body.bo .tab .legend{grid-template-columns:repeat(4,minmax(0,1fr))!important}}
+@media(min-width:1101px){html body.bo #t-cal .legend,html body.bo .tab .legend{grid-template-columns:repeat(7,minmax(0,1fr))!important}}
+html body.bo #t-cal .legend>*,html body.bo .tab .legend>*{width:auto!important;min-width:0!important;max-width:100%!important}
+html body.bo .tab .seg.segc:not(.tabs),html body.bo .tab .segc.seg2,html body.bo .tab .chips,html body.bo #memf,html body.bo #lf{display:flex!important;flex-wrap:wrap!important;max-width:100%!important;min-width:0!important;box-sizing:border-box!important;overflow:visible!important;white-space:normal!important}
+html body.bo .tab .seg.segc:not(.tabs)>.btn,html body.bo .tab .segc.seg2>.btn,html body.bo #memf>.btn,html body.bo #lf>*{flex:0 1 auto!important;min-width:0!important;max-width:100%!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}
