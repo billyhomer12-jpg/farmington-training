@@ -647,3 +647,24 @@ html body.bo{padding-bottom:calc(120px + env(safe-area-inset-bottom))!important}
 #form .wt label{display:grid;grid-template-columns:auto 1fr;align-items:center;column-gap:10px;min-height:44px}#form .wt label>input{min-height:0;width:20px;height:20px;margin:0}#form .wt label>small{grid-column:1/-1}
 @media(max-width:760px){#booking-root #form{padding-right:60px;padding-bottom:132px}}
 #review,#review *{overflow-wrap:anywhere}#review a[href^="mailto:"]{white-space:normal!important;overflow-wrap:anywhere!important;max-width:100%}
+
+/* SEG-SHARED: one rule for every back-office segmented control / tab / filter row.
+   Track: --seg-r radius + --seg-inset padding; selected pill radius = calc(var(--seg-r) - var(--seg-inset)), even inset all sides. */
+html body.bo .segc{--seg-r:26px;--seg-inset:4px;--seg-h:44px;padding:var(--seg-inset)!important;border-radius:var(--seg-r)!important;gap:0!important;box-sizing:border-box;max-width:100%;min-width:0;border:0!important;box-shadow:none!important}
+html body.bo .segc>.btn{min-height:var(--seg-h)!important;height:var(--seg-h);margin:0!important;border-radius:calc(var(--seg-r) - var(--seg-inset))!important;white-space:nowrap!important;justify-content:center;text-align:center;box-sizing:border-box}
+/* fixed controls (Month/Week/Day, Waivers, Reviews): even N-column grid */
+html body.bo .segc:not(.seg2):not(#memf):not(.tabs){display:grid!important;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);grid-template-columns:none!important}
+html body.bo .segc:not(.seg2):not(#memf)>.btn{width:100%;min-width:0!important;padding:0 6px!important}
+/* top tabs: equal-width tabs, centered; when wrapped (phones: 4 + 3) the second row is centered too */
+html body.bo .tabs.segc{display:flex!important;flex-wrap:wrap!important;justify-content:center!important;overflow:visible!important}
+html body.bo .tabs.segc>.btn{flex:0 0 calc(100% / 7)!important}
+@media(max-width:760px){html body.bo .tabs.segc>.btn{flex:0 0 25%!important}}
+/* filter chip rows (Sign-ups, Members): same pill shape, one row scrolling inside its card */
+html body.bo .segc.seg2,html body.bo #memf{display:flex!important;flex-wrap:nowrap!important;width:auto!important;overflow-x:auto;scrollbar-width:none}
+html body.bo .segc.seg2::-webkit-scrollbar,html body.bo #memf::-webkit-scrollbar{display:none}
+html body.bo .segc.seg2>.btn,html body.bo #memf>.btn{flex:0 0 auto!important;min-width:max-content!important;padding:0 14px!important}
+/* containment: parents of scroll rows/tables never grow past their card; Sign-ups table scrolls inside its card */
+html body.bo #app,html body.bo .tab,html body.bo .card,html body.bo #lf,html body.bo .tw{min-width:0;max-width:100%;box-sizing:border-box}
+html body.bo .tw{overflow-x:auto}
+/* FREE card: button on its own line, centered */
+#programs .ffnote a.cta-book{display:flex;width:fit-content;margin:12px auto 0}
