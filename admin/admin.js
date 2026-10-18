@@ -170,3 +170,6 @@ $('wvf').onclick=e=>{const b=e.target.closest('[data-wvf]');if(b){wvF=b.dataset.
 $('wvq').oninput=drawWv;
 document.querySelector('#wvt tbody').onclick=e=>{const r=e.target.closest('[data-wvs]');if(r)wvOpen(r.dataset.wvs)};
 document.querySelector('#wvt tbody').onkeydown=e=>{if(e.key==='Enter'){const r=e.target.closest('[data-wvs]');if(r)wvOpen(r.dataset.wvs)}};
+
+/* SALE-OG: Groups tab solo price follows the Grand Opening window (same saleOn() as the site) */
+(()=>{const fix=()=>{const n=document.querySelector('#t-og .note');if(!n)return;const P=((window.SITE||{}).packages||{}).open_group||{};const reg=P.price||125,sale=P.sale||100;const on=window.saleOn&&window.saleOn();const want=on?'$'+sale+' (20% Grand Opening)':'$'+reg;n.innerHTML=n.innerHTML.replace(/\$\d+( \(20% Grand Opening\))? per athlete/,want+' per athlete')};fix();document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('[data-tab]'))setTimeout(fix,0)})})();
