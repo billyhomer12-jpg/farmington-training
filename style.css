@@ -609,3 +609,4 @@ body.pg-coaches .qbook,body.pg-coaches .qbook.on{border-radius:16px 16px 0 0;bac
 .solo>.cta2.cta-pair,.ctas.left.cta-pair{justify-content:flex-end}
 .solo>.cta2.cta-pair{margin-left:auto}
 @media (max-width:700px){.solo>.cta2.cta-pair{align-self:stretch;margin-left:0}}
+body.qb-on .scrollhint.dn,body.qb-on .scrollhint.up{display:flex!important}
