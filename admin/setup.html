@@ -1,6 +1,67 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><link rel="icon" href="/favicon.svg?v=198" type="image/svg+xml"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
-<title>Coach PIN setup</title><link rel="stylesheet" href="../style.css?v=198"><script src="../config.js?v=198"></script><style>.pinbig{text-align:center;font:600 1.8rem var(--font);letter-spacing:.6em;height:60px}body{background:var(--bg2)}.gnav-in>span:empty{display:none}.gnav .lockbtn,.gnav .btn.ghost{justify-self:end;width:auto!important;grid-column:2!important;grid-row:1!important;margin:0!important}@media(max-width:760px){.gnav-in{grid-template-rows:48px;padding:0 16px}.gnav .logo{padding-left:0}}</style></head><body>
-<header class="gnav"><div class="gnav-in"><a href="../" class="logo"><svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18" style="fill:var(--ac)"/><path d="M2 20h36M20 2v36M7 7c8 6 8 20 0 26M33 7c-8 6-8 20 0 26" stroke="#111" stroke-width="2.5" fill="none"/></svg><span class="brand">Back office</span></a><span></span><a class="btn sm ghost" href="./">Sign in</a></div></header>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="theme-color" content="#000000"><link rel="icon" href="/favicon-v2.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="/img/icon-v2-32.png"><link rel="icon" type="image/png" sizes="16x16" href="/img/icon-v2-16.png"><link rel="apple-touch-icon" sizes="180x180" href="/img/icon-v2-180.png"><link rel="manifest" href="/site-v2.webmanifest"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
+<title>Coach PIN setup</title><link rel="stylesheet" href="../style.css?v=199"><script src="../config.js?v=199"></script><style>.pinbig{text-align:center;font:600 1.8rem var(--font);letter-spacing:.6em;height:60px}body{background:var(--bg2)}.gnav-in>span:empty{display:none}.gnav .lockbtn,.gnav .btn.ghost{justify-self:end;width:auto!important;grid-column:2!important;grid-row:1!important;margin:0!important}@media(max-width:760px){.gnav-in{grid-template-rows:48px;padding:0 16px}.gnav .logo{padding-left:0}}</style><style id="bo-refresh">/* BO-REFRESH: admin-only brand + Apple buttons + mobile polish */
+body.bo{--space-3:14px;--space-4:20px;--space-5:40px;--btn-h:44px;--cta-gap:14px}
+.bo .gnav .logo{display:flex;align-items:center;gap:10px;min-height:44px}.bo .gnav .logo img.lockup{height:40px;width:auto;max-width:213px}
+.bo .bo-tag{font:600 12px/1 var(--font,inherit);letter-spacing:.04em;text-transform:uppercase;color:#1E7B34;border:1px solid #1E7B34;border-radius:999px;padding:6px 10px;white-space:nowrap}
+.bo .btn{min-height:var(--btn-h);padding:0 var(--space-4);border-radius:999px;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;white-space:nowrap;font-size:max(14px,.875rem)}
+.bo .btn:not(.ghost):not(.lockbtn){background:#34C759;color:#000;border:1px solid #34C759}
+.bo .btn.ghost{background:transparent;color:#1E7B34;border:1px solid #1E7B34}
+.bo .dark .btn.ghost,.bo .hero .btn.ghost{color:#34C759;border-color:#34C759}
+.bo .bar,.bo .atop,.bo .calbar,.bo .seg,.bo .tabs{gap:var(--cta-gap)}
+.bo .bar>.btn:not(.ghost),.bo .atop>.btn:not(.ghost),.bo form .row>.btn:not(.ghost),.bo dialog .btn:not(.ghost){order:9}
+.bo .tabs .btn{min-width:44px}
+.bo select,.bo input:not([type=checkbox]):not([type=radio]):not([type=hidden]){min-height:44px;font-size:max(16px,1rem)}
+.bo .pinbox input{min-height:52px}
+.bo .vh{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.bo .note s,.bo s.was{color:#6e6e73;font-size:max(12px,.9em)}
+@media(max-width:760px){html,body.bo{overflow-x:hidden}.bo .gnav .logo img.lockup{height:32px;max-width:160px}.bo .wrap{padding-left:16px;padding-right:16px}
+.bo .tabs{display:flex;flex-wrap:wrap}.bo .tabs .btn{flex:1 1 auto}
+.bo .cal{font-size:12px}.bo .cal.mini .c i,.bo .ev small,.bo .ev u,.bo small,.bo .mut,.bo .note,.bo table{font-size:max(12px,.8rem)}
+.bo .ev,.bo .cal.mini .c,.bo .ag,.bo #list td a,.bo .stat{min-height:44px}.bo .ev{display:flex;flex-direction:column;justify-content:center}
+.bo #list .detb{width:calc(100vw - 48px)}.bo dialog{max-width:calc(100vw - 24px)}
+.bo .lockbtn{top:4px;right:8px}}
+
+/* BO-REFRESH 2: full Apple-style back office */
+.bo{--bo-line:#d2d2d7;--bo-g:#34C759;--bo-gd:#1E7B34;--bo-bg2:#f5f5f7;--bo-r:18px}
+.bo .tabs.segc{display:flex;gap:4px;padding:4px;background:var(--bo-bg2);border:1px solid var(--bo-line);border-radius:999px;overflow-x:auto;scrollbar-width:none;margin:0 0 var(--space-4);-webkit-overflow-scrolling:touch}
+.bo .tabs.segc::-webkit-scrollbar{display:none}
+.bo .tabs.segc .btn{flex:1 0 auto;min-height:44px;border-radius:999px;padding:0 16px;font-weight:600;border:0!important}
+.bo .tabs.segc .btn.ghost{background:transparent;color:#1d1d1f}
+.bo .tabs.segc .btn:not(.ghost){background:#000;color:#fff;box-shadow:0 1px 4px rgba(0,0,0,.18)}
+.bo .seg.segc,.bo .segc.seg2{display:inline-flex;gap:4px;padding:4px;background:var(--bo-bg2);border-radius:999px;border:1px solid var(--bo-line)}
+.bo .seg.segc .btn,.bo .segc.seg2 .btn{border:0!important;min-height:40px}
+.bo .seg.segc .btn.ghost,.bo .segc.seg2 .btn.ghost{background:transparent;color:#1d1d1f}
+.bo .seg.segc .btn:not(.ghost),.bo .segc.seg2 .btn:not(.ghost){background:#000;color:#fff}
+.bo .card.tile,.bo .tab.card{border-radius:var(--bo-r);border:1px solid var(--bo-line);background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.04);padding:var(--space-4)}
+.bo .calbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-3)}.bo .calbar b{font-size:1.15rem}
+.bo .cal{gap:6px}.bo .cal .c{background:#fff;border:1px solid var(--bo-line);border-radius:12px}.bo .cal .h{color:#6e6e73;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+.bo .cal .c.today>b{background:var(--bo-g);color:#000}.bo .cal.mini .c.sel{border:2px solid #000}
+.bo .ev{border-left-color:var(--bo-g);background:#E1F5E6;border-radius:8px;padding:4px 6px}
+.bo .ag{border-radius:14px;border-color:var(--bo-line);border-left-color:var(--bo-g);padding:var(--space-3)}
+.bo table{border-collapse:separate;border-spacing:0}.bo th{background:var(--bo-bg2);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.03em;color:#424245}.bo th,.bo td{padding:10px 12px;border-bottom:1px solid #e8e8ed}
+.bo #list thead th{background:var(--bo-bg2)}.bo #list tbody tr:hover{background:#fafafa}.bo .tw{border:1px solid var(--bo-line);border-radius:14px}
+.bo input:not([type=checkbox]):not([type=radio]):not([type=hidden]),.bo select,.bo textarea{border:1px solid var(--bo-line);border-radius:12px;padding:0 14px;background:#fff;color:#1d1d1f}
+.bo textarea{padding:12px 14px;min-height:88px}
+.bo input:focus,.bo select:focus,.bo textarea:focus{outline:none;border-color:var(--bo-gd);box-shadow:0 0 0 3px rgba(52,199,89,.25)}
+.bo .btn:focus-visible{outline:3px solid rgba(52,199,89,.5);outline-offset:2px}
+.bo dialog{border:0;border-radius:22px;padding:var(--space-4);box-shadow:0 20px 60px rgba(0,0,0,.3)}.bo dialog::backdrop{background:rgba(0,0,0,.45);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+.bo #login.card{max-width:360px;margin:0 auto;text-align:center;padding:var(--space-5) var(--space-4)}.bo #login h3{font-size:1.5rem;margin:0 0 4px}
+.bo .pinbox{display:flex;gap:10px;justify-content:center;margin:var(--space-4) 0}.bo .pinbox input{width:52px!important;text-align:center;font-size:24px!important;font-weight:600;border-radius:14px;padding:0}
+.bo #login .btn{width:100%}
+.bo .empty,.bo .muted,.bo .mut{color:#6e6e73}.bo td.empty{color:#aeaeb2}
+.bo .stats .stat{border-radius:16px;min-height:44px}
+.bo .badge{border-radius:999px;padding:3px 10px;font-size:12px;font-weight:600}
+@media(max-width:760px){.bo .tabs.segc{flex-wrap:nowrap;border-radius:22px}.bo .tabs.segc .btn{flex:0 0 auto}.bo .card.tile,.bo .tab.card{padding:var(--space-3);border-radius:16px}.bo .cal{gap:3px}.bo .cal .c{border-radius:8px}.bo .pinbox input{width:56px!important;min-height:56px}}
+
+/* BO-REFRESH 3: tap/text minimums */
+.bo .seg.segc .btn,.bo .segc.seg2 .btn,.bo .btn.sm{min-height:44px}.bo .calbar .btn{min-width:44px}
+.bo .cal .dn{min-width:44px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;margin:-10px -6px -8px;font-size:13px}
+.bo .pl{font-size:12px!important;line-height:1.2}.bo .cal .h{font-size:12px}
+@media(max-width:760px){.bo .cal .dn{min-width:44px;margin:-10px -6px -8px}.bo .cal .c{padding:2px}.bo .pl{padding:2px;letter-spacing:-.02em}}
+.bo .tabs.segc .btn:not(.ghost),.bo .seg.segc .btn:not(.ghost),.bo .segc.seg2 .btn:not(.ghost),.bo .segc .btn[aria-selected=true],.bo .segc .btn.on{background:#000!important;color:#fff!important;-webkit-text-fill-color:#fff}
+.bo .tabs.segc .btn.ghost,.bo .seg.segc .btn.ghost{color:#1d1d1f!important;-webkit-text-fill-color:#1d1d1f}
+</style></head><body class="bo">
+<header class="gnav"><div class="gnav-in"><a href="../" class="logo"><img class="lockup" src="../img/logo-lockup.svg?v=199" width="213" height="40" alt="Four Corners Hoops &amp; Performance" decoding="async"><span class="bo-tag">Back office</span></a><span></span><a class="btn sm ghost" href="./">Sign in</a></div></header>
 <main><section class="hero dark sm-hero"><div class="wrap"><p class="kicker">Back office</p><h1>Set your PIN.</h1><p class="lead">One-time setup for coaches.</p></div></section>
 <section class="sec alt" style="padding:28px 0 48px"><div class="wrap"><form id="f" class="card tile" style="max-width:420px;margin:0 auto;border-radius:28px;background:#fff;padding:28px;text-align:center">
 <label>Email<input id="em" type="email" required></label><label>One-time setup code<input id="code" required autocomplete="off" style="text-transform:uppercase;text-align:center;letter-spacing:.2em"></label>
