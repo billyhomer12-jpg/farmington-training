@@ -688,3 +688,6 @@ input,select,textarea{box-sizing:border-box;max-width:100%}
 @media(min-width:761px){html body.bo #list th,html body.bo #list td{padding-left:6px!important;padding-right:6px!important}html body.bo #list th{white-space:normal!important}html body.bo #list{font-size:13px}}
 /* BO-ARROWS2 (Site Builder 2 bb56c33): desktop bottom clearance so arrows never cover text at page bottom (>=761px) */
 @media(min-width:761px){html body.bo{padding-bottom:120px!important}}
+/* FIX-PILLS2-SB3: Members pills = one row scrolling inside its card (same as Sign-ups chips); never past the card; end pills not clipped */
+html body.bo #memf{flex-wrap:nowrap!important;overflow-x:auto!important;max-width:100%!important;min-width:0!important;box-sizing:border-box;padding-left:4px!important;padding-right:4px!important;scroll-padding-inline:8px;scrollbar-width:none}
+html body.bo #memf>.btn{flex:0 0 auto!important;flex-shrink:0!important}
