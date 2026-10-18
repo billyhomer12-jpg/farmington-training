@@ -622,3 +622,9 @@ body.qb-on .scrollhint.dn,body.qb-on .scrollhint.up{display:flex!important}
 
 /* NOBAR-CLEAR: pages without the Book bar: footer text clears the arrows (44px + 16px right) on phones */
 @media(max-width:760px){html body:not(.qb-on) footer>.wrap,html body:not(.qb-on) footer:not(:has(>.wrap)){padding-right:64px!important;box-sizing:border-box}html body:not(.qb-on) footer a,html body:not(.qb-on) footer p{overflow-wrap:anywhere!important;white-space:normal!important}}
+/* BOOKFIX-SB3: booking-flow defects (book.html form only) */
+#form .row .btn,#form [data-next]{min-height:44px}
+.cdbox .u i,.cd-ph .cdbox .u i{font-size:12px!important}
+#form .wt label{display:block}#form .wt label>input{display:inline-block!important;vertical-align:middle;margin:0 8px 0 0!important;width:auto!important}#form .wt label>b{display:inline!important;vertical-align:middle}
+#form{padding-right:56px;padding-bottom:132px}@media(min-width:761px){#form{padding-right:0;padding-bottom:72px}}
+#review,#review *{overflow-wrap:anywhere}
