@@ -638,3 +638,7 @@ html body .gfoot p:has(.sep){display:flex;flex-wrap:wrap;gap:4px 14px;align-item
 /* BO-390: no empty band under stat boxes; footer clears the arrow stack at page bottom */
 html body.bo .ahero{padding-bottom:0!important}
 html body.bo{padding-bottom:calc(120px + env(safe-area-inset-bottom))!important}
+/* BOFIX-SB3: back office (admin) cards clear the arrow column (44px + 20px right + 8px); inputs never wider than their card */
+input,select,textarea{box-sizing:border-box;max-width:100%}
+.grid2>*,.row>*,label{min-width:0}
+@media(max-width:760px){body.bo #main .card.tile{margin-right:72px}body.bo #main{padding-bottom:124px}}
