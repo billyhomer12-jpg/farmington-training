@@ -701,3 +701,5 @@ html body.bo #memf{flex-wrap:nowrap!important;overflow-x:auto!important;max-widt
 html body.bo #memf>.btn{flex:0 0 auto!important;flex-shrink:0!important}
 /* BO-ARROWS3 (Site Builder 2 032d886): right-aligned Groups fill text clears the arrow column (>=761px), cards untouched */
 @media(min-width:761px){html body.bo .ogfill{padding-right:56px!important;box-sizing:border-box}}
+/* BO-REMOVE-430: phones: tables grow with the page (no 78vh inner scroll box), so the last Remove button scrolls clear of the arrows via the page bottom padding */
+@media(max-width:760px){html body.bo .tw{max-height:none!important;overflow-y:visible!important}}
