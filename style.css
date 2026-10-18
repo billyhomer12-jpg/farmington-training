@@ -712,3 +712,9 @@ input[type=date]::-webkit-datetime-edit,input[type=time]::-webkit-datetime-edit{
 @media(max-width:760px){html body.bo form.fgrid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px}html body.bo form.fgrid>.wide,html body.bo form.fgrid>button{grid-column:1/-1}}
 html body.bo form.fgrid>label{min-width:0}
 @media(max-width:399px){html body.bo form.fgrid{grid-template-columns:minmax(0,1fr)!important}}
+/* BO-ARROWS-FINAL-SB3: rows that reach the card edge end before the fixed arrow column; month grid inset evenly; today circle drawn inside the day button (tap area unchanged) */
+@media(max-width:760px){html body.bo #main .fgrid,html body.bo #memf{width:auto!important;max-width:calc(100% - 36px)!important;margin-right:36px!important;box-sizing:border-box}html body.bo #cal.cal{margin-left:33px!important;margin-right:33px!important;max-width:calc(100% - 66px)!important;width:auto!important;grid-template-columns:repeat(7,minmax(0,1fr))!important}}
+@media(min-width:761px){html body.bo #cal.cal{margin-left:28px!important;margin-right:28px!important;width:auto!important;max-width:calc(100% - 56px)!important;grid-template-columns:repeat(7,minmax(0,1fr))!important}}
+html body.bo .cal .c.today{position:relative;container-type:inline-size}html body.bo .cal .c.today .dn{background:transparent!important;position:static!important;isolation:isolate}
+html body.bo .cal .c.today .dn::before{content:"";position:absolute;left:50%;top:50%;width:min(30px,calc(100cqw - 4px));aspect-ratio:1/1;transform:translate(-50%,-50%);border-radius:50%;background:#34C759;z-index:-1;pointer-events:none}
+@media(min-width:761px){html body.bo .cal .c.today .dn::before{left:20px;top:15px;width:28px}}
