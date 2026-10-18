@@ -615,9 +615,7 @@ body.qb-on .scrollhint.dn,body.qb-on .scrollhint.up{display:flex!important}
 :root{--arw-b:calc(12px + env(safe-area-inset-bottom));--arw-s:44px;--arw-r:16px}
 .scrollhint.dn,body.qb-on .scrollhint.dn,html body .scrollhint.dn{bottom:var(--arw-b)!important;width:var(--arw-s)!important;height:var(--arw-s)!important;min-width:0!important;min-height:0!important;right:var(--arw-r)!important}
 .scrollhint.up,body.qb-on .scrollhint.up,html body .scrollhint.up,body.qb-on .scrollhint.dn.gone~.scrollhint.up{bottom:calc(var(--arw-b) + var(--arw-s) + 8px)!important;width:var(--arw-s)!important;height:var(--arw-s)!important;min-width:0!important;min-height:0!important;right:var(--arw-r)!important}
-@media(max-width:760px){:root{--arw-r:6px;--arw-s:36px}
-body{padding-left:20px!important;padding-right:48px!important;box-sizing:border-box}
-body>.gnav,body>header,body>.deal-bar{margin-left:-20px;margin-right:-48px}
-.scrollhint,.scrollhint.gone,.scrollhint.dn,.scrollhint.up{border-radius:50%!important;background:rgba(0,0,0,.55)!important;color:#fff!important;-webkit-backdrop-filter:blur(12px)!important;backdrop-filter:blur(12px)!important;overflow:visible!important}
-.scrollhint::before{content:"";position:absolute;left:50%;top:50%;width:44px;height:44px;transform:translate(-50%,-50%);background:transparent;border-radius:50%}}
-@media(max-width:760px){.fcols>*{min-width:0;max-width:100%}.fcols a,.fcols span{white-space:normal!important;overflow-wrap:anywhere}}
+
+
+/* BAR-CLEAR: last content clears the fixed Book bar via bottom padding only */
+@media(max-width:760px){html body.qb-on{padding-bottom:calc(88px + env(safe-area-inset-bottom))!important}}
