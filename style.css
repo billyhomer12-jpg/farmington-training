@@ -712,3 +712,8 @@ input[type=date]::-webkit-datetime-edit,input[type=time]::-webkit-datetime-edit{
 @media(max-width:760px){html body.bo form.fgrid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px}html body.bo form.fgrid>.wide,html body.bo form.fgrid>button{grid-column:1/-1}}
 html body.bo form.fgrid>label{min-width:0}
 @media(max-width:399px){html body.bo form.fgrid{grid-template-columns:minmax(0,1fr)!important}}
+/* BO-ARROWS7-SB3: back office: up/down arrows leave fixed positioning and sit as a centered row below the last content wherever the gutter is narrower than arrow 44px + 20px offset + 8px (<1352px), so nothing can sit under them (cards/grids untouched); today circle drawn inside its cell, day button tap area unchanged */
+@media(max-width:1351px){html body.bo>.scrollhint{position:static!important;display:inline-flex!important;vertical-align:top;inset:auto!important;transform:none!important;margin:16px 6px 24px!important;opacity:1!important;pointer-events:auto!important}html body.bo>.scrollhint.up{margin-left:calc(50% - 50px)!important}}
+html body.bo .cal .c.today{position:relative;container-type:inline-size}html body.bo .cal .c.today .dn{background:transparent!important;position:static!important;isolation:isolate}
+html body.bo .cal .c.today .dn::before{content:"";position:absolute;left:50%;top:50%;width:min(30px,calc(100cqw - 4px));aspect-ratio:1/1;transform:translate(-50%,-50%);border-radius:50%;background:#34C759;z-index:-1;pointer-events:none}
+@media(min-width:761px){html body.bo .cal .c.today .dn::before{left:20px;top:15px;width:28px}}
