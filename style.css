@@ -764,3 +764,11 @@ html body .offer-tile#top h1,html body .offer-tile#top .osub{color:#000;font-wei
 html body .offer-tile#top h1 span{color:#1E7B34}
 html body .offer-tile#top .cta-pair .btn.btn-secondary{background:#fff;color:#1E7B34;border:1.5px solid #1E7B34;box-shadow:none}
 html body .offer-tile#top .hero-img.hero-ball{background:#fff}
+/* PROMO241: back-office overview (greeting + stat boxes) -> white, same treatment as homepage promo */
+html body.bo section.hero.dark.ahero:has(#hi){background:#fff;color:#000}
+html body.bo section.hero.dark.ahero:has(#hi) h1{color:#000;font-weight:700}
+html body.bo section.hero.dark.ahero:has(#hi) .stats .stat{background:#f5f5f7!important;border:1px solid #e5e5ea;color:#000}
+html body.bo section.hero.dark.ahero:has(#hi) .stats .stat b{color:#000;font-weight:700}
+html body.bo section.hero.dark.ahero:has(#hi) .stats .stat span{color:#1d1d1f;font-weight:400}
+html body.bo section.hero.dark.ahero:has(#hi) .stats .stat:hover{background:#ebebef!important}
+html body.bo section.hero.dark.ahero:has(#hi) .stats .stat:active{background:#e5e5ea!important}
