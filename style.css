@@ -772,3 +772,18 @@ html body.bo section.hero.dark.ahero:has(#hi) .stats .stat b{color:#000;font-wei
 html body.bo section.hero.dark.ahero:has(#hi) .stats .stat span{color:#1d1d1f;font-weight:400}
 html body.bo section.hero.dark.ahero:has(#hi) .stats .stat:hover{background:#ebebef!important}
 html body.bo section.hero.dark.ahero:has(#hi) .stats .stat:active{background:#e5e5ea!important}
+/* PROMO242: every remaining black band -> white, same treatment as homepage promo (v=240) and back-office overview (v=241). Book bar and arrows untouched. */
+html body .cd-top{background:#fff;color:#000;border-bottom:1px solid rgba(0,0,0,.08)}
+html body .cd-top .cdlbl{color:#000;font-weight:700}
+html body .cd-top .cdsub{color:#000}
+html body .cd-top .cdbox .u{background:#f5f5f7;border:1px solid #e5e5ea}
+html body .cd-top .cdbox .u b{color:#000}
+html body .cd-top .cdbox .u i{color:#000;opacity:.72}
+html body .cd-top .cdsub a.btn.btn-secondary.cta-inline.cd-btn{background:#fff;color:#1E7B34;border:1.5px solid #1E7B34;font-weight:700}
+html body .cd-top .cdsub a.btn.btn-secondary.cta-inline.cd-btn:hover{background:rgba(52,199,89,.10)}
+html body .hero.dark{background:#fff;color:#000}
+html body .hero.dark h1,html body .hero.dark .lead,html body .hero.dark .osub{color:#000;font-weight:700}
+html body .hero.dark .kicker{color:#1E7B34;font-weight:700}
+html body .hero.dark h1 span{color:#1E7B34}
+html body .hero.dark .cta-pair .btn.btn-secondary,html body .hero.dark a.btn.btn-secondary,html body .hero.dark .btn.ghost{background:#fff;color:#1E7B34;border:1.5px solid #1E7B34;box-shadow:none}
+html body .hero.dark .hero-img.hero-ball{background:#fff}
