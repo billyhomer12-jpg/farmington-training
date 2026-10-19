@@ -758,3 +758,9 @@ html body .cd-top.cd-home .cdbox .u b{color:#000}
 html body .cd-top.cd-home .cdbox .u i{color:#000;opacity:.72}
 html body .cd-top.cd-home .cdsub a.btn.btn-secondary.cta-inline.cd-btn{background:#fff;color:#1E7B34;border:1.5px solid #1E7B34;font-weight:700}
 html body .cd-top.cd-home .cdsub a.btn.btn-secondary.cta-inline.cd-btn:hover{background:rgba(52,199,89,.10)}
+/* PROMO240b: homepage 'First session free' block -> white (Billy OK via Cisco) */
+html body .hero.dark.offer-tile#top{background:#fff;color:#000}
+html body .offer-tile#top h1,html body .offer-tile#top .osub{color:#000;font-weight:700}
+html body .offer-tile#top h1 span{color:#1E7B34}
+html body .offer-tile#top .cta-pair .btn.btn-secondary{background:#fff;color:#1E7B34;border:1.5px solid #1E7B34;box-shadow:none}
+html body .offer-tile#top .hero-img.hero-ball{background:#fff}
