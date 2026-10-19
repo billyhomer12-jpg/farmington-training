@@ -749,3 +749,12 @@ html body.bo #t-cal .legend,html body.bo .tab .legend{display:grid!important;fle
 @media(min-width:761px) and (max-width:1100px){html body.bo #t-cal .legend,html body.bo .tab .legend{grid-template-columns:repeat(4,minmax(0,1fr))!important}}
 @media(min-width:1101px){html body.bo #t-cal .legend,html body.bo .tab .legend{grid-template-columns:repeat(7,minmax(0,1fr))!important}}
 html body.bo #t-cal .legend>*,html body.bo .tab .legend>*{width:auto!important;min-width:0!important;max-width:100%!important}
+/* PROMO240: homepage-only countdown promo -> white (Billy OK via Cisco) */
+html body .cd-top.cd-home{background:#fff;color:#000;border-bottom:1px solid rgba(0,0,0,.08)}
+html body .cd-top.cd-home .cdlbl{color:#000;font-weight:700}
+html body .cd-top.cd-home .cdsub{color:#000}
+html body .cd-top.cd-home .cdbox .u{background:#f5f5f7;border:1px solid #e5e5ea}
+html body .cd-top.cd-home .cdbox .u b{color:#000}
+html body .cd-top.cd-home .cdbox .u i{color:#000;opacity:.72}
+html body .cd-top.cd-home .cdsub a.btn.btn-secondary.cta-inline.cd-btn{background:#fff;color:#1E7B34;border:1.5px solid #1E7B34;font-weight:700}
+html body .cd-top.cd-home .cdsub a.btn.btn-secondary.cta-inline.cd-btn:hover{background:rgba(52,199,89,.10)}
