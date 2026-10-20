@@ -789,3 +789,5 @@ html body .hero.dark .kicker{color:#1E7B34;font-weight:700}
 html body .hero.dark h1 span{color:#1E7B34}
 html body .hero.dark .cta-pair .btn.btn-secondary,html body .hero.dark a.btn.btn-secondary,html body .hero.dark .btn.ghost{background:#fff;color:#1E7B34;border:1.5px solid #1E7B34;box-shadow:none}
 html body .hero.dark .hero-img.hero-ball{background:#fff}
+/* A11Y: selected booking card sits on #e1f5e6; #6e6e73 text there was 4.44:1 */
+.mcard:has(input:checked) small,.ogcard:has(input:checked) small{color:#6b6b70}
