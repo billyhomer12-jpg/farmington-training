@@ -1,0 +1,292 @@
+/* ============================================================
+   Four Corners Hoops & Performance — 2.0 Liquid Glass layer
+   ------------------------------------------------------------
+   Loaded AFTER style.css on every page (public + back office).
+   Presentation only: no markup, content, price, or JS changes.
+
+   How the system is built (Apple's rules, translated to CSS):
+   - Glass lives on the functional layer: nav, countdown strip,
+     quick-book bar, scroll hints, dialogs, segmented controls,
+     and the hero offer chip. Those get REAL backdrop blur —
+     never more than ~4 blurred surfaces on screen at once.
+   - Cards sit on flat section backgrounds (#fff / #f5f5f7),
+     where backdrop blur is visually identical to a translucent
+     fill — so cards use the glass-strong fill, specular rim,
+     sheen and shadow WITHOUT the GPU cost. Same look, 60fps.
+   - Content stays solid: body text, FAQ, forms, calendar,
+     waiver/privacy text, and every back-office list/table.
+   - The only solid color control is the primary action
+     (Book / primary buttons, already solid green in style.css).
+   ============================================================ */
+
+:root{
+  --glass-fill:        rgb(255 255 255 / .72);  /* nav, bars — tinted end of Apple's dial */
+  --glass-fill-strong: rgb(255 255 255 / .85);  /* cards, sheets */
+  --glass-fill-chip:   rgb(255 255 255 / .55);  /* small media-adjacent chip */
+  --glass-rim:         rgb(255 255 255 / .8);   /* specular top edge */
+  --glass-edge:        rgb(20 24 33 / .10);     /* hairline against content */
+  --glass-shadow:      0 8px 32px rgb(20 24 33 / .13);
+  --glass-shadow-sm:   0 4px 18px rgb(20 24 33 / .08);
+  --glass-blur:        18px;
+  --glass-saturate:    170%;
+  --radius-chrome:     24px;
+  --ease-spring:       cubic-bezier(.32,.72,.24,1);
+}
+@media (max-width: 640px){ :root{ --glass-blur: 12px; } } /* mobile: cheaper blur */
+
+/* Reusable utilities (same system, for any future markup) */
+.glass{
+  position:relative; isolation:isolate;
+  background:var(--glass-fill);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+          backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border:1px solid var(--glass-edge);
+  box-shadow: inset 0 1px 1px var(--glass-rim), inset 0 -1px 1px rgb(255 255 255 / .25), var(--glass-shadow);
+  border-radius:var(--radius-chrome);
+}
+.glass-strong{ background:var(--glass-fill-strong); }
+
+/* Anchors clear the floating capsule */
+html{ scroll-padding-top:96px; }
+@media (max-width:760px){ html{ scroll-padding-top:136px; } }
+
+/* ---------- Floating glass nav capsule (every page) ---------- */
+.gnav{
+  top:12px;
+  width:min(1048px, calc(100% - 24px));
+  margin:12px auto 0;
+  background:var(--glass-fill);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+          backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border:1px solid var(--glass-edge);
+  border-radius:var(--radius-chrome);
+  box-shadow: inset 0 1px 1px var(--glass-rim), inset 0 -1px 1px rgb(255 255 255 / .25), var(--glass-shadow);
+}
+.gnav.has-menu{ top:12px; }
+/* Mobile menu sheet = glass-strong panel floating under the capsule */
+@media (max-width:760px){
+  .gnav.has-menu.open .tabsnav{
+    left:8px; right:8px; top:60px;
+    background:var(--glass-fill-strong);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+            backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    border:1px solid var(--glass-edge);
+    border-radius:20px;
+    box-shadow: inset 0 1px 1px var(--glass-rim), 0 18px 44px rgb(20 24 33 / .18);
+  }
+}
+
+/* ---------- Countdown strip: one glass capsule under the nav ---------- */
+.cd-top{
+  width:min(1048px, calc(100% - 24px));
+  margin:12px auto 0;
+  background:var(--glass-fill-strong);
+  border:1px solid var(--glass-edge);
+  border-radius:20px;
+  box-shadow: inset 0 1px 1px var(--glass-rim), var(--glass-shadow-sm);
+}
+
+/* ---------- Buttons: secondary/ghost become glass pills ---------- */
+.btn.btn-secondary, .btn.ghost{
+  background:rgb(255 255 255 / .62);
+  -webkit-backdrop-filter: blur(10px) saturate(160%);
+          backdrop-filter: blur(10px) saturate(160%);
+  border:1px solid var(--glass-edge);
+  box-shadow: inset 0 1px 1px var(--glass-rim), var(--glass-shadow-sm);
+}
+.btn.btn-secondary{ color:#1E7B34; }
+.hero.dark .cta-pair .btn.btn-secondary, [data-theme=dark] .cta-pair .btn.btn-secondary{ color:#1E7B34; }
+/* Dark surfaces keep a dark-glass pill with light text */
+.atile.dark .btn.ghost, .dark .atile .btn.ghost{
+  background:rgb(22 22 24 / .5); color:#f5f5f7; border-color:rgb(255 255 255 / .28);
+}
+/* Primary actions stay solid (Apple's one colored control); add a top light */
+.btn.btn-primary, .btn.book, .qbook a.qb-book{
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .35), 0 1px 2px rgb(20 24 33 / .10);
+}
+
+/* ---------- Home hero: soft court wash + glass offer chip ---------- */
+html body .hero.dark.offer-tile#top{
+  background:
+    linear-gradient(rgb(255 255 255 / .93), rgb(255 255 255 / .965)),
+    url(img/basketball.jpg) center 38% / cover no-repeat #fff;
+}
+.offer-tile .osub{
+  width:fit-content; max-width:calc(100% - 32px);
+  padding:10px 18px;
+  background:var(--glass-fill-chip);
+  -webkit-backdrop-filter: blur(12px) saturate(var(--glass-saturate));
+          backdrop-filter: blur(12px) saturate(var(--glass-saturate));
+  border:1px solid var(--glass-edge);
+  border-radius:999px;
+  box-shadow: inset 0 1px 1px var(--glass-rim), var(--glass-shadow-sm);
+}
+/* Free-first note becomes a tinted glass panel (green edge kept) */
+.ffnote{
+  background:var(--glass-fill-strong);
+  box-shadow: inset 0 1px 1px var(--glass-rim), var(--glass-shadow-sm);
+}
+
+/* ---------- Cards: glass-strong fill + rim + soft lift ---------- */
+.sec:not(.alt) .card, .sec.alt .card, .card,
+.sec:not(.alt) .tile, .sec.alt .tile, .tile,
+.mytile, .filters, .rvempty, .gcard, .rv{
+  background:var(--glass-fill-strong);
+  border:1px solid var(--glass-edge);
+  box-shadow: inset 0 1px 1px var(--glass-rim), var(--glass-shadow-sm);
+}
+.atile:not(.accent):not(.dark){
+  background:var(--glass-fill-strong);
+  border:1px solid var(--glass-edge);
+  box-shadow: inset 0 1px 1px var(--glass-rim), var(--glass-shadow-sm);
+}
+.sec.alt .coach, .coaches .coach{
+  background:var(--glass-fill-strong);
+  border:1px solid var(--glass-edge);
+  box-shadow: inset 0 1px 1px var(--glass-rim), var(--glass-shadow-sm);
+}
+.solo{
+  background:var(--glass-fill-strong);
+  box-shadow: inset 0 1px 1px var(--glass-rim), var(--glass-shadow-sm);
+}
+.aday, .sec.alt .aday{
+  background:var(--glass-fill-strong);
+  border:1px solid var(--glass-edge);
+  box-shadow: inset 0 1px 1px var(--glass-rim), var(--glass-shadow-sm);
+}
+.gymhours{
+  background:rgb(255 255 255 / .65);
+  border:1px solid var(--glass-edge);
+}
+/* Pricing tab rows + membership cards */
+.ptab-sec .prices4 .price{
+  background:var(--glass-fill-strong);
+  border:1px solid var(--glass-edge);
+  box-shadow: inset 0 1px 1px var(--glass-rim), var(--glass-shadow-sm);
+}
+.ptab-sec #memberships .price{
+  background:var(--glass-fill-strong);
+}
+/* Small repeated chips: glass-look fill, no backdrop blur (performance) */
+.achip, .sec.alt .aday .achip{
+  background:rgb(255 255 255 / .68);
+  border:1px solid var(--glass-edge);
+  box-shadow: inset 0 1px 1px var(--glass-rim);
+}
+
+/* ---------- Segmented controls: glass track, solid indicator ---------- */
+.seg{
+  background:rgb(255 255 255 / .6);
+  -webkit-backdrop-filter: blur(14px) saturate(var(--glass-saturate));
+          backdrop-filter: blur(14px) saturate(var(--glass-saturate));
+  border:1px solid var(--glass-edge);
+  box-shadow: inset 0 1px 1px var(--glass-rim), var(--glass-shadow-sm);
+}
+/* Sticky pricing tabs sit below the floating capsule, not under it */
+.js-ptabs .ptabs{ top:76px; background:linear-gradient(rgb(245 245 247 / .85) 80%, transparent); }
+@media (max-width:760px){ .js-ptabs .ptabs{ top:124px; } }
+
+/* ---------- Booking sheet / dialogs: glass-strong shell, solid form ---------- */
+.sheet{
+  background:rgb(255 255 255 / .94);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+          backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border:1px solid var(--glass-edge);
+  box-shadow: 0 24px 64px rgb(20 24 33 / .25);
+}
+.sheet-head{
+  background:rgb(255 255 255 / .78);
+  box-shadow: inset 0 1px 1px var(--glass-rim);
+}
+
+/* ---------- Quick-book bar: floating dark-glass capsule ---------- */
+.qbook, .qbook.on{
+  left:12px; right:12px;
+  bottom:calc(12px + env(safe-area-inset-bottom));
+  border-radius:var(--radius-chrome);
+  border:1px solid rgb(255 255 255 / .22);
+  box-shadow: inset 0 1px 1px rgb(255 255 255 / .28), 0 16px 40px rgb(0 0 0 / .28);
+}
+@media (min-width:761px){ .qbook, .qbook.on{ bottom:16px; } }
+body.qb-on{ padding-bottom:calc(86px + env(safe-area-inset-bottom)); }
+@media (min-width:761px){ body.qb-on{ padding-bottom:114px; } }
+
+/* ---------- Scroll hints: white-glass bubbles ---------- */
+.scrollhint{
+  background:rgb(255 255 255 / .7);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+          backdrop-filter: blur(12px) saturate(180%);
+  border:1px solid var(--glass-edge);
+  box-shadow: inset 0 1px 1px var(--glass-rim), var(--glass-shadow-sm);
+  color:#1d1d1f;
+}
+
+/* ============================================================
+   Back office (body.bo) — same system, tinted end of the dial.
+   Chrome gets glass; all data (lists, tables, calendar,
+   forms) stays solid and scannable.
+   ============================================================ */
+/* Stat tiles */
+html body.bo section.hero.dark.ahero:has(#hi) .stats .stat,
+html body.bo .ahero .stats .stat{
+  background:var(--glass-fill-strong) !important;
+  border:1px solid var(--glass-edge) !important;
+  box-shadow: inset 0 1px 1px var(--glass-rim), var(--glass-shadow-sm);
+  -webkit-backdrop-filter: blur(10px) saturate(160%);
+          backdrop-filter: blur(10px) saturate(160%);
+}
+/* Segmented controls / tab bars */
+html body.bo .segc.segc{
+  background:rgb(255 255 255 / .66) !important;
+  border:1px solid var(--glass-edge) !important;
+  box-shadow: inset 0 1px 1px var(--glass-rim), var(--glass-shadow-sm) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(160%);
+          backdrop-filter: blur(12px) saturate(160%);
+}
+/* PIN sign-in card — the one back-office "doorway" screen */
+html body.bo #login.card{
+  background:rgb(255 255 255 / .9);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+          backdrop-filter: blur(14px) saturate(160%);
+  border:1px solid var(--glass-edge);
+  box-shadow: inset 0 1px 1px var(--glass-rim), 0 20px 48px rgb(20 24 33 / .16);
+}
+/* Admin cards/tiles ride the shared .card/.tile glass above.
+   Tables (#list, .atable), calendar cells and forms: untouched. */
+
+/* ============================================================
+   Accessibility fallbacks (spec B9)
+   ============================================================ */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))){
+  .gnav, .cd-top, .sheet, .seg, .offer-tile .osub, .scrollhint,
+  .btn.btn-secondary, .btn.ghost{ background: rgb(255 255 255 / .96); }
+}
+@media (prefers-reduced-transparency: reduce){
+  .gnav, .cd-top, .sheet, .seg, .offer-tile .osub, .scrollhint,
+  .btn.btn-secondary, .btn.ghost,
+  html body.bo .segc.segc, html body.bo #login.card{
+    -webkit-backdrop-filter:none; backdrop-filter:none;
+    background: rgb(255 255 255 / .97);
+  }
+  .sec:not(.alt) .card, .sec.alt .card, .card,
+  .sec:not(.alt) .tile, .sec.alt .tile, .tile,
+  .mytile, .filters, .rvempty, .gcard, .rv,
+  .atile:not(.accent):not(.dark), .aday, .sec.alt .aday,
+  .ptab-sec .prices4 .price{ background: rgb(255 255 255 / .97); }
+}
+@media (prefers-contrast: more){
+  .gnav, .cd-top, .sheet, .seg, .offer-tile .osub, .scrollhint,
+  .sec:not(.alt) .card, .sec.alt .card, .card,
+  .sec:not(.alt) .tile, .sec.alt .tile, .tile,
+  .mytile, .filters, .rvempty, .gcard, .rv,
+  .atile:not(.accent):not(.dark), .aday, .sec.alt .aday,
+  .ptab-sec .prices4 .price{
+    -webkit-backdrop-filter:none; backdrop-filter:none;
+    background:#fff; border-color: rgb(20 24 33 / .45); box-shadow:none;
+  }
+}
+@media (prefers-reduced-motion: reduce){
+  .gnav, .qbook, .card, .tile, .atile, .btn, .seg .ind{
+    transition-duration:.01ms !important; animation:none !important;
+  }
+}
