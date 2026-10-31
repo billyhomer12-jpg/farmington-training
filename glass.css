@@ -174,6 +174,41 @@ html body .hero.dark.offer-tile#top{
   box-shadow: inset 0 1px 1px var(--glass-rim);
 }
 
+/* ---------- Reviews: quote-led glass (reviews.html) ----------
+   Published reviews render via JS as .card.tile.rv inside
+   #rvlist. style.css .sec.alt .tile paints them #fff, and the
+   shared card fill (.85 white over the #f5f5f7 alt section)
+   still reads as a solid white slab — so reviews get their
+   own lighter frost, a top sheen, and quote-led type.
+   The text is the hero; the box gets out of the way. */
+.sec.alt .rvlist{ gap:22px; }
+.sec.alt .rvlist .rv, .sec.alt .rvlist .rvempty, .sec.alt .rvform{
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / .5), rgb(255 255 255 / 0) 46%),
+    rgb(255 255 255 / .66);
+  border:1px solid var(--glass-edge);
+  border-radius:var(--radius-chrome);
+  box-shadow: inset 0 1px 1px var(--glass-rim), var(--glass-shadow-sm);
+}
+.sec.alt .rvlist .rv{ padding:30px 32px 26px; }
+.sec.alt .rvlist .rv::before{
+  content:"\201C";
+  display:block;
+  font-family:Georgia, "Times New Roman", serif;
+  font-size:3rem; line-height:.55;
+  color:rgb(30 123 52 / .38);
+  margin:6px 0 14px;
+}
+.sec.alt .rvlist .rv .rvq{
+  font-size:1.3rem; line-height:1.52; letter-spacing:-.012em;
+  font-weight:500; color:#1d1d1f;
+}
+.sec.alt .rvlist .rv .rvby{ margin:18px 0 0; font-size:.95rem; }
+@media (max-width:760px){
+  .sec.alt .rvlist .rv{ padding:24px 22px 20px; }
+  .sec.alt .rvlist .rv .rvq{ font-size:1.18rem; }
+}
+
 /* ---------- Segmented controls: glass track, solid indicator ---------- */
 .seg{
   background:rgb(255 255 255 / .6);
@@ -273,6 +308,9 @@ html body.bo #login.card{
   .mytile, .filters, .rvempty, .gcard, .rv,
   .atile:not(.accent):not(.dark), .aday, .sec.alt .aday,
   .ptab-sec .prices4 .price{ background: rgb(255 255 255 / .97); }
+  .sec.alt .rvlist .rv, .sec.alt .rvlist .rvempty, .sec.alt .rvform{
+    background: rgb(255 255 255 / .97);
+  }
 }
 @media (prefers-contrast: more){
   .gnav, .cd-top, .sheet, .seg, .offer-tile .osub, .scrollhint,
@@ -281,6 +319,10 @@ html body.bo #login.card{
   .mytile, .filters, .rvempty, .gcard, .rv,
   .atile:not(.accent):not(.dark), .aday, .sec.alt .aday,
   .ptab-sec .prices4 .price{
+    -webkit-backdrop-filter:none; backdrop-filter:none;
+    background:#fff; border-color: rgb(20 24 33 / .45); box-shadow:none;
+  }
+  .sec.alt .rvlist .rv, .sec.alt .rvlist .rvempty, .sec.alt .rvform{
     -webkit-backdrop-filter:none; backdrop-filter:none;
     background:#fff; border-color: rgb(20 24 33 / .45); box-shadow:none;
   }
